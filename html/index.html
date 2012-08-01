@@ -1,1 +1,110 @@
-<h1>Nothing to see here</h1>
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Movies</title>
+		<link media="all" rel="stylesheet" type="text/css" 
+		      href="assets/css/styles.css" />
+		<script type="text/javascript" 
+		        src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js">
+		</script>
+		<script src="assets/js/movies.js" type="text/javascript"></script>		
+	</head>
+	<body>
+		<div id="content">
+		<table cellspacing="0" cellpadding="4">
+			<thead>
+				<tr>
+					<th colspan="7" style="text-align:center;">
+						<span style="float:left;">
+							<a href="javascript:void(0);" 
+							   onclick="movies.prev();">&laquo;Prev</a>
+						</span>
+						Movies 
+						<span class="start_movies"></span> to
+						<span class="end_movies"></span> of
+						<span class="total_movies"></span>
+						<span style="float:right;">
+							<a href="javascript:void(0);" 
+							   onclick="movies.next();">Next&raquo;</a>
+						</span>										
+					</th>
+				</tr>	
+				<tr>
+					<th colspan="7">
+						<span style="float:right;">
+							<a href="javascript:void(0);" 
+							   id="advanced_search_link"
+							   onclick="alert('advanced search');">
+								Advanced Search</a>
+							<input type="text" size="25" 
+							       placeholder="Movie Title"
+							       id="movie_title_search" />
+							<input type="button" value="Search" 
+							       onclick='movies.filter();'/>
+							<input type="button" value="Reset" 
+							       onclick='movies.reset();' />
+						</span>						
+					</th>					
+				</tr>			
+				<tr>
+					<th style="width:35%">
+						<a href="javascript:void(0);" 
+						   onclick="movies.sort_movies('title', true, false);">
+							Title						   
+						</a>						
+					</th>
+					<th style="width:1%">
+						<a href="javascript:void(0);" 
+						   onclick="movies.sort_movies('year', false, 
+						                               parseInt);">
+							Year						   
+						</a>
+					</th>
+					<th style="width:1%">
+						<a href="javascript:void(0);" 
+						   onclick="movies.sort_movies('hd', false, false);">
+							HD						   
+						</a>
+					</th>				
+					<th style="width:5%">
+						<a href="javascript:void(0);" 
+						   onclick="movies.sort_movies('size', false, 
+						                               parseInt);">
+							Size(GB)						   
+						</a>
+					</th>
+					<th style="width:10%">
+						<a href="javascript:void(0);" 
+						   onclick="movies.sort_movies('archive_date', 
+						                               false, false);">
+							Downloaded						   
+						</a>
+					</th>
+					<th style="width:40%">Path</th>
+					<th style="width:1%;text-align:center;">-</th>
+				</tr>
+			</thead>
+			<tbody id="movies">
+			</tbody>
+			<tfoot>
+				<tr>
+					<th colspan="7" style="text-align:center;">
+						<span style="float:left;">
+							<a href="javascript:void(0);" 
+							   onclick="movies.prev();">&laquo;Prev</a>
+						</span>
+						Movies 
+						<span class="start_movies"></span> to
+						<span class="end_movies"></span> of
+						<span class="total_movies"></span>
+						<span style="float:right;">
+							<a href="javascript:void(0);" 
+							   onclick="movies.next();">Next&raquo;</a>
+						</span>							
+					</th>
+				</tr>
+			</tfoot>
+		</table>
+		</div>
+	</body>
+</html>

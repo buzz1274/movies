@@ -1,0 +1,36 @@
+body {
+	font-family:Trebuchet MS;
+	font-size:85%;
+}
+#content {
+	margin:0 auto 0 auto;
+	width:80%;
+	border:1px solid #000000;
+}
+#advanced_search_link {
+	text-decoration:underline;
+	padding-right:10px;
+}
+table {
+    border-collapse: collapse;
+    border-style: hidden;
+    width:100%;
+}
+table th {
+	text-align:left;
+	background-color:#246B1E;
+	color:#FFFFFF;
+}
+table td, table th {
+    border:1px solid #000000;
+}
+table td a {
+	color:#000000;
+}
+table th a {
+	color:#FFFFFF;
+	text-decoration:none;
+}
+.centre {
+	text-align:center;
+}
