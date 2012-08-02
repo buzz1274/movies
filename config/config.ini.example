@@ -1,0 +1,5 @@
+[MEDIASERVER]
+hostname: #hostname or ip address for the mediaserver 
+username: #username for 
+password:
+regex_pattern:
