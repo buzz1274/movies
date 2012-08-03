@@ -9,9 +9,10 @@ import ConfigParser
 from fabric.api import settings, hide
 from fabric.operations import get
 from fabric.operations import run
+from config import CONFIG_PATH
 
-class spider():
-    
+class File():
+            
     hostname = None
     
     username = None
@@ -23,26 +24,15 @@ class spider():
     movies = ""
     
     def __init__(self):
+        """
+        File constructor reads ini file for configuration 
+        settings
+        """
         try:
-            self.get_config_variables()
-            self.spider()
-            if not self.movies:
-                self.parse()
+            self._set_config_variables()
         except ConfigParser.Error, e:
             print 'Invalid config file(%s)' % e
                 
-    def get_config_variables(self):
-        """
-        retrieves and parse the appropriate variables from
-        the config file 
-        """        
-        config = ConfigParser.ConfigParser()
-        config.read('../config/config.ini')
-        self.hostname = config.get('MEDIASERVER', 'hostname')
-        self.username = config.get('MEDIASERVER', 'username')
-        self.password = config.get('MEDIASERVER', 'password')
-        self.regex_pattern = config.get('MEDIASERVER', 'regex_pattern')
-
     def spider(self):
         """
         spiders the supplied drives and directories for files 
@@ -56,12 +46,33 @@ class spider():
                     run(("find %s -type f -print0 | xargs -0 ls -la" % path),
                         shell=False, pty=True, combine_stderr=True)
                     
-    def parse(self):
+        if self.movies:
+            self._parse()
+            
+    def _set_config_variables(self):
+        """
+        retrieves and parse the appropriate variables from
+        the config file 
+        """        
+        config = ConfigParser.ConfigParser()
+        config.read(CONFIG_PATH)
+        self.hostname = config.get('MEDIASERVER', 'hostname')
+        self.username = config.get('MEDIASERVER', 'username')
+        self.password = config.get('MEDIASERVER', 'password')
+        self.regex_pattern = config.get('MEDIASERVER', 'regex_pattern')            
+                    
+    def _parse(self):
         """
         parses the list of files generated whilst spidering into a list
         of valid media files
         """
         film = []
+        
+        for line in self.movies.split("\r\n"):  
+            movie = re.search(self.regex_pattern, line)
+            print line
+            print movie
+            print movie.group(3)
                  
 """     
         film = []
@@ -113,7 +124,4 @@ class spider():
                         file = open('movies.json', 'w')
                         file.write(json.dumps(film))
                         file.close()
-"""                                                
-        
-if __name__ == "__main__":
-    spider()               
+"""                                                              
