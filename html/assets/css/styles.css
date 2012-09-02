@@ -6,7 +6,7 @@ body {
     margin:0 auto 0 auto;
     width:80%;
 }
-#advanced_search_link {
+.advancedSearchLink {
     text-decoration:underline;
     padding-right:10px;
 }

@@ -12,7 +12,11 @@ window.MovieSummaryView = Backbone.View.extend({
     summary:false,
     events: {
         'click a.prevLink': 'prev',
-        'click a.nextLink': 'next'
+        'click a.nextLink': 'next',
+        'click a.sortLink': 'sort',
+        'click a.advancedSearchLink': 'advanced_search',
+        "click input.searchButton": 'search',
+        "click input.resetButton": 'reset',
     },
 
     initialize:function () {
@@ -24,23 +28,53 @@ window.MovieSummaryView = Backbone.View.extend({
     render:function (eventName) {
         summary = this.model.toJSON();
         $(this.el).append(this.template(summary));
+        console.log(search);
+        $('#movie_title_search').val(search);
         return this;
+    },
+    sort: function(ev) {
+        if(sort == $(ev.currentTarget).attr('data-sort_order')) {
+            sort_ascending = !sort_ascending;
+        } else {
+            sort = $(ev.currentTarget).attr('data-sort_order');
+            sort_ascending = 1;
+        }
+        page = 1;
+        app.list();
     },
     next: function() {
         if(page < summary.totalPages) {
             page += 1;
-            app.list(page);
+            app.list();
         }
         this.stylePagingLinks();
     },
-    prev:function() {
+    prev: function() {
         if(page > 1) {
             page -= 1;
-            app.list(page);
+            app.list();
         }
         this.stylePagingLinks();
     },
-    stylePagingLinks:function () {
+    reset: function() {
+        page = 1;
+        sort = 'title';
+        sort_ascending = true;
+        search = '';
+        app.list();
+    },
+    advanced_search: function() {
+        alert("COMING SOON");
+    },
+    search: function() {
+        console.log("HERE");
+        page = 1;
+        sort = 'title';
+        sort_ascending = true;
+        search = $('#movie_title_search').val();
+        app.list();
+    },
+    stylePagingLinks: function () {
         console.log("style links");
     }
 });
@@ -65,6 +99,7 @@ window.MovieListItemView = Backbone.View.extend({
     events: {
         'mouseover': 'mouseoverrow',
         'mouseout': 'mouseoutrow',
+        'click a.detailLink': 'details',
     },
 
     template:_.template($('#tpl-movie-list-item').html()),
@@ -73,7 +108,9 @@ window.MovieListItemView = Backbone.View.extend({
         $(this.el).html(this.template(this.model.toJSON()));
         return this;
     },
-
+    details: function() {
+        alert("SHOW MOVIE DETAILS");
+    },
     mouseoverrow: function() {
         $(this.el).css("background-color","#BADA55");
     },
@@ -98,22 +135,26 @@ var AppRouter = Backbone.Router.extend({
 
     routes:{
         "":"list",
-        "pages/:id":"movieDetails"
+        "movies/:id":"movieDetails"
     },
 
-    list:function (page) {
+    list:function () {
         $('#movies_table').html('');
         var movieSummary = new MovieSummary();
         var movieSummaryView = new MovieSummaryView({model:movieSummary});
         movieSummary.fetch({
-            data:{page:page},
+            data:{page:page,
+                  search:search},
             success: function() {
                 $('#movies_table').prepend(movieSummaryView.render().el);
             }
         });
         this.movieList = new MovieCollection();
         this.movieListView = new MovieListView({model:this.movieList});
-        this.movieList.fetch({data:{page:page}});
+        this.movieList.fetch({data:{page:page,
+                                    sort:sort,
+                                    search:search,
+                                    sort_ascending:sort_ascending}});
 
         $('#movies_table').append(this.movieListView.render().el);
     },
@@ -125,6 +166,9 @@ var AppRouter = Backbone.Router.extend({
     }
 });
 
+var search = '';
 var page = 1;
+var sort = 'title';
+var sort_ascending = true;
 var app = new AppRouter();
 Backbone.history.start();

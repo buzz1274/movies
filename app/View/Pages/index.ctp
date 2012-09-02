@@ -20,13 +20,13 @@
             </td>
             <td class='centre'><%= Movie.release_year %></td>
             <td class='centre'><%= Movie.imdb_rating %></td>
-            <td class='centre'>-</td>
             <td><%= Movie.runtime %></td>
             <td><%= Movie.filesize %></td>
             <td><%= Movie.date_added %></td>
-            <td>Y:\<%= Movie.path %></td>
+            <td class='centre'>-</td>
+            <td class='centre'>-</td>
             <td>
-                <a class="prevLink" href='javascript:void(0);' onclick='movies.displayInfo();'>
+                <a class="detailLink" href='javascript:void(0);'>
                     <img src='/assets/image/magnifying.png'
                          width='20' height='20'>
                 </a>
@@ -41,10 +41,9 @@
                             &laquo;Prev
                         </a>
                     </span>
-                    Movies
                     <%= startOffset %> to
-                    <%= endffset %> of
-                    <%= totalMovies %>
+                    <%= endOffset %> of
+                    <%= totalMovies %> Movies
                     <span style="float:right;">
                         <a class="nextLink" href="javascript:void(0);">
                             Next&raquo;
@@ -56,68 +55,67 @@
                 <th colspan="9">
                     <span style="float:right;">
                         <a href="javascript:void(0);"
-                           id="advanced_search_link"
-                           onclick="alert('advanced search');">
+                           class="advancedSearchLink">
                             Advanced Search</a>
                         <input type="text" size="25"
                                placeholder="Movie Title"
                                id="movie_title_search" />
                         <input type="button" value="Search"
-                               onclick='movies.filter();'/>
+                               class="searchButton" />
                         <input type="button" value="Reset"
-                               onclick='movies.reset();' />
+                               class="resetButton" />
                     </span>
                 </th>
             </tr>
             <tr>
                 <th style="width:35%">
-                    <a href="javascript:void(0);"
-                       onclick="movies.sort_movies('title', true, false);">
+                    <a href="javascript:void(0);" class="sortLink"
+                       data-sort_order="title">
                         Title
                     </a>
                 </th>
                 <th style="width:1%">
-                    <a href="javascript:void(0);"
-                       onclick="movies.sort_movies('year', false,
-                                                   parseInt);">
+                    <a href="javascript:void(0);" class="sortLink"
+                       data-sort_order="release_year">
                         Year
                     </a>
                 </th>
                 <th style="width:1%">
-                    <a href="javascript:void(0);"
-                       onclick="movies.sort_movies('year', false,
-                                                   parseInt);">
+                    <a href="javascript:void(0);" class="sortLink"
+                       data-sort_order="imdb_rating">
                         Rating
                     </a>
                 </th>
-                <th style="width:1%">
-                    <a href="javascript:void(0);"
-                       onclick="movies.sort_movies('hd', false, false);">
-                        HD
-                    </a>
-                </th>
-                <th style="width:1%">
-                    <a href="javascript:void(0);"
-                       onclick="movies.sort_movies('year', false,
-                                                   parseInt);">
+                <th style="width:8%">
+                    <a href="javascript:void(0);" class="sortLink"
+                       data-sort_order="runtime">
                         Runtime
                     </a>
                 </th>
                 <th style="width:5%">
-                    <a href="javascript:void(0);"
-                       onclick="movies.sort_movies('size', false,
-                                                   parseInt);">
+                    <a href="javascript:void(0);" class="sortLink"
+                       data-sort_order="filesize">
                         Size(GB)
                     </a>
                 </th>
                 <th style="width:10%">
-                    <a href="javascript:void(0);"
-                       onclick="movies.sort_movies('archive_date',
-                                                   false, false);">
+                    <a href="javascript:void(0);" class="sortLink"
+                       data-sort_order="date_added">
                         Downloaded
                     </a>
                 </th>
-                <th style="width:40%">Path</th>
+                <th style="width:1%">
+                    <a href="javascript:void(0);" class="sortLink"
+                       data-sort_order="hd">
+                        HD
+                    </a>
+                </th>
+                <th style="width:1%">
+                    <a href="javascript:void(0);" class="sortLink"
+                       data-sort_order="watched">
+                        Watched
+                    </a>
+                </th>
                 <th style="width:1%;text-align:center;">-</th>
             </tr>
         </script>
