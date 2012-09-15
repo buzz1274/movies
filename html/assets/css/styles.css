@@ -1,20 +1,36 @@
 body {
+    margin:0;
+    padding:0;
     font-family:Trebuchet MS;
     font-size:13px;
+    background-color:#E9E9F5;
+}
+a:hover {
+    cursor:pointer;
+}
+#header {
+    background-color:#246B1E;
+    width:100%;
+    line-height:30px;
+    margin:0 0 5px 0;
+    padding:0 0 0 20px;
+    color:#FFFFFF;
+    border:1px solid #000000;
 }
 #content {
     margin:0 auto 0 auto;
-    width:80%;
+    min-width:700px;
+    max-width:800px;
 }
 .advancedSearchLink {
     text-decoration:underline;
     padding-right:10px;
 }
 table {
+    background-color:#FFFFFF;
     border-collapse: collapse;
     border-style: hidden;
     width:100%;
-    border:1px solid #000000;
 }
 table th {
     text-align:left;
@@ -31,6 +47,45 @@ table th a {
     color:#FFFFFF;
     text-decoration:none;
 }
+#no_results {
+    text-align:center;
+    color:#FF0000;
+    line-height:50px;
+    font-weight:bold;
+}
 .centre {
     text-align:center;
+}
+img.move_image {
+    float:left;
+    margin-right:20px;
+    border:1px solid #000000;
+    width:214px;
+    height:317px;
+}
+div.no_image_holder div {
+    float:left;
+    margin-right:20px;
+    border:1px solid #000000;
+    background-color:#EDEDED;
+}
+div.no_image_holder div {
+    width:214px;
+    height:317px;
+}
+div.no_image_holder div p {
+    padding:130px 0 0 80px;
+}
+ul.genres a, ul.directors a, ul.actors a {
+    text-decoration:underline;
+}
+ul.genres li, ul.directors li, ul.actors li {
+    float:left;
+    padding-right:5px;
+    list-style:none;
+}
+#version {
+    float:right;
+    font-size:0.75em;
+    display:none;
 }

@@ -6,10 +6,25 @@
               href="/assets/css/styles.css" />
     </head>
     <body>
-        <div id="content">
-            <table id="movies_table" cellspacing="0" cellpadding="4">
-            </table>
+        <div id="header">
+            Movies
         </div>
+        <div id="content">
+            <table style="display:none;"
+                   id="movies_table" cellspacing="0" cellpadding="4">
+            </table>
+            <span id="version">
+                moviedb v0.5
+            </span>
+        </div>
+
+        <script type="text/template" id="tpl-movie-list-no-results">
+            <tr>
+                <td id="no_results" colspan="9">
+                    No Results. Please try another search
+                </td>
+            </tr>
+        </script>
 
         <script type="text/template" id="tpl-movie-list-item">
             <td>
@@ -26,7 +41,8 @@
             <td class='centre'>-</td>
             <td class='centre'>-</td>
             <td>
-                <a class="detailLink" href='javascript:void(0);'>
+                <a title="More Details" class="detailLink"
+                   data-imdb_id="<%= Movie.imdb_id %>">
                     <img src='/assets/image/magnifying.png'
                          width='20' height='20'>
                 </a>
@@ -37,17 +53,15 @@
             <tr>
                 <th colspan="9" style="text-align:center;">
                     <span style="float:left;">
-                        <a class="prevLink" href="javascript:void(0);">
-                            &laquo;Prev
-                        </a>
+                        <a class="prevLink">&laquo;Prev</a>
                     </span>
-                    <%= startOffset %> to
-                    <%= endOffset %> of
-                    <%= totalMovies %> Movies
                     <span style="float:right;">
-                        <a class="nextLink" href="javascript:void(0);">
-                            Next&raquo;
-                        </a>
+                        <a class="nextLink">Next&raquo;</a>
+                    </span>
+                    <span id="result_count" style="display:inline;">
+                        <%= startOffset %> to
+                        <%= endOffset %> of
+                        <%= totalMovies %> Movies
                     </span>
                 </th>
             </tr>
@@ -68,51 +82,43 @@
                 </th>
             </tr>
             <tr>
-                <th style="width:35%">
-                    <a href="javascript:void(0);" class="sortLink"
-                       data-sort_order="title">
+                <th style="width:30%">
+                    <a class="sortLink" data-sort_order="title">
                         Title
                     </a>
                 </th>
                 <th style="width:1%">
-                    <a href="javascript:void(0);" class="sortLink"
-                       data-sort_order="release_year">
+                    <a class="sortLink" data-sort_order="release_year">
                         Year
                     </a>
                 </th>
                 <th style="width:1%">
-                    <a href="javascript:void(0);" class="sortLink"
-                       data-sort_order="imdb_rating">
+                    <a class="sortLink" data-sort_order="imdb_rating">
                         Rating
                     </a>
                 </th>
                 <th style="width:8%">
-                    <a href="javascript:void(0);" class="sortLink"
-                       data-sort_order="runtime">
+                    <a class="sortLink" data-sort_order="runtime">
                         Runtime
                     </a>
                 </th>
                 <th style="width:5%">
-                    <a href="javascript:void(0);" class="sortLink"
-                       data-sort_order="filesize">
+                    <a class="sortLink" data-sort_order="filesize">
                         Size(GB)
                     </a>
                 </th>
                 <th style="width:10%">
-                    <a href="javascript:void(0);" class="sortLink"
-                       data-sort_order="date_added">
+                    <a class="sortLink" data-sort_order="date_added">
                         Downloaded
                     </a>
                 </th>
                 <th style="width:1%">
-                    <a href="javascript:void(0);" class="sortLink"
-                       data-sort_order="hd">
+                    <a class="sortLink" data-sort_order="hd">
                         HD
                     </a>
                 </th>
                 <th style="width:1%">
-                    <a href="javascript:void(0);" class="sortLink"
-                       data-sort_order="watched">
+                    <a class="sortLink" data-sort_order="watched">
                         Watched
                     </a>
                 </th>
@@ -121,7 +127,57 @@
         </script>
 
         <script type="text/template" id="tpl-movie-details">
-            <h1>HERE</h1>
+            <tr id="<%= Movie.imdb_id %>">
+                <td colspan="9">
+                    <% if(Movie.has_image) { %>
+                        <img class="move_image"
+                             src="/assets/image/movies/<%= Movie.imdb_id %>.jpg" />
+                    <% } else { %>
+                        <div class="no_image_holder">
+                            <div>
+                                <p>No Image</p>
+                            </div>
+                        </div>
+                    <% } %>
+                    <div><%= Movie.synopsis %></div>
+                    <ul class="directors">
+                        <li><strong>Director(s):</strong></li>
+                        <% _.each(Director, function(director) { %>
+                            <li>
+                                <a class="directorLink"
+                                   data-person_id="<%= director.person_id %>">
+                                    <%= director.person_name %>
+                                </a>
+                            </li>
+                        <% }); %>
+                    </ul><br />
+                    <ul class="actors">
+                        <li><strong>Actors(s):</strong></li>
+                        <% _.each(Actor, function(actor) { %>
+                            <li>
+                                <a class="actorLink"
+                                   data-person_id="<%= actor.person_id %>">
+                                    <%= actor.person_name %>
+                                </a>
+                            </li>
+                        <% }); %>
+                    </ul><br /><br /><br />
+                    <ul class="genres">
+                        <li><strong>Genre(s):</strong></li>
+                        <% _.each(Genre, function(genre) { %>
+                            <li>
+                                <a class="genreLink"
+                                   data-genre_id="<%= genre.genre_id %>">
+                                    <%= genre.genre %>
+                                </a>
+                            </li>
+                        <% }); %>
+                    </ul><br />
+                    <div>
+                        <strong>Path:</strong>&nbsp;y:\<%= Movie.path %>
+                    </div>
+                </td>
+            </tr>
         </script>
 
         <script type="text/javascript"

@@ -8,29 +8,50 @@
 
         public $page = 1;
 
-        public $sort = 'title';
+        public $sort = 'true';
 
         public $sortDirection = 'asc';
 
         public $search = false;
 
+        public $genreID = false;
+
+        public $personID = false;
+
         /**
          * returns all movies that match the supplied search critera
-         * @
+         * @author David <david@sulaco.co.uk>
          */
-        public function index() {
+        public function movies() {
 
             $this->_parseURLVars();
             $this->paginate = array(
                         'limit' => $this->limit,
                         'callbacks' => true,
+                        'conditions' => array(),
+                        'joins' => array(),
                         'page' => $this->page,
+                        'recursive' => 2,
                         'order' => array($this->sort => $this->sortDirection));
 
             if($this->search) {
 
-                $this->paginate['conditions'] =
+                $this->paginate['conditions'][] =
                     array('Movie.title ILIKE' => '%'.$this->search.'%');
+
+            }
+
+            if($this->genreID) {
+
+                $this->paginate['joins'][] =
+                    $this->Movie->genreSearch($this->genreID);
+
+            }
+
+            if($this->personID) {
+
+                $this->paginate['joins'][] =
+                    $this->Movie->personSearch($this->personID);
 
             }
 
@@ -40,19 +61,47 @@
 
         }
 
+        public function movie() {
+
+            $movie = $this->Movie->find('first',
+                          array('recursive' => 2,
+                                'conditions' =>
+                                    array('imdb_id' => $this->request->params['imdbID'])));
+
+            //error_log(json_encode($movie));
+
+            return new CakeResponse(array('body' => json_encode($movie)));
+
+        }
+        //end movie
+
         /**
          * provides summary details for the current resultset
          * @author David <david@sulaco.co.uk>
          */
         public function summary() {
 
-            $searchCriteria = array();
+            $searchCriteria = array('recursive' => -1);
             $this->_parseURLVars();
 
             if($this->search) {
 
                 $searchCriteria['conditions'] =
                     array('Movie.title ILIKE' => '%'.$this->search.'%');
+
+            }
+
+            if($this->genreID) {
+
+                $searchCriteria['joins'][] =
+                    $this->Movie->genreSearch($this->genreID);
+
+            }
+
+            if($this->personID) {
+
+                $searchCriteria['joins'][] =
+                    $this->Movie->personSearch($this->personID);
 
             }
 
@@ -105,6 +154,18 @@
             if(isset($_GET['search']) && !empty($_GET['search'])) {
 
                 $this->search = $_GET['search'];
+
+            }
+
+            if(isset($_GET['genre_id']) && (int)$_GET['genre_id'] > 0) {
+
+                $this->genreID = $_GET['genre_id'];
+
+            }
+
+            if(isset($_GET['person_id']) && (int)$_GET['person_id'] > 0) {
+
+                $this->personID = $_GET['person_id'];
 
             }
 

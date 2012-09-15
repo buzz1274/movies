@@ -2,9 +2,6 @@
 
     App::uses('Controller', 'Controller');
 
-    class AppController extends Controller {
-
-
-    }
+    class AppController extends Controller {}
 
 ?>

@@ -68,9 +68,17 @@ class Movie():
 
         if movies:
             for movie in movies:
-                self.scrape_imdb(movie.imdb_id)
-                """
+                self.movie = movie
+
+                print movie.imdb_id
+
                 imdb = IMDB(movie.imdb_id, rating_only = True)
+                if imdb.directors:
+                    self._add_role(imdb.directors, 'director')
+
+                if imdb.actors:
+                    self._add_role(imdb.actors, 'actor')
+                """
                 if imdb.rating:
                     query = self.config.movie_table.update().\
                                  where(self.config.movie_table.c.imdb_id==\
@@ -133,11 +141,12 @@ class Movie():
         or havn't been scraped in the last month
         @return list
         """
-        query = select([self.config.movie_table.c.imdb_id]).\
+        query = select([self.config.movie_table.c.imdb_id,
+                        self.config.movie_table.c.movie_id]).\
                 where((self.config.movie_table.c.date_last_scraped==None).\
                 __or__(func.date_part('day', func.now() -
                                              self.config.movie_table.c.\
-                                             date_last_scraped) > 28))
+                                             date_last_scraped) > 0))
 
         return self.config.db.execute(query).fetchall()
 
@@ -152,7 +161,8 @@ class Movie():
             query = self.config.movie_table.update().\
                                          where(self.config.movie_table.c.imdb_id==\
                                                imdb_id).\
-                                         values(runtime=imdb.runtime,
+                                         values(title=imdb.title,
+                                                runtime=imdb.runtime,
                                                 imdb_rating=imdb.rating,
                                                 synopsis=imdb.synopsis,
                                                 certificate=imdb.certificate,
