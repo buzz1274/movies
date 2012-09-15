@@ -53,10 +53,20 @@
             <tr>
                 <th colspan="9" style="text-align:center;">
                     <span style="float:left;">
-                        <a class="prevLink">&laquo;Prev</a>
+                        <span class="paging_link" data_link_action="first">
+                            &laquo;&laquo;First
+                        </span>
+                        <span class="paging_link" data_link_action="prev">
+                            &laquo;Prev
+                        </span>
                     </span>
                     <span style="float:right;">
-                        <a class="nextLink">Next&raquo;</a>
+                        <span class="paging_link" data_link_action="next">
+                            Next&raquo;
+                        </span>
+                        <span class="paging_link" data_link_action="last">
+                            Last&raquo;&raquo;
+                        </span>
                     </span>
                     <span id="result_count" style="display:inline;">
                         <%= startOffset %> to

@@ -14,8 +14,7 @@ window.MovieSummaryView = Backbone.View.extend({
     summary:false,
     template:_.template($('#tpl-movie-list-header').html()),
     events: {
-        'click a.prevLink': 'prev',
-        'click a.nextLink': 'next',
+        'click span.paging_link': 'paging',
         'click a.sortLink': 'sort',
         'keypress #movie_title_search': 'searchOnEnter',
         'click a.advancedSearchLink': 'advanced_search',
@@ -31,6 +30,19 @@ window.MovieSummaryView = Backbone.View.extend({
         $('#movie_title_search').val(search);
         return this;
     },
+    paging: function(ev) {
+        var paging_method = $(ev.currentTarget).attr('data_link_action');
+        if(paging_method == 'first') {
+            page = 0;
+        } else if(paging_method == 'last') {
+            page = summary.totalPages;
+        } else if(paging_method == 'prev' && page > 1) {
+            page -= 1;
+        } else if(paging_method == 'next' && page < summary.totalPages) {
+            page += 1;
+        }
+        app.list();
+    },
     sort: function(ev) {
         if(sort == $(ev.currentTarget).attr('data-sort_order')) {
             sort_ascending = !sort_ascending;
@@ -40,20 +52,6 @@ window.MovieSummaryView = Backbone.View.extend({
         }
         page = 1;
         app.list();
-    },
-    next: function() {
-        if(page < summary.totalPages) {
-            page += 1;
-            app.list();
-        }
-        this.stylePagingLinks();
-    },
-    prev: function() {
-        if(page > 1) {
-            page -= 1;
-            app.list();
-        }
-        this.stylePagingLinks();
     },
     reset: function() {
         page = 1;

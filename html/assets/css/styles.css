@@ -8,6 +8,9 @@ body {
 a:hover {
     cursor:pointer;
 }
+span.paging_link:hover {
+    cursor:pointer;
+}
 #header {
     background-color:#246B1E;
     width:100%;
