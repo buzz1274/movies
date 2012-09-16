@@ -15,9 +15,9 @@ window.MovieSummaryView = Backbone.View.extend({
     template:_.template($('#tpl-movie-list-header').html()),
     events: {
         'click span.paging_link': 'paging',
-        'click a.sortLink': 'sort',
+        'click span.sort_link': 'sort',
         'keypress #movie_title_search': 'searchOnEnter',
-        'click a.advancedSearchLink': 'advanced_search',
+        'click span.advanced_search_link': 'advanced_search',
         "click input.searchButton": 'search',
         "click input.resetButton": 'reset',
     },
@@ -72,12 +72,13 @@ window.MovieSummaryView = Backbone.View.extend({
             sort_ascending = !sort_ascending;
         } else {
             sort = $(ev.currentTarget).attr('data-sort_order');
-            sort_ascending = true;
+            sort_ascending = sort_defaults[sort];
         }
         page = 1;
         app.list(false);
     },
     reset: function() {
+        $('#movie_title_search').val('');
         page = 1;
         genre_id=0;
         person_id=0;
@@ -109,9 +110,9 @@ window.MovieSummaryView = Backbone.View.extend({
 window.MovieListView = Backbone.View.extend({
     tagName:"tbody",
     events: {
-        'click a.genreLink': 'genreSearch',
-        'click a.directorLink': 'personSearch',
-        'click a.actorLink': 'personSearch',
+        'click span.genre_link': 'genreSearch',
+        'click span.director_link': 'personSearch',
+        'click span.actor_link': 'personSearch',
     },
     personSearch:function (ev) {
         page = 1;
@@ -124,9 +125,8 @@ window.MovieListView = Backbone.View.extend({
         app.list(false);
     },
     render:function (eventName) {
-        $('#result_count').css('display', 'none');
+        $('#movies_table > tbody').html('');
          if(this.model.models.length) {
-            $('#result_count').css('display', 'block');
             _.each(this.model.models, function (movie) {
                 $(this.el).append(new MovieListItemView({model:movie}).render().el);
             }, this);
@@ -142,11 +142,11 @@ window.MovieListItemView = Backbone.View.extend({
     events: {
         'mouseover': 'mouseoverrow',
         'mouseout': 'mouseoutrow',
-        'click a.detailLink': 'details',
+        'click span.detail_link': 'details',
     },
     template:_.template($('#tpl-movie-list-item').html()),
     details:function() {
-        imdb_id = $('a.detailLink', this.el).attr('data-imdb_id');
+        imdb_id = $('span.detail_link', this.el).attr('data-imdb_id');
         if($('tr#'+imdb_id).html()) {
             $('#'+imdb_id).remove();
         } else {
@@ -182,10 +182,6 @@ var AppRouter = Backbone.Router.extend({
     },
     list:function (drawheader) {
         var drawheader = drawheader == undefined ? true : false;
-        $('#movies_table > tbody').html('');
-
-        console.log(drawheader);
-
         var movieSummary = new MovieSummary();
         var movieSummaryView = new MovieSummaryView({model:movieSummary});
         movieSummary.fetch({
@@ -201,8 +197,6 @@ var AppRouter = Backbone.Router.extend({
                 }
             }
         });
-        /*
-        */
         var movieList = new MovieCollection();
         var movieListView = new MovieListView({model:movieList});
         movieList.fetch(
@@ -230,7 +224,16 @@ var AppRouter = Backbone.Router.extend({
         });
     }
 });
-
+var sort_defaults = {
+    'title': true,
+    'release_year': false,
+    'imdb_rating': false,
+    'runtime': false,
+    'filesize': false,
+    'date_added': false,
+    'hd': true,
+    'watched': true
+};
 var search = '';
 var page = 1;
 var sort = 'title';

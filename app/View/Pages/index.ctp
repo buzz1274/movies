@@ -41,11 +41,11 @@
             <td class='centre'>-</td>
             <td class='centre'>-</td>
             <td class='centre'>
-                <a title="More Details" class="detailLink"
+                <span title="More Details" class="detail_link link"
                    data-imdb_id="<%= Movie.imdb_id %>">
                     <img src='/assets/image/magnifying.png'
                          width='20' height='20'>
-                </a>
+                </span>
             </td>
         </script>
 
@@ -53,21 +53,21 @@
             <tr>
                 <th colspan="9" style="text-align:center;">
                     <span style="float:left;">
-                        <span id="first_page_link" class="paging_link"
+                        <span id="first_page_link" class="paging_link link"
                               data_link_action="first">
                             &laquo;&laquo;First
                         </span>
-                        <span id="prev_page_link" class="paging_link"
+                        <span id="prev_page_link" class="paging_link link"
                               data_link_action="prev">
                             &laquo;Prev
                         </span>
                     </span>
                     <span style="float:right;">
-                        <span id="next_page_link" class="paging_link"
+                        <span id="next_page_link" class="paging_link link"
                               data_link_action="next">
                             Next&raquo;
                         </span>
-                        <span id="last_page_link" class="paging_link"
+                        <span id="last_page_link" class="paging_link link"
                               data_link_action="last">
                             Last&raquo;&raquo;
                         </span>
@@ -82,9 +82,7 @@
             <tr>
                 <th colspan="9">
                     <span style="float:right;">
-                        <a href="javascript:void(0);"
-                           class="advancedSearchLink">
-                            Advanced</a>
+                        <span class="advanced_search_link link">Advanced</span>
                         <input type="text" size="25"
                                placeholder="Movie Title"
                                id="movie_title_search" />
@@ -97,44 +95,44 @@
             </tr>
             <tr>
                 <th style="width:30%">
-                    <a class="sortLink" data-sort_order="title">
+                    <span class="sort_link link" data-sort_order="title">
                         Title
-                    </a>
+                    </span>
                 </th>
                 <th style="width:1%">
-                    <a class="sortLink" data-sort_order="release_year">
+                    <span class="sort_link link" data-sort_order="release_year">
                         Year
-                    </a>
+                    </span>
                 </th>
                 <th style="width:1%">
-                    <a class="sortLink" data-sort_order="imdb_rating">
+                    <span class="sort_link link" data-sort_order="imdb_rating">
                         Rating
-                    </a>
+                    </span>
                 </th>
                 <th style="width:8%">
-                    <a class="sortLink" data-sort_order="runtime">
+                    <span class="sort_link link" data-sort_order="runtime">
                         Runtime
-                    </a>
+                    </span>
                 </th>
                 <th style="width:5%">
-                    <a class="sortLink" data-sort_order="filesize">
+                    <span class="sort_link link" data-sort_order="filesize">
                         Size(GB)
-                    </a>
+                    </span>
                 </th>
                 <th style="width:10%">
-                    <a class="sortLink" data-sort_order="date_added">
+                    <span class="sort_link link" data-sort_order="date_added">
                         Downloaded
-                    </a>
+                    </span>
                 </th>
                 <th style="width:1%">
-                    <a class="sortLink" data-sort_order="hd">
+                    <span class="sort_link link" data-sort_order="hd">
                         HD
-                    </a>
+                    </span>
                 </th>
                 <th style="width:1%">
-                    <a class="sortLink" data-sort_order="watched">
+                    <span class="sort_link link" data-sort_order="watched">
                         Watched
-                    </a>
+                    </span>
                 </th>
                 <th style="width:4%;text-align:center;">-</th>
             </tr>
@@ -158,10 +156,10 @@
                         <li><strong>Director(s):</strong></li>
                         <% _.each(Director, function(director) { %>
                             <li>
-                                <a class="directorLink"
+                                <span class="director_link link"
                                    data-person_id="<%= director.person_id %>">
                                     <%= director.person_name %>
-                                </a>
+                                </span>
                             </li>
                         <% }); %>
                     </ul><br />
@@ -169,10 +167,10 @@
                         <li><strong>Actors(s):</strong></li>
                         <% _.each(Actor, function(actor) { %>
                             <li>
-                                <a class="actorLink"
+                                <span class="actor_link link"
                                    data-person_id="<%= actor.person_id %>">
                                     <%= actor.person_name %>
-                                </a>
+                                </span>
                             </li>
                         <% }); %>
                     </ul><br /><br /><br />
@@ -180,10 +178,10 @@
                         <li><strong>Genre(s):</strong></li>
                         <% _.each(Genre, function(genre) { %>
                             <li>
-                                <a class="genreLink"
+                                <span class="genre_link"
                                    data-genre_id="<%= genre.genre_id %>">
                                     <%= genre.genre %>
-                                </a>
+                                </span>
                             </li>
                         <% }); %>
                     </ul><br />
