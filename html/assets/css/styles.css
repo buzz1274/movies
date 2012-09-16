@@ -8,6 +8,12 @@ body {
 a:hover {
     cursor:pointer;
 }
+span#first_page_link, span#prev_page_link {
+    visibility:hidden;
+}
+span#last_page_link, span#next_page_link {
+    visibility:visible;
+}
 span.paging_link:hover {
     cursor:pointer;
 }
@@ -90,5 +96,4 @@ ul.genres li, ul.directors li, ul.actors li {
 #version {
     float:right;
     font-size:0.75em;
-    display:none;
 }

@@ -27,13 +27,37 @@ window.MovieSummaryView = Backbone.View.extend({
     render:function (eventName) {
         summary = this.model.toJSON();
         $(this.el).append(this.template(summary));
-        $('#movie_title_search').val(search);
         return this;
+    },
+    update:function() {
+        summary = this.model.toJSON();
+        if(!summary.totalMovies) {
+            $('#result_count').css('visibility', 'hidden');
+        } else {
+            $('#result_count').css('visibility', 'visible');
+            $('#result_count').html(summary.startOffset + ' to '+
+                                    summary.endOffset + ' of ' +
+                                    summary.totalMovies + ' Movies');
+        }
+        if(page == 1) {
+            $('#first_page_link').css('visibility', 'hidden');
+            $('#prev_page_link').css('visibility', 'hidden');
+        } else {
+            $('#first_page_link').css('visibility', 'visible');
+            $('#prev_page_link').css('visibility', 'visible');
+        }
+        if(page >= summary.totalPages) {
+            $('#last_page_link').css('visibility', 'hidden');
+            $('#next_page_link').css('visibility', 'hidden');
+        } else {
+            $('#last_page_link').css('visibility', 'visible');
+            $('#next_page_link').css('visibility', 'visible');
+        }
     },
     paging: function(ev) {
         var paging_method = $(ev.currentTarget).attr('data_link_action');
         if(paging_method == 'first') {
-            page = 0;
+            page = 1;
         } else if(paging_method == 'last') {
             page = summary.totalPages;
         } else if(paging_method == 'prev' && page > 1) {
@@ -41,7 +65,7 @@ window.MovieSummaryView = Backbone.View.extend({
         } else if(paging_method == 'next' && page < summary.totalPages) {
             page += 1;
         }
-        app.list();
+        app.list(false);
     },
     sort: function(ev) {
         if(sort == $(ev.currentTarget).attr('data-sort_order')) {
@@ -51,7 +75,7 @@ window.MovieSummaryView = Backbone.View.extend({
             sort_ascending = true;
         }
         page = 1;
-        app.list();
+        app.list(false);
     },
     reset: function() {
         page = 1;
@@ -60,7 +84,7 @@ window.MovieSummaryView = Backbone.View.extend({
         sort = 'title';
         sort_ascending = true;
         search = '';
-        app.list();
+        app.list(false);
     },
     advanced_search: function() {
         alert("COMING SOON");
@@ -75,7 +99,7 @@ window.MovieSummaryView = Backbone.View.extend({
         sort = 'title';
         sort_ascending = true;
         search = $('#movie_title_search').val();
-        app.list();
+        app.list(false);
     },
     stylePagingLinks: function () {
         console.log("style links");
@@ -92,12 +116,12 @@ window.MovieListView = Backbone.View.extend({
     personSearch:function (ev) {
         page = 1;
         person_id = $(ev.currentTarget).attr('data-person_id');
-        app.list();
+        app.list(false);
     },
     genreSearch:function (ev) {
         page = 1;
         genre_id = $(ev.currentTarget).attr('data-genre_id');
-        app.list();
+        app.list(false);
     },
     render:function (eventName) {
         $('#result_count').css('display', 'none');
@@ -152,15 +176,15 @@ window.MovieView = Backbone.View.extend({
 
 // Router
 var AppRouter = Backbone.Router.extend({
-
     routes:{
         "":"list",
         "/movies/:imdb_id/":"movieDetails"
     },
-    list:function () {
-        $('#movies_table').html('');
-        $('#movies_table').css('display', 'none');
-        $('#version').css('display', 'none');
+    list:function (drawheader) {
+        var drawheader = drawheader == undefined ? true : false;
+        $('#movies_table > tbody').html('');
+
+        console.log(drawheader);
 
         var movieSummary = new MovieSummary();
         var movieSummaryView = new MovieSummaryView({model:movieSummary});
@@ -170,9 +194,15 @@ var AppRouter = Backbone.Router.extend({
                   person_id:person_id,
                   search:search},
             success: function() {
-                $('#movies_table').prepend(movieSummaryView.render().el);
+                if(drawheader) {
+                    $('#movies_table').prepend(movieSummaryView.render().el);
+                } else {
+                    movieSummaryView.update();
+                }
             }
         });
+        /*
+        */
         var movieList = new MovieCollection();
         var movieListView = new MovieListView({model:movieList});
         movieList.fetch(

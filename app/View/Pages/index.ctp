@@ -40,7 +40,7 @@
             <td><%= Movie.date_added %></td>
             <td class='centre'>-</td>
             <td class='centre'>-</td>
-            <td>
+            <td class='centre'>
                 <a title="More Details" class="detailLink"
                    data-imdb_id="<%= Movie.imdb_id %>">
                     <img src='/assets/image/magnifying.png'
@@ -53,22 +53,26 @@
             <tr>
                 <th colspan="9" style="text-align:center;">
                     <span style="float:left;">
-                        <span class="paging_link" data_link_action="first">
+                        <span id="first_page_link" class="paging_link"
+                              data_link_action="first">
                             &laquo;&laquo;First
                         </span>
-                        <span class="paging_link" data_link_action="prev">
+                        <span id="prev_page_link" class="paging_link"
+                              data_link_action="prev">
                             &laquo;Prev
                         </span>
                     </span>
                     <span style="float:right;">
-                        <span class="paging_link" data_link_action="next">
+                        <span id="next_page_link" class="paging_link"
+                              data_link_action="next">
                             Next&raquo;
                         </span>
-                        <span class="paging_link" data_link_action="last">
+                        <span id="last_page_link" class="paging_link"
+                              data_link_action="last">
                             Last&raquo;&raquo;
                         </span>
                     </span>
-                    <span id="result_count" style="display:inline;">
+                    <span id="result_count">
                         <%= startOffset %> to
                         <%= endOffset %> of
                         <%= totalMovies %> Movies
@@ -80,7 +84,7 @@
                     <span style="float:right;">
                         <a href="javascript:void(0);"
                            class="advancedSearchLink">
-                            Advanced Search</a>
+                            Advanced</a>
                         <input type="text" size="25"
                                placeholder="Movie Title"
                                id="movie_title_search" />
@@ -132,7 +136,7 @@
                         Watched
                     </a>
                 </th>
-                <th style="width:1%;text-align:center;">-</th>
+                <th style="width:4%;text-align:center;">-</th>
             </tr>
         </script>
 
