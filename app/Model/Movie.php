@@ -69,9 +69,25 @@
 
                 if(isset($val['Movie']['runtime'])) {
 
-                    $results[$key]['Movie']['runtime'] =
-                        floor($val['Movie']['runtime'] / 60).'hrs '.
-                        ($val['Movie']['runtime'] % 60).'mins';
+                    $hours = floor($val['Movie']['runtime'] / 60);
+                    $minutes = $val['Movie']['runtime'] % 60;
+
+                    if($hours > 1) {
+
+                        $results[$key]['Movie']['runtime'] = $hours.'hrs';
+
+                    } elseif($hours == 1) {
+
+                        $results[$key]['Movie']['runtime'] = $hours.'hr';
+
+                    }
+
+                    if($minutes) {
+
+                        $results[$key]['Movie']['runtime'] .=
+                            ' '.$minutes.'mins';
+
+                    }
 
                 }
 
