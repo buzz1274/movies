@@ -74,6 +74,13 @@ window.MovieSummaryView = Backbone.View.extend({
             sort = $(ev.currentTarget).attr('data-sort_order');
             sort_ascending = sort_defaults[sort];
         }
+        $('.down_arrow').remove();
+        $('.up_arrow').remove();
+        if(sort_ascending) {
+            $(ev.currentTarget).prepend('<span class="up_arrow" />');
+        } else {
+            $(ev.currentTarget).prepend('<span class="down_arrow" />');
+        }
         page = 1;
         app.list(false);
     },
@@ -209,7 +216,6 @@ var AppRouter = Backbone.Router.extend({
              success: function() {
                 $('#movies_table').append(movieListView.render().el);
                 $('#movies_table').css('display', 'block');
-                $('#version').css('display', 'block');
             }
         });
     },

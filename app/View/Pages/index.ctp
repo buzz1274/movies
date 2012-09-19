@@ -11,10 +11,10 @@
         </div>
         <div id="content">
             <table style="display:none;"
-                   id="movies_table" cellspacing="0" cellpadding="4">
+                   id="movies_table" cellspacing="0" cellpadding="1">
             </table>
             <span id="version">
-                moviedb v0.5
+                moviedb v0.55
             </span>
         </div>
 
@@ -36,7 +36,7 @@
             <td class='centre'><%= Movie.release_year %></td>
             <td class='centre'><%= Movie.imdb_rating %></td>
             <td><%= Movie.runtime %></td>
-            <td><%= Movie.filesize %></td>
+            <td class='centre'><%= Movie.filesize %></td>
             <td><%= Movie.date_added %></td>
             <td class='centre'>-</td>
             <td class='centre'>-</td>
@@ -82,7 +82,10 @@
             <tr>
                 <th colspan="9">
                     <span style="float:right;">
-                        <span class="advanced_search_link link">Advanced</span>
+                        <span title="Advanced Search"
+                              class="advanced_search_link link">
+                            Advanced
+                        </span>
                         <input type="text" size="25"
                                placeholder="Movie Title"
                                id="movie_title_search" />
@@ -95,16 +98,17 @@
             </tr>
             <tr>
                 <th style="width:30%">
+                    <span class="up_arrow" />
                     <span class="sort_link link" data-sort_order="title">
                         Title
                     </span>
                 </th>
-                <th style="width:1%">
+                <th style="width:5%">
                     <span class="sort_link link" data-sort_order="release_year">
                         Year
                     </span>
                 </th>
-                <th style="width:1%">
+                <th style="width:6%">
                     <span class="sort_link link" data-sort_order="imdb_rating">
                         Rating
                     </span>
@@ -114,22 +118,22 @@
                         Runtime
                     </span>
                 </th>
-                <th style="width:5%">
+                <th style="width:7%">
                     <span class="sort_link link" data-sort_order="filesize">
                         Size(GB)
                     </span>
                 </th>
                 <th style="width:10%">
                     <span class="sort_link link" data-sort_order="date_added">
-                        Downloaded
+                        Purchased
                     </span>
                 </th>
-                <th style="width:1%">
+                <th style="width:4%">
                     <span class="sort_link link" data-sort_order="hd">
                         HD
                     </span>
                 </th>
-                <th style="width:1%">
+                <th style="width:7%">
                     <span class="sort_link link" data-sort_order="watched">
                         Watched
                     </span>
@@ -140,7 +144,7 @@
 
         <script type="text/template" id="tpl-movie-details">
             <tr id="<%= Movie.imdb_id %>">
-                <td colspan="9">
+                <td class="movie_details" colspan="9">
                     <% if(Movie.has_image) { %>
                         <img class="move_image"
                              src="/assets/image/movies/<%= Movie.imdb_id %>.jpg" />
@@ -178,7 +182,7 @@
                         <li><strong>Genre(s):</strong></li>
                         <% _.each(Genre, function(genre) { %>
                             <li>
-                                <span class="genre_link"
+                                <span class="genre_link link"
                                    data-genre_id="<%= genre.genre_id %>">
                                     <%= genre.genre %>
                                 </span>

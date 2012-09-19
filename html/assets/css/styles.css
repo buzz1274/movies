@@ -2,7 +2,7 @@ body {
     margin:0;
     padding:0;
     font-family:Trebuchet MS;
-    font-size:13px;
+    font-size:12px;
     background-color:#E9E9F5;
 }
 a:hover {
@@ -32,7 +32,6 @@ span.link:hover {
     max-width:800px;
 }
 span.advanced_search_link {
-    text-decoration:underline;
     padding-right:10px;
 }
 table {
@@ -45,8 +44,10 @@ table th {
     text-align:left;
     background-color:#246B1E;
     color:#FFFFFF;
+    line-height:25px;
 }
 table td, table th {
+    padding:0 4px 0 4px;
     border:1px solid #000000;
 }
 table td a {
@@ -55,6 +56,9 @@ table td a {
 table th a {
     color:#FFFFFF;
     text-decoration:none;
+}
+table td.movie_details {
+    padding:0px;
 }
 #no_results {
     text-align:center;
@@ -67,7 +71,7 @@ table th a {
 }
 img.move_image {
     float:left;
-    margin-right:20px;
+    margin-right:10px;
     border:1px solid #000000;
     width:214px;
     height:317px;
@@ -96,4 +100,18 @@ ul.genres li, ul.directors li, ul.actors li {
 #version {
     float:right;
     font-size:0.75em;
+}
+span.down_arrow {
+    float:right;
+    width:7px;
+    height:7px;
+    margin-top:8px;
+    background:url('/assets/image/down_arrow.png') no-repeat;
+}
+span.up_arrow {
+    float:right;
+    width:7px;
+    height:7px;
+    margin-top:8px;
+    background:url('/assets/image/up_arrow.png') no-repeat;
 }

@@ -71,6 +71,7 @@
 
                     $hours = floor($val['Movie']['runtime'] / 60);
                     $minutes = $val['Movie']['runtime'] % 60;
+                    $results[$key]['Movie']['runtime'] = '';
 
                     if($hours > 1) {
 
