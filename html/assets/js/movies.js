@@ -11,6 +11,7 @@ window.MovieCollection = Backbone.Collection.extend({
 
 window.MovieSummaryView = Backbone.View.extend({
     tagName:"thead",
+    id:"movies_thead",
     summary:false,
     template:_.template($('#tpl-movie-list-header').html()),
     events: {
@@ -39,14 +40,14 @@ window.MovieSummaryView = Backbone.View.extend({
                                     summary.endOffset + ' of ' +
                                     summary.totalMovies + ' Movies');
         }
-        if(page == 1) {
+        if(UrlParams.Params.p == 1) {
             $('#first_page_link').css('visibility', 'hidden');
             $('#prev_page_link').css('visibility', 'hidden');
         } else {
             $('#first_page_link').css('visibility', 'visible');
             $('#prev_page_link').css('visibility', 'visible');
         }
-        if(page >= summary.totalPages) {
+        if(UrlParams.Params.p >= summary.totalPages) {
             $('#last_page_link').css('visibility', 'hidden');
             $('#next_page_link').css('visibility', 'hidden');
         } else {
@@ -57,42 +58,39 @@ window.MovieSummaryView = Backbone.View.extend({
     paging: function(ev) {
         var paging_method = $(ev.currentTarget).attr('data_link_action');
         if(paging_method == 'first') {
-            page = 1;
+            UrlParams.Params.p = 1;
         } else if(paging_method == 'last') {
-            page = summary.totalPages;
-        } else if(paging_method == 'prev' && page > 1) {
-            page -= 1;
-        } else if(paging_method == 'next' && page < summary.totalPages) {
-            page += 1;
+            UrlParams.Params.p = summary.totalPages;
+        } else if(paging_method == 'prev' &&
+                  UrlParams.Params.p > 1) {
+            UrlParams.Params.p = parseInt(UrlParams.Params.p) - 1;
+        } else if(paging_method == 'next' &&
+                  UrlParams.Params.p < summary.totalPages) {
+            UrlParams.Params.p = parseInt(UrlParams.Params.p) + 1;
         }
-        app.list(false);
+        app.navigate(UrlParams.query_string(), {'trigger':true});
     },
     sort: function(ev) {
-        if(sort == $(ev.currentTarget).attr('data-sort_order')) {
-            sort_ascending = !sort_ascending;
+        if(UrlParams.Params.s == $(ev.currentTarget).attr('data-sort_order')) {
+            UrlParams.Params.asc = !UrlParams.Params.asc
         } else {
-            sort = $(ev.currentTarget).attr('data-sort_order');
-            sort_ascending = sort_defaults[sort];
+            UrlParams.Params.s = $(ev.currentTarget).attr('data-sort_order');
+            UrlParams.Params.asc = UrlParams.SortDefaults[UrlParams.Params.s];
         }
+        UrlParams.Params.p = 1;
         $('.down_arrow').remove();
         $('.up_arrow').remove();
-        if(sort_ascending) {
+        if(UrlParams.Params.asc) {
             $(ev.currentTarget).prepend('<span class="up_arrow" />');
         } else {
             $(ev.currentTarget).prepend('<span class="down_arrow" />');
         }
-        page = 1;
-        app.list(false);
+        app.navigate(UrlParams.query_string(), {'trigger':true});
     },
     reset: function() {
         $('#movie_title_search').val('');
-        page = 1;
-        genre_id=0;
-        person_id=0;
-        sort = 'title';
-        sort_ascending = true;
-        search = '';
-        app.list(false);
+        UrlParams.reset();
+        app.navigate(UrlParams.query_string(), {'trigger':true});
     },
     advanced_search: function() {
         alert("COMING SOON");
@@ -103,15 +101,10 @@ window.MovieSummaryView = Backbone.View.extend({
         }
     },
     search: function() {
-        page = 1;
-        sort = 'title';
-        sort_ascending = true;
-        search = $('#movie_title_search').val();
-        app.list(false);
+        UrlParams.reset();
+        UrlParams.Params.search = $('#movie_title_search').val();
+        app.navigate(UrlParams.query_string(), {'trigger':true});
     },
-    stylePagingLinks: function () {
-        console.log("style links");
-    }
 });
 
 window.MovieListView = Backbone.View.extend({
@@ -122,14 +115,14 @@ window.MovieListView = Backbone.View.extend({
         'click span.actor_link': 'personSearch',
     },
     personSearch:function (ev) {
-        page = 1;
-        person_id = $(ev.currentTarget).attr('data-person_id');
-        app.list(false);
+        UrlParams.reset();
+        UrlParams.Params.pid = $(ev.currentTarget).attr('data-person_id');
+        app.navigate(UrlParams.query_string(), {'trigger':true});
     },
     genreSearch:function (ev) {
-        page = 1;
-        genre_id = $(ev.currentTarget).attr('data-genre_id');
-        app.list(false);
+        UrlParams.reset();
+        UrlParams.Params.gid = $(ev.currentTarget).attr('data-genre_id');
+        app.navigate(UrlParams.query_string(), {'trigger':true});
     },
     render:function (eventName) {
         $('#movies_table > tbody').html('');
@@ -180,22 +173,20 @@ window.MovieView = Backbone.View.extend({
         return this;
     },
 });
-
-// Router
 var AppRouter = Backbone.Router.extend({
     routes:{
         "":"list",
+        "#":"list",
+        "*query_string": "list",
         "/movies/:imdb_id/":"movieDetails"
     },
-    list:function (drawheader) {
-        var drawheader = drawheader == undefined ? true : false;
+    list:function (query_string) {
+        var drawheader = !Boolean($('#movies_thead').html());
         var movieSummary = new MovieSummary();
         var movieSummaryView = new MovieSummaryView({model:movieSummary});
+        UrlParams.parse(query_string);
         movieSummary.fetch({
-            data:{page:page,
-                  genre_id:genre_id,
-                  person_id:person_id,
-                  search:search},
+            data:UrlParams.Params,
             success: function() {
                 if(drawheader) {
                     $('#movies_table').prepend(movieSummaryView.render().el);
@@ -207,12 +198,7 @@ var AppRouter = Backbone.Router.extend({
         var movieList = new MovieCollection();
         var movieListView = new MovieListView({model:movieList});
         movieList.fetch(
-            {data:{page:page,
-                   sort:sort,
-                   search:search,
-                   genre_id:genre_id,
-                   person_id:person_id,
-                   sort_ascending:sort_ascending},
+            {data:UrlParams.Params,
              success: function() {
                 $('#movies_table').append(movieListView.render().el);
                 $('#movies_table').css('display', 'block');
@@ -230,21 +216,62 @@ var AppRouter = Backbone.Router.extend({
         });
     }
 });
-var sort_defaults = {
-    'title': true,
-    'release_year': false,
-    'imdb_rating': false,
-    'runtime': false,
-    'filesize': false,
-    'date_added': false,
-    'hd': true,
-    'watched': true
+var UrlParams = {
+    Params: {
+        'p': null, /*page*/
+        's': null, /*sort*/
+        'asc': null, /*ascending*/
+        'pid': null, /*person id*/
+        'gid': null, /*genre id*/
+        'search': null /*search*/
+    },
+    DefaultParams: {
+        'p':1,
+        's':'title',
+        'asc':true,
+        'gid':0,
+        'pid':0,
+        'search':''
+    },
+    SortDefaults: {
+        'title': true,
+        'release_year': false,
+        'imdb_rating': false,
+        'runtime': false,
+        'filesize': false,
+        'date_added': false,
+        'hd': true,
+        'watched': true
+    },
+    parse:function(query_string) {
+        if(query_string == undefined || !query_string) {
+            UrlParams.reset();
+        } else {
+            query_string.split('&').forEach(function(argument) {
+                if(argument) {
+                    fragment = argument.split('=');
+                    UrlParams.Params[fragment[0]] = fragment[1];
+                }
+            });
+        }
+    },
+    query_string:function() {
+        var query_string = '';
+        _.each(UrlParams.DefaultParams, function(value, key) {
+            if((UrlParams.Params[key] != UrlParams.DefaultParams[key]) ||
+                (key == 'asc' || key == 's')) {
+                query_string += key+'='+UrlParams.Params[key]+"&";
+            }
+        });
+        return query_string.slice(0, -1);
+    },
+    reset:function() {
+        _.each(UrlParams.DefaultParams, function(value, key) {
+            UrlParams.Params[key] = value;
+        });
+    }
 };
-var search = '';
-var page = 1;
-var sort = 'title';
-var sort_ascending = true;
-var genre_id = 0;
-var person_id = 0;
+
+UrlParams.reset();
 var app = new AppRouter();
 Backbone.history.start();

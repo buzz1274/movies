@@ -24,6 +24,8 @@
          */
         public function movies() {
 
+            //error_log(json_encode($_GET));
+
             $this->_parseURLVars();
             $this->paginate = array(
                         'limit' => $this->limit,
@@ -145,9 +147,9 @@
          */
         private function _parseURLVars() {
 
-            if(isset($_GET['page']) && (int)$_GET['page'] > 0) {
+            if(isset($_GET['p']) && (int)$_GET['p'] > 0) {
 
-                $this->page = $_GET['page'];
+                $this->page = $_GET['p'];
 
             }
 
@@ -157,33 +159,33 @@
 
             }
 
-            if(isset($_GET['genre_id']) && (int)$_GET['genre_id'] > 0) {
+            if(isset($_GET['gid']) && (int)$_GET['gid'] > 0) {
 
-                $this->genreID = $_GET['genre_id'];
-
-            }
-
-            if(isset($_GET['person_id']) && (int)$_GET['person_id'] > 0) {
-
-                $this->personID = $_GET['person_id'];
+                $this->genreID = $_GET['gid'];
 
             }
 
-            if(isset($_GET['sort']) &&
-               in_array($_GET['sort'], array('title', 'release_year',
-                                             'imdb_rating', 'hd',
-                                             'runtime', 'filesize',
-                                             'date_added'))) {
+            if(isset($_GET['pid']) && (int)$_GET['pid'] > 0) {
 
-                $this->sort = $_GET['sort'];
+                $this->personID = $_GET['pid'];
 
             }
 
-            if(isset($_GET['sort_ascending']) &&
-               ($_GET['sort_ascending'] == 'true' ||
-                $_GET['sort_ascending'] == 'false')) {
+            if(isset($_GET['s']) &&
+               in_array($_GET['s'], array('title', 'release_year',
+                                          'imdb_rating', 'hd',
+                                          'runtime', 'filesize',
+                                          'date_added'))) {
 
-                if($_GET['sort_ascending'] == 'true') {
+                $this->sort = $_GET['s'];
+
+            }
+
+            if(isset($_GET['asc']) &&
+               ($_GET['asc'] == 'true' ||
+                $_GET['asc'] == 'false')) {
+
+                if($_GET['asc'] == 'true') {
 
                     $this->sortDirection = 'asc';
 
