@@ -44,6 +44,10 @@ class Config(object):
 
     db = None
 
+    backup_path = None
+
+    backup_files_to_keep = None
+
     def __init__(self):
         """
         """
@@ -90,3 +94,5 @@ class Config(object):
         self.db_host = config.get('DB', 'db_host').strip('"')
         self.db_port = config.get('DB', 'db_port').strip('"')
         self.db_name = config.get('DB', 'db_name').strip('"')
+        self.backup_path = config.get('BACKUP', 'backup_path').strip('"')
+        self.backup_files_to_keep = int(config.get('BACKUP', 'backup_files_to_keep').strip('"'))
