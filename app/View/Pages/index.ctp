@@ -7,14 +7,16 @@
     </head>
     <body>
         <div id="header">
-            Movies
+            <a href='/'>Movies</a>
         </div>
         <div id="content">
             <table style="display:none;"
                    id="movies_table" cellspacing="0" cellpadding="1">
             </table>
+            <div id="paging_links"
+                 style="text-align:center;margin-top:10px;font-weight:bold;"></div>
             <span id="version">
-                moviedb v0.55
+                moviedb v0.60
             </span>
         </div>
 
@@ -49,36 +51,31 @@
             </td>
         </script>
 
+        <script type="text/tenplate" id="tpl-movie-list-footer">
+            <span id="first_page_link" class="paging_link link"
+                  data_link_action="first">
+                &laquo;&laquo;First
+            </span>
+            <span id="prev_page_link" class="paging_link link"
+                  data_link_action="prev">
+                &laquo;Prev
+            </span>
+            <span id="result_count">
+                <%= startOffset %> to
+                <%= endOffset %> of
+                <%= totalMovies %> Movies
+            </span>
+            <span id="next_page_link" class="paging_link link"
+                  data_link_action="next">
+                Next&raquo;
+            </span>
+            <span id="last_page_link" class="paging_link link"
+                  data_link_action="last">
+                Last&raquo;&raquo;
+            </span>
+        </script>
+
         <script type="text/tenplate" id="tpl-movie-list-header">
-            <tr>
-                <th colspan="9" style="text-align:center;">
-                    <span style="float:left;">
-                        <span id="first_page_link" class="paging_link link"
-                              data_link_action="first">
-                            &laquo;&laquo;First
-                        </span>
-                        <span id="prev_page_link" class="paging_link link"
-                              data_link_action="prev">
-                            &laquo;Prev
-                        </span>
-                    </span>
-                    <span style="float:right;">
-                        <span id="next_page_link" class="paging_link link"
-                              data_link_action="next">
-                            Next&raquo;
-                        </span>
-                        <span id="last_page_link" class="paging_link link"
-                              data_link_action="last">
-                            Last&raquo;&raquo;
-                        </span>
-                    </span>
-                    <span id="result_count">
-                        <%= startOffset %> to
-                        <%= endOffset %> of
-                        <%= totalMovies %> Movies
-                    </span>
-                </th>
-            </tr>
             <tr>
                 <th colspan="9">
                     <span style="float:right;">

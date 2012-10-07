@@ -9,43 +9,24 @@ class Config(object):
 
     CONFIG_PATH = re.sub('Scripts.*', 'Config/',
                          os.path.dirname(os.path.abspath(__file__))) + 'config.ini'
-
     hostname = None
-
     username = None
-
     password = None
-
     regex_pattern = None
-
     image_save_path = None
-
     movie_table = None
-
     genre_table = None
-
     movie_genre_table = None
-
     role_table = None
-
     person_table = None
-
     movie_role_table = None
-
     db_engine = None
-
     db_user = None
-
     db_host = None
-
     db_port = None
-
     db_name = None
-
     db = None
-
     backup_path = None
-
     backup_files_to_keep = None
 
     def __init__(self):

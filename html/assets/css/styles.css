@@ -26,6 +26,10 @@ span.link:hover {
     color:#FFFFFF;
     border:1px solid #000000;
 }
+#header a {
+    color:#FFFFFF;
+    text-decoration:none;
+}
 #content {
     margin:0 auto 0 auto;
     min-width:700px;
@@ -45,6 +49,9 @@ table th {
     background-color:#246B1E;
     color:#FFFFFF;
     line-height:25px;
+}
+#result_count {
+    padding:0 20px 0 20px;
 }
 table td, table th {
     padding:0 4px 0 4px;

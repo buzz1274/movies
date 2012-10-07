@@ -15,7 +15,6 @@ window.MovieSummaryView = Backbone.View.extend({
     summary:false,
     template:_.template($('#tpl-movie-list-header').html()),
     events: {
-        'click span.paging_link': 'paging',
         'click span.sort_link': 'sort',
         'keypress #movie_title_search': 'searchOnEnter',
         'click span.advanced_search_link': 'advanced_search',
@@ -26,49 +25,12 @@ window.MovieSummaryView = Backbone.View.extend({
         this.model.bind("reset", this.render, this);
     },
     render:function (eventName) {
-        summary = this.model.toJSON();
-        $(this.el).append(this.template(summary));
+        Summary = this.model.toJSON();
+        $(this.el).append(this.template(Summary));
         return this;
     },
     update:function() {
-        summary = this.model.toJSON();
-        if(!summary.totalMovies) {
-            $('#result_count').css('visibility', 'hidden');
-        } else {
-            $('#result_count').css('visibility', 'visible');
-            $('#result_count').html(summary.startOffset + ' to '+
-                                    summary.endOffset + ' of ' +
-                                    summary.totalMovies + ' Movies');
-        }
-        if(UrlParams.Params.p == 1) {
-            $('#first_page_link').css('visibility', 'hidden');
-            $('#prev_page_link').css('visibility', 'hidden');
-        } else {
-            $('#first_page_link').css('visibility', 'visible');
-            $('#prev_page_link').css('visibility', 'visible');
-        }
-        if(UrlParams.Params.p >= summary.totalPages) {
-            $('#last_page_link').css('visibility', 'hidden');
-            $('#next_page_link').css('visibility', 'hidden');
-        } else {
-            $('#last_page_link').css('visibility', 'visible');
-            $('#next_page_link').css('visibility', 'visible');
-        }
-    },
-    paging: function(ev) {
-        var paging_method = $(ev.currentTarget).attr('data_link_action');
-        if(paging_method == 'first') {
-            UrlParams.Params.p = 1;
-        } else if(paging_method == 'last') {
-            UrlParams.Params.p = summary.totalPages;
-        } else if(paging_method == 'prev' &&
-                  UrlParams.Params.p > 1) {
-            UrlParams.Params.p = parseInt(UrlParams.Params.p) - 1;
-        } else if(paging_method == 'next' &&
-                  UrlParams.Params.p < summary.totalPages) {
-            UrlParams.Params.p = parseInt(UrlParams.Params.p) + 1;
-        }
-        app.navigate(UrlParams.query_string(), {'trigger':true});
+        Summary = this.model.toJSON();
     },
     sort: function(ev) {
         if(UrlParams.Params.s == $(ev.currentTarget).attr('data-sort_order')) {
@@ -88,6 +50,8 @@ window.MovieSummaryView = Backbone.View.extend({
         app.navigate(UrlParams.query_string(), {'trigger':true});
     },
     reset: function() {
+        $('.down_arrow').remove();
+        $('.up_arrow').remove();
         $('#movie_title_search').val('');
         UrlParams.reset();
         app.navigate(UrlParams.query_string(), {'trigger':true});
@@ -106,7 +70,56 @@ window.MovieSummaryView = Backbone.View.extend({
         app.navigate(UrlParams.query_string(), {'trigger':true});
     },
 });
-
+window.MovieFooterView = Backbone.View.extend({
+    tagName:"div",
+    template:_.template($('#tpl-movie-list-footer').html()),
+    events: {
+        'click span.paging_link': 'paging'
+    },
+    render:function () {
+        $(this.el).append(this.template(Summary));
+        return this;
+    },
+    update:function() {
+        if(!Summary.totalMovies) {
+            $('#result_count').css('visibility', 'hidden');
+        } else {
+            $('#result_count').css('visibility', 'visible');
+            $('#result_count').html(Summary.startOffset + ' to '+
+                                    Summary.endOffset + ' of ' +
+                                    Summary.totalMovies + ' Movies');
+        }
+        if(UrlParams.Params.p == 1) {
+            $('#first_page_link').css('visibility', 'hidden');
+            $('#prev_page_link').css('visibility', 'hidden');
+        } else {
+            $('#first_page_link').css('visibility', 'visible');
+            $('#prev_page_link').css('visibility', 'visible');
+        }
+        if(UrlParams.Params.p >= Summary.totalPages) {
+            $('#last_page_link').css('visibility', 'hidden');
+            $('#next_page_link').css('visibility', 'hidden');
+        } else {
+            $('#last_page_link').css('visibility', 'visible');
+            $('#next_page_link').css('visibility', 'visible');
+        }
+    },
+    paging: function(ev) {
+        var paging_method = $(ev.currentTarget).attr('data_link_action');
+        if(paging_method == 'first') {
+            UrlParams.Params.p = 1;
+        } else if(paging_method == 'last') {
+            UrlParams.Params.p = Summary.totalPages;
+        } else if(paging_method == 'prev' &&
+                  UrlParams.Params.p > 1) {
+            UrlParams.Params.p = parseInt(UrlParams.Params.p) - 1;
+        } else if(paging_method == 'next' &&
+                  UrlParams.Params.p < Summary.totalPages) {
+            UrlParams.Params.p = parseInt(UrlParams.Params.p) + 1;
+        }
+        app.navigate(UrlParams.query_string(), {'trigger':true});
+    },
+});
 window.MovieListView = Backbone.View.extend({
     tagName:"tbody",
     events: {
@@ -181,14 +194,15 @@ var AppRouter = Backbone.Router.extend({
         "/movies/:imdb_id/":"movieDetails"
     },
     list:function (query_string) {
-        var drawheader = !Boolean($('#movies_thead').html());
+        var draw_header_footer = !Boolean($('#movies_thead').html());
         var movieSummary = new MovieSummary();
         var movieSummaryView = new MovieSummaryView({model:movieSummary});
         UrlParams.parse(query_string);
         movieSummary.fetch({
+            async:false,
             data:UrlParams.Params,
             success: function() {
-                if(drawheader) {
+                if(draw_header_footer) {
                     $('#movies_table').prepend(movieSummaryView.render().el);
                 } else {
                     movieSummaryView.update();
@@ -204,6 +218,12 @@ var AppRouter = Backbone.Router.extend({
                 $('#movies_table').css('display', 'block');
             }
         });
+        var movieFooterView = new MovieFooterView({model:movieSummary});
+        if(draw_header_footer) {
+            $('#paging_links').append(movieFooterView.render().el);
+        } else {
+            movieFooterView.update();
+        }
     },
     movieDetails:function (imdb_id, element) {
         var movie = new Movie();
@@ -216,6 +236,7 @@ var AppRouter = Backbone.Router.extend({
         });
     }
 });
+var Summary = {}
 var UrlParams = {
     Params: {
         'p': null, /*page*/
@@ -247,22 +268,33 @@ var UrlParams = {
         if(query_string == undefined || !query_string) {
             UrlParams.reset();
         } else {
+            var page_in_params = false;
             query_string.split('&').forEach(function(argument) {
                 if(argument) {
                     fragment = argument.split('=');
                     UrlParams.Params[fragment[0]] = fragment[1];
+                    if(fragment[0] == 'p') {
+                        page_in_params = true;
+                    }
                 }
             });
+            if(!page_in_params) {
+                UrlParams.Params.p = 1;
+            }
         }
     },
     query_string:function() {
         var query_string = '';
         _.each(UrlParams.DefaultParams, function(value, key) {
-            if((UrlParams.Params[key] != UrlParams.DefaultParams[key]) ||
-                (key == 'asc' || key == 's')) {
+            if((UrlParams.Params[key] != UrlParams.DefaultParams[key]) &&
+                (key != 'asc' && key != 's')) {
                 query_string += key+'='+UrlParams.Params[key]+"&";
             }
         });
+        if(!(UrlParams.Params['s'] == 'title' && UrlParams.Params['asc'])) {
+            query_string += 's='+UrlParams.Params['s']+'&asc='+
+                            UrlParams.Params['asc']+'&';
+        }
         return query_string.slice(0, -1);
     },
     reset:function() {
