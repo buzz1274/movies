@@ -262,7 +262,8 @@ var UrlParams = {
         'filesize': false,
         'date_added': false,
         'hd': true,
-        'watched': true
+        'watched': true,
+        'cert':true
     },
     parse:function(query_string) {
         if(query_string == undefined || !query_string) {

@@ -22,7 +22,7 @@
 
         <script type="text/template" id="tpl-movie-list-no-results">
             <tr>
-                <td id="no_results" colspan="9">
+                <td id="no_results" colspan="10">
                     No Results. Please try another search
                 </td>
             </tr>
@@ -38,6 +38,14 @@
             <td class='centre'><%= Movie.release_year %></td>
             <td class='centre'><%= Movie.imdb_rating %></td>
             <td><%= Movie.runtime %></td>
+            <td class='centre'>
+                <% if(Movie.certificate) { %>
+                    <img style="padding-top:5px;"
+                         src='/assets/image/<%= Movie.certificate %>.png' />
+                <% } else { %>
+                    -
+                <% } %>
+            </td>
             <td class='centre'><%= Movie.filesize %></td>
             <td><%= Movie.date_added %></td>
             <td class='centre'>-</td>
@@ -77,7 +85,7 @@
 
         <script type="text/tenplate" id="tpl-movie-list-header">
             <tr>
-                <th colspan="9">
+                <th colspan="10">
                     <span style="float:right;">
                         <span title="Advanced Search"
                               class="advanced_search_link link">
@@ -115,6 +123,11 @@
                         Runtime
                     </span>
                 </th>
+                <th style="width:5%">
+                    <span class="sort_link link" data-sort_order="cert">
+                        Cert
+                    </span>
+                </th>
                 <th style="width:7%">
                     <span class="sort_link link" data-sort_order="filesize">
                         Size(GB)
@@ -141,7 +154,7 @@
 
         <script type="text/template" id="tpl-movie-details">
             <tr id="<%= Movie.imdb_id %>">
-                <td class="movie_details" colspan="9">
+                <td class="movie_details" colspan="10">
                     <% if(Movie.has_image) { %>
                         <img class="move_image"
                              src="/assets/image/movies/<%= Movie.imdb_id %>.jpg" />

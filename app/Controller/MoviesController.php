@@ -175,9 +175,15 @@
                in_array($_GET['s'], array('title', 'release_year',
                                           'imdb_rating', 'hd',
                                           'runtime', 'filesize',
-                                          'date_added'))) {
+                                          'date_added', 'cert'))) {
 
                 $this->sort = $_GET['s'];
+
+                if($this->sort == 'cert') {
+
+                    $this->sort = 'certificate';
+
+                }
 
             }
 
