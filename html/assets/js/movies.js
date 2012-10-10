@@ -8,79 +8,23 @@ window.MovieCollection = Backbone.Collection.extend({
     model:Movie,
     url:'../../movies/',
 });
-
-window.MovieSummaryView = Backbone.View.extend({
-    tagName:"thead",
-    id:"movies_thead",
-    summary:false,
-    template:_.template($('#tpl-movie-list-header').html()),
-    events: {
-        'click span.sort_link': 'sort',
-        'keypress #movie_title_search': 'searchOnEnter',
-        'click span.advanced_search_link': 'advanced_search',
-        "click input.searchButton": 'search',
-        "click input.resetButton": 'reset',
-    },
-    initialize:function () {
-        this.model.bind("reset", this.render, this);
-    },
-    render:function (eventName) {
-        Summary = this.model.toJSON();
-        $(this.el).append(this.template(Summary));
-        return this;
-    },
-    update:function() {
-        Summary = this.model.toJSON();
-    },
-    sort: function(ev) {
-        if(UrlParams.Params.s == $(ev.currentTarget).attr('data-sort_order')) {
-            UrlParams.Params.asc = !UrlParams.Params.asc
-        } else {
-            UrlParams.Params.s = $(ev.currentTarget).attr('data-sort_order');
-            UrlParams.Params.asc = UrlParams.SortDefaults[UrlParams.Params.s];
-        }
-        UrlParams.Params.p = 1;
-        $('.down_arrow').remove();
-        $('.up_arrow').remove();
-        if(UrlParams.Params.asc) {
-            $(ev.currentTarget).prepend('<span class="up_arrow" />');
-        } else {
-            $(ev.currentTarget).prepend('<span class="down_arrow" />');
-        }
-        app.navigate(UrlParams.query_string(), {'trigger':true});
-    },
-    reset: function() {
-        $('.down_arrow').remove();
-        $('.up_arrow').remove();
-        $('#movie_title_search').val('');
-        UrlParams.reset();
-        app.navigate(UrlParams.query_string(), {'trigger':true});
-    },
-    advanced_search: function() {
-        alert("COMING SOON");
-    },
-    searchOnEnter: function(e) {
-        if(e.keyCode == 13) {
-            this.search();
-        }
-    },
-    search: function() {
-        UrlParams.reset();
-        UrlParams.Params.search = $('#movie_title_search').val();
-        app.navigate(UrlParams.query_string(), {'trigger':true});
-    },
-});
-window.MovieFooterView = Backbone.View.extend({
+window.MovieSearchView = Backbone.View.extend({
     tagName:"div",
-    template:_.template($('#tpl-movie-list-footer').html()),
+    id:"movies_search",
+    template:_.template($('#tpl-movie-list-search').html()),
     events: {
-        'click span.paging_link': 'paging'
+        'click img.paging_link': 'paging',
+        'keypress #search_input': 'searchOnEnter',
+        'click #advanced_search_icon': 'advanced_search',
+        'click #xls_icon': 'download',
     },
     render:function () {
+        Summary = this.model.toJSON();
         $(this.el).append(this.template(Summary));
         return this;
     },
     update:function() {
+        Summary = this.model.toJSON();
         if(!Summary.totalMovies) {
             $('#result_count').css('visibility', 'hidden');
         } else {
@@ -104,7 +48,7 @@ window.MovieFooterView = Backbone.View.extend({
             $('#next_page_link').css('visibility', 'visible');
         }
     },
-    paging: function(ev) {
+    paging:function(ev) {
         var paging_method = $(ev.currentTarget).attr('data_link_action');
         if(paging_method == 'first') {
             UrlParams.Params.p = 1;
@@ -116,6 +60,57 @@ window.MovieFooterView = Backbone.View.extend({
         } else if(paging_method == 'next' &&
                   UrlParams.Params.p < Summary.totalPages) {
             UrlParams.Params.p = parseInt(UrlParams.Params.p) + 1;
+        }
+        app.navigate(UrlParams.query_string(), {'trigger':true});
+    },
+    reset:function() {
+        $('.down_arrow').remove();
+        $('.up_arrow').remove();
+        $('#movie_title_search').val('');
+        UrlParams.reset();
+        app.navigate(UrlParams.query_string(), {'trigger':true});
+    },
+    advanced_search:function() {
+        alert("COMING SOON");
+    },
+    download:function() {
+        alert("COMING SOON");
+    },
+    searchOnEnter:function(e) {
+        if(e.keyCode == 13) {
+            this.search();
+        }
+    },
+    search: function() {
+        UrlParams.reset();
+        UrlParams.Params.search = $('#search_input').val();
+        app.navigate(UrlParams.query_string(), {'trigger':true});
+    },
+});
+window.MovieHeaderView = Backbone.View.extend({
+    tagName:"thead",
+    template:_.template($('#tpl-movie-list-header').html()),
+    events: {
+        'click span.sort_link': 'sort',
+    },
+    render:function () {
+        $(this.el).append(this.template());
+        return this;
+    },
+    sort:function(ev) {
+        if(UrlParams.Params.s == $(ev.currentTarget).attr('data-sort_order')) {
+            UrlParams.Params.asc = !UrlParams.Params.asc
+        } else {
+            UrlParams.Params.s = $(ev.currentTarget).attr('data-sort_order');
+            UrlParams.Params.asc = UrlParams.SortDefaults[UrlParams.Params.s];
+        }
+        UrlParams.Params.p = 1;
+        $('.down_arrow').remove();
+        $('.up_arrow').remove();
+        if(UrlParams.Params.asc) {
+            $(ev.currentTarget).prepend('<span class="up_arrow" />');
+        } else {
+            $(ev.currentTarget).prepend('<span class="down_arrow" />');
         }
         app.navigate(UrlParams.query_string(), {'trigger':true});
     },
@@ -149,7 +144,6 @@ window.MovieListView = Backbone.View.extend({
         return this;
     },
 });
-
 window.MovieListItemView = Backbone.View.extend({
     tagName:"tr",
     events: {
@@ -177,7 +171,6 @@ window.MovieListItemView = Backbone.View.extend({
         $(this.el).css("background-color","");
     },
 });
-
 window.MovieView = Backbone.View.extend({
     tagname:"tr",
     template:_.template($('#tpl-movie-details').html()),
@@ -194,36 +187,34 @@ var AppRouter = Backbone.Router.extend({
         "/movies/:imdb_id/":"movieDetails"
     },
     list:function (query_string) {
-        var draw_header_footer = !Boolean($('#movies_thead').html());
+        var render_search = !Boolean($('#movies_search').html());
         var movieSummary = new MovieSummary();
-        var movieSummaryView = new MovieSummaryView({model:movieSummary});
+        var movieSearchView = new MovieSearchView({model:movieSummary});
+        var movieHeaderView = new MovieHeaderView();
         UrlParams.parse(query_string);
         movieSummary.fetch({
             async:false,
             data:UrlParams.Params,
             success: function() {
-                if(draw_header_footer) {
-                    $('#movies_table').prepend(movieSummaryView.render().el);
+                if(render_search) {
+                    $('#content').prepend(movieSearchView.render().el);
+                    $('#movies_table').append(movieHeaderView.render().el);
                 } else {
-                    movieSummaryView.update();
+                    movieSearchView.update();
                 }
             }
         });
         var movieList = new MovieCollection();
         var movieListView = new MovieListView({model:movieList});
-        movieList.fetch(
-            {data:UrlParams.Params,
-             success: function() {
+        movieList.fetch({
+            async:false,
+            data:UrlParams.Params,
+            success: function() {
                 $('#movies_table').append(movieListView.render().el);
                 $('#movies_table').css('display', 'block');
             }
         });
-        var movieFooterView = new MovieFooterView({model:movieSummary});
-        if(draw_header_footer) {
-            $('#paging_links').append(movieFooterView.render().el);
-        } else {
-            movieFooterView.update();
-        }
+        $('#version').css('display', 'block');
     },
     movieDetails:function (imdb_id, element) {
         var movie = new Movie();
@@ -236,7 +227,6 @@ var AppRouter = Backbone.Router.extend({
         });
     }
 });
-var Summary = {}
 var UrlParams = {
     Params: {
         'p': null, /*page*/

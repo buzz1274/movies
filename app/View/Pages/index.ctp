@@ -13,16 +13,89 @@
             <table style="display:none;"
                    id="movies_table" cellspacing="0" cellpadding="1">
             </table>
-            <div id="paging_links"
-                 style="text-align:center;margin-top:10px;font-weight:bold;"></div>
             <span id="version">
                 moviedb v0.60
             </span>
         </div>
 
+        <script type="text/tenplate" id="tpl-movie-list-search">
+            <img class="paging_link" data_link_action="first"
+                 title="First Page" src="/assets/image/page-first.gif" />
+            <img class="paging_link" data_link_action="prev"
+                 title="Previous Page" src="/assets/image/page-prev.gif" />
+            <img class="paging_link" data_link_action="next"
+                 title="Next Page" src="/assets/image/page-next.gif" />
+            <img class="paging_link" data_link_action="last"
+                 title="Last Page" src="/assets/image/page-last.gif" />
+            <span class="border" />
+            <img id="xls_icon" src="/assets/image/xls_icon.gif" />
+            <span class="border" />
+            <img id="advanced_search_icon" title="Advanced Search"
+                 src="/assets/image/magnifying.png" />
+            <span class="border" />
+            <input id="search_input" type="text" size="15" />
+            Search
+            <p id="result_count">
+                Movies <%= startOffset %> to
+                <%= endOffset %> of <%= totalMovies %>
+            </p>
+        </script>
+
+        <script type="text/tenplate" id="tpl-movie-list-header">
+            <tr>
+                <th style="width:30%">
+                    <span class="up_arrow" />
+                    <span class="sort_link link" data-sort_order="title">
+                        Title
+                    </span>
+                </th>
+                <th style="width:5%">
+                    <span class="sort_link link" data-sort_order="release_year">
+                        Year
+                    </span>
+                </th>
+                <th style="width:6%">
+                    <span class="sort_link link" data-sort_order="imdb_rating">
+                        Rating
+                    </span>
+                </th>
+                <th style="width:8%">
+                    <span class="sort_link link" data-sort_order="runtime">
+                        Runtime
+                    </span>
+                </th>
+                <th style="width:5%">
+                    <span class="sort_link link" data-sort_order="cert">
+                        Cert
+                    </span>
+                </th>
+                <th style="width:5%">
+                    <span class="sort_link link" data-sort_order="filesize">
+                        GB
+                    </span>
+                </th>
+                <th style="width:10%">
+                    <span class="sort_link link" data-sort_order="date_added">
+                        Purchased
+                    </span>
+                </th>
+                <th style="width:4%">
+                    <span class="sort_link link" data-sort_order="hd">
+                        HD
+                    </span>
+                </th>
+                <th style="width:5%">
+                    <span class="sort_link link" data-sort_order="watched">
+                        Seen
+                    </span>
+                </th>
+                <th style="width:4%;text-align:center;">-</th>
+            </tr>
+        </script>
+
         <script type="text/template" id="tpl-movie-list-no-results">
             <tr>
-                <td id="no_results" colspan="10">
+                <td id="no_results" colspan="12">
                     No Results. Please try another search
                 </td>
             </tr>
@@ -48,8 +121,24 @@
             </td>
             <td class='centre'><%= Movie.filesize %></td>
             <td><%= Movie.date_added %></td>
-            <td class='centre'>-</td>
-            <td class='centre'>-</td>
+            <td class='centre'>
+                <% if(Movie.hd) { %>
+                    <img style="padding-top:5px;" height="15" width="15"
+                         src='/assets/image/ticked.png' />
+                <% } else { %>
+                    <img style="padding-top:5px;" height="15" width="15"
+                         src='/assets/image/cross.png' />
+                <% } %>
+            </td>
+            <td class='centre'>
+                <% if(Movie.watched) { %>
+                    <img style="padding-top:5px;" height="15" width="15"
+                         src='/assets/image/ticked.png' />
+                <% } else { %>
+                    <img style="padding-top:5px;" height="15" width="15"
+                         src='/assets/image/cross.png' />
+                <% } %>
+            </td>
             <td class='centre'>
                 <span title="More Details" class="detail_link link"
                    data-imdb_id="<%= Movie.imdb_id %>">
@@ -81,75 +170,6 @@
                   data_link_action="last">
                 Last&raquo;&raquo;
             </span>
-        </script>
-
-        <script type="text/tenplate" id="tpl-movie-list-header">
-            <tr>
-                <th colspan="10">
-                    <span style="float:right;">
-                        <span title="Advanced Search"
-                              class="advanced_search_link link">
-                            Advanced
-                        </span>
-                        <input type="text" size="25"
-                               placeholder="Movie Title"
-                               id="movie_title_search" />
-                        <input type="button" value="Search"
-                               class="searchButton" />
-                        <input type="button" value="Reset"
-                               class="resetButton" />
-                    </span>
-                </th>
-            </tr>
-            <tr>
-                <th style="width:30%">
-                    <span class="up_arrow" />
-                    <span class="sort_link link" data-sort_order="title">
-                        Title
-                    </span>
-                </th>
-                <th style="width:5%">
-                    <span class="sort_link link" data-sort_order="release_year">
-                        Year
-                    </span>
-                </th>
-                <th style="width:6%">
-                    <span class="sort_link link" data-sort_order="imdb_rating">
-                        Rating
-                    </span>
-                </th>
-                <th style="width:8%">
-                    <span class="sort_link link" data-sort_order="runtime">
-                        Runtime
-                    </span>
-                </th>
-                <th style="width:5%">
-                    <span class="sort_link link" data-sort_order="cert">
-                        Cert
-                    </span>
-                </th>
-                <th style="width:7%">
-                    <span class="sort_link link" data-sort_order="filesize">
-                        Size(GB)
-                    </span>
-                </th>
-                <th style="width:10%">
-                    <span class="sort_link link" data-sort_order="date_added">
-                        Purchased
-                    </span>
-                </th>
-                <th style="width:4%">
-                    <span class="sort_link link" data-sort_order="hd">
-                        HD
-                    </span>
-                </th>
-                <th style="width:7%">
-                    <span class="sort_link link" data-sort_order="watched">
-                        Watched
-                    </span>
-                </th>
-                <th style="width:4%;text-align:center;">-</th>
-            </tr>
         </script>
 
         <script type="text/template" id="tpl-movie-details">

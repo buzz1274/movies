@@ -18,7 +18,7 @@ span.link:hover {
     cursor:pointer;
 }
 #header {
-    background-color:#246B1E;
+    background-color:#000000;
     width:100%;
     line-height:30px;
     margin:0 0 5px 0;
@@ -35,8 +35,44 @@ span.link:hover {
     min-width:700px;
     max-width:800px;
 }
-span.advanced_search_link {
-    padding-right:10px;
+#movies_search {
+    border:1px solid #7F8082;
+    width:300px;
+    border-bottom:0px;
+    background-color:#FFFFFF;
+    padding:3px;
+}
+#movies_search img.paging_link {
+    float:left;
+    padding:2px 0 0 0;
+    margin:0;
+}
+#movies_search span.border {
+    border-right:1px solid #7F8082;
+    padding:0px;
+    margin:0 5px 0px 5px;
+    padding-top:3px;
+}
+#movies_search #result_count {
+    font-size:0.85em;
+    font-weight:bold;
+    margin:0;
+    padding:0;
+}
+#xls_icon {
+    padding:0 0 0 2px;
+    margin:0;
+    width:12px;
+    height:15px
+}
+#advanced_search_icon {
+    padding:0;
+    margin:0;
+    width:15px;
+    height:16px
+}
+#search_input {
+    font-size:0.85em;
 }
 table {
     background-color:#FFFFFF;
@@ -46,16 +82,13 @@ table {
 }
 table th {
     text-align:left;
-    background-color:#246B1E;
+    background-color:#000000;
     color:#FFFFFF;
     line-height:25px;
 }
-#result_count {
-    padding:0 20px 0 20px;
-}
 table td, table th {
     padding:0 4px 0 4px;
-    border:1px solid #000000;
+    border:1px solid #7F8082;
 }
 table td a {
     color:#000000;
@@ -105,6 +138,7 @@ ul.genres li, ul.directors li, ul.actors li {
     list-style:none;
 }
 #version {
+    display:none;
     float:right;
     font-size:0.75em;
 }
