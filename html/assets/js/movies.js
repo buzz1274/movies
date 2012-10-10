@@ -14,7 +14,9 @@ window.MovieSearchView = Backbone.View.extend({
     template:_.template($('#tpl-movie-list-search').html()),
     events: {
         'click img.paging_link': 'paging',
-        'keypress #search_input': 'searchOnEnter',
+        'mouseover img.icon': 'icon_over',
+        'mouseout img.icon': 'icon_out',
+        'keypress #search_input': 'search_on_enter',
         'click #advanced_search_icon': 'advanced_search',
         'click #xls_icon': 'download',
     },
@@ -76,7 +78,7 @@ window.MovieSearchView = Backbone.View.extend({
     download:function() {
         alert("COMING SOON");
     },
-    searchOnEnter:function(e) {
+    search_on_enter:function(e) {
         if(e.keyCode == 13) {
             this.search();
         }
@@ -86,6 +88,12 @@ window.MovieSearchView = Backbone.View.extend({
         UrlParams.Params.search = $('#search_input').val();
         app.navigate(UrlParams.query_string(), {'trigger':true});
     },
+    icon_over:function() {
+        $('#content').css('cursor', 'pointer');
+    },
+    icon_out:function() {
+        $('#content').css('cursor', 'auto');
+    }
 });
 window.MovieHeaderView = Backbone.View.extend({
     tagName:"thead",

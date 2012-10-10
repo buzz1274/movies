@@ -19,21 +19,22 @@
         </div>
 
         <script type="text/tenplate" id="tpl-movie-list-search">
-            <img class="paging_link" data_link_action="first"
+            <img class="paging_link icon" data_link_action="first"
                  title="First Page" src="/assets/image/page-first.gif" />
-            <img class="paging_link" data_link_action="prev"
+            <img class="paging_link icon" data_link_action="prev"
                  title="Previous Page" src="/assets/image/page-prev.gif" />
-            <img class="paging_link" data_link_action="next"
+            <img class="paging_link icon" data_link_action="next"
                  title="Next Page" src="/assets/image/page-next.gif" />
-            <img class="paging_link" data_link_action="last"
+            <img class="paging_link icon" data_link_action="last"
                  title="Last Page" src="/assets/image/page-last.gif" />
             <span class="border" />
-            <img id="xls_icon" src="/assets/image/xls_icon.gif" />
+            <img id="xls_icon" class="icon" src="/assets/image/xls_icon.gif" />
             <span class="border" />
-            <img id="advanced_search_icon" title="Advanced Search"
+            <img id="advanced_search_icon" class="icon" title="Advanced Search"
                  src="/assets/image/magnifying.png" />
             <span class="border" />
-            <input id="search_input" type="text" size="15" />
+            <input id="search_input" type="text" size="25"
+                   placeholder="Movie, Keywords, Cast"/>
             Search
             <p id="result_count">
                 Movies <%= startOffset %> to
