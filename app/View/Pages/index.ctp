@@ -219,6 +219,14 @@
                         <% }); %>
                     </ul><br />
                     <div>
+                        <strong>Archived:</strong>
+                        <% if(Movie.archived) { %>
+                            <img style="padding-top:5px;" height="15" width="15"
+                                 src='/assets/image/ticked.png' />
+                        <% } else { %>
+                            <img style="padding-top:5px;" height="15" width="15"
+                                 src='/assets/image/cross.png' />
+                        <% } %><br />
                         <strong>Path:</strong>&nbsp;y:\<%= Movie.path %>
                     </div>
                 </td>
