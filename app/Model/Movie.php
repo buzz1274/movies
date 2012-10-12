@@ -8,6 +8,8 @@
 
         public $primaryKey = 'movie_id';
 
+        public $belongsTo = 'Certificate';
+
         public $hasAndBelongsToMany = array(
             'Genre' =>
                 array('className'             => 'Genre',

@@ -27,15 +27,13 @@
                  title="Next Page" src="/assets/image/page-next.gif" />
             <img class="paging_link icon" data_link_action="last"
                  title="Last Page" src="/assets/image/page-last.gif" />
-            <span class="border" />
             <img id="xls_icon" class="icon" src="/assets/image/xls_icon.gif" />
-            <span class="border" />
             <img id="advanced_search_icon" class="icon" title="Advanced Search"
                  src="/assets/image/magnifying.png" />
-            <span class="border" />
             <input id="search_input" type="text" size="25"
                    placeholder="Movie, Keywords, Cast"/>
-            Search
+            Go
+            Rs
             <p id="result_count">
                 Movies <%= startOffset %> to
                 <%= endOffset %> of <%= totalMovies %>
@@ -113,9 +111,9 @@
             <td class='centre'><%= Movie.imdb_rating %></td>
             <td><%= Movie.runtime %></td>
             <td class='centre'>
-                <% if(Movie.certificate) { %>
+                <% if(Certificate.certificate) { %>
                     <img style="padding-top:5px;"
-                         src='/assets/image/<%= Movie.certificate %>.png' />
+                         src='/assets/image/<%= Certificate.certificate %>.png' />
                 <% } else { %>
                     -
                 <% } %>

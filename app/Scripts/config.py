@@ -20,6 +20,7 @@ class Config(object):
     role_table = None
     person_table = None
     movie_role_table = None
+    certificate_table = None
     db_engine = None
     db_user = None
     db_host = None
@@ -43,6 +44,9 @@ class Config(object):
             self.genre_table = Table('genre', MetaData(), autoload=True,
                                      autoload_with=self.db)
             self.movie_genre_table = Table('movie_genre', MetaData(),
+                                           autoload=True,
+                                           autoload_with=self.db)
+            self.certificate_table = Table('certificate', MetaData(),
                                            autoload=True,
                                            autoload_with=self.db)
             self.role_table = Table('role', MetaData(), autoload=True,

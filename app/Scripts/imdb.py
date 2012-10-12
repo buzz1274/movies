@@ -62,8 +62,6 @@ class IMDB(object):
         parses the current imdb page for required information
         """
         self._set_rating()
-        self._set_directors()
-        self._set_actors()
 
         if not self.rating_only:
             self._set_title()

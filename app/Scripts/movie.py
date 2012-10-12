@@ -70,8 +70,6 @@ class Movie():
             for movie in movies:
                 self.movie = movie
 
-                print movie.imdb_id
-
                 imdb = IMDB(movie.imdb_id, rating_only = True)
                 if imdb.directors:
                     self._add_role(imdb.directors, 'director')
@@ -158,17 +156,22 @@ class Movie():
         try:
             self.movie = self.get(imdb_id)
             imdb = IMDB(imdb_id)
+            certificate_query =\
+                select([self.config.certificate_table.c.certificate_id]).\
+                where(self.config.certificate_table.c.certificate==imdb.certificate)
+
             query = self.config.movie_table.update().\
                                          where(self.config.movie_table.c.imdb_id==\
                                                imdb_id).\
                                          values(title=imdb.title,
                                                 runtime=imdb.runtime,
                                                 imdb_rating=imdb.rating,
+                                                certificate_id=certificate_query,
                                                 synopsis=imdb.synopsis,
-                                                certificate=imdb.certificate,
                                                 release_year=imdb.release_year,
                                                 has_image=bool(imdb.image_path),
                                                 date_last_scraped=func.now())
+
             self.config.db.execute(query)
 
             if imdb.image_path:
@@ -185,7 +188,7 @@ class Movie():
 
             if imdb.genres:
                 self._add_genre(imdb.genres)
-        except:
+        except Exception, e:
             #@todo: this needs to be logged and dealt with
             pass
 

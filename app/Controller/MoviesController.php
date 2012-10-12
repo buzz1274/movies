@@ -33,7 +33,7 @@
                         'conditions' => array(),
                         'joins' => array(),
                         'page' => $this->page,
-                        'recursive' => 2,
+                        'recursive' => 0,
                         'order' => array($this->sort => $this->sortDirection));
 
             if($this->search) {
@@ -181,7 +181,7 @@
 
                 if($this->sort == 'cert') {
 
-                    $this->sort = 'certificate';
+                    $this->sort = 'Certificate.order';
 
                 }
 
