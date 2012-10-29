@@ -2,6 +2,10 @@
 <html>
     <head>
         <title>Movies</title>
+        <link rel="shortcut icon" href="/assets/image/favicon.ico"
+              type="image/x-icon">
+        <link rel="icon" href="/assets/image/favicon.ico"
+              type="image/x-icon">
         <link media="all" rel="stylesheet" type="text/css"
               href="/assets/css/styles.css" />
     </head>
@@ -207,6 +211,13 @@
                             </li>
                         <% }); %>
                     </ul><br /><br /><br />
+                    <video id="myvideo" width="330px" style="float:right;"
+                           onmouseover="$('#myvideo').webkitEnterFullScreen();alert('here');"
+                           height="240px" controls
+                           source src='http://media.zz50.local:8000/<%= Movie.path %>'
+                           type='video/x-matroska' codecs='theora, vorbis'>
+                        Your browser does not support the video tag.
+                    </video>
                     <ul class="genres">
                         <li><strong>Genre(s):</strong></li>
                         <% _.each(Genre, function(genre) { %>
@@ -227,7 +238,6 @@
                             <img style="padding-top:5px;" height="15" width="15"
                                  src='/assets/image/cross.png' />
                         <% } %><br />
-                        <strong>Path:</strong>&nbsp;y:\<%= Movie.path %>
                     </div>
                 </td>
             </tr>

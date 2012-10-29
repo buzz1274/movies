@@ -302,7 +302,6 @@ var UrlParams = {
         });
     }
 };
-
 UrlParams.reset();
 var app = new AppRouter();
 Backbone.history.start();

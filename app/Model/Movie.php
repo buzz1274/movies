@@ -103,8 +103,10 @@
                 }
 
                 if(isset($val['Movie']['path'])) {
+                    /*
                     $results[$key]['Movie']['path'] =
-                        str_replace('/', "\\", $val['Movie']['path']);
+                        urlencode($val['Movie']['path']);
+                    */
                 }
 
             }

@@ -32,6 +32,8 @@ class IMDB(object):
 
     certificate = None
 
+    plot_keywords = None
+
     rating_only = False
 
     def __init__(self, imdb_id, rating_only = False):
@@ -54,13 +56,8 @@ class IMDB(object):
                                'en-US; rv:1.9.0.1) Gecko/2008071615 '\
                                'Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
         browser.open('http://www.imdb.com/title/%s' % (self.imdb_id))
-        self.page = BeautifulSoup(browser.response().read())
-        self._parse()
 
-    def _parse(self):
-        """
-        parses the current imdb page for required information
-        """
+        self.page = BeautifulSoup(browser.response().read())
         self._set_rating()
 
         if not self.rating_only:
@@ -74,19 +71,33 @@ class IMDB(object):
             self._set_directors()
             self._set_actors()
 
-            #@todo parse actor and directors from full crew page
-            #@todo fix html entities in all text
-            #@todo rename results returned from beautiful soup to something more
-            #      sensible
+            #get plot keywords
+            browser.open('http://www.imdb.com/title/%s/keywords' %
+                         (self.imdb_id))
+            self._set_plot_keywords(BeautifulSoup(browser.response().read()))
 
     def _set_title(self):
         """
         gets the title for the current movie
-        @author david <david@sulaco.co.uk>
         """
         tag = self.page.find('h1', itemprop='name').contents
         if tag:
             self.title = tag[0].strip()
+
+    def _set_plot_keywords(self, plot_keywords_page):
+        """
+        sets plot keywords for current movie
+        @param plot_keywords_page: string
+        """
+        try:
+            #print "GET PLOT KEYWORDS"
+            print plot_keywords_page
+            tags = plot_keywords_page.find(True, {'class': 'keyword'})
+            #print "TAGS ", tags
+            if tags:
+                print tags
+        except Exception, e:
+            print e
 
     def _set_actors(self):
         """
