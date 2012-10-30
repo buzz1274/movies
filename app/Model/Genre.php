@@ -6,6 +6,8 @@
 
         public $primaryKey = 'genre_id';
 
+        public $order = "Genre.genre ASC";
+
     }
 
 ?>

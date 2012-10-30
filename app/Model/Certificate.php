@@ -8,6 +8,8 @@
 
         public $hasMany = 'Movie';
 
+        public $order = "Certificate.order ASC";
+
     }
 
 ?>

@@ -4,7 +4,7 @@
 
         public $paginate = false;
 
-        public $limit = 10;
+        public $limit = 20;
 
         public $page = 1;
 
@@ -20,7 +20,7 @@
 
         /**
          * returns all movies that match the supplied search critera
-         * @author David <david@sulaco.co.uk>
+         * @author David
          */
         public function movies() {
 
@@ -35,6 +35,8 @@
                         'page' => $this->page,
                         'recursive' => 0,
                         'order' => array($this->sort => $this->sortDirection));
+
+            //error_log($this->sortDirection);
 
             if($this->search) {
 
@@ -69,8 +71,6 @@
                           array('recursive' => 2,
                                 'conditions' =>
                                     array('imdb_id' => $this->request->params['imdbID'])));
-
-            //error_log(json_encode($movie));
 
             return new CakeResponse(array('body' => json_encode($movie)));
 
@@ -129,14 +129,8 @@
                                                  $totalMovies,
                                               'totalPages' =>
                                                 $totalPages,
-                                              'limit' =>
-                                                $this->limit,
                                               'page' =>
-                                                $this->page,
-                                              'startOffset' =>
-                                                $startOffset,
-                                              'endOffset' =>
-                                                $endOffset))));
+                                                $this->page))));
 
         }
         //end summary
@@ -188,10 +182,9 @@
             }
 
             if(isset($_GET['asc']) &&
-               ($_GET['asc'] == 'true' ||
-                $_GET['asc'] == 'false')) {
+               ($_GET['asc'] == 1 || $_GET['asc'] == 0)) {
 
-                if($_GET['asc'] == 'true') {
+                if($_GET['asc'] == 1) {
 
                     $this->sortDirection = 'asc';
 

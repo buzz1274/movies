@@ -58,6 +58,9 @@ class IMDB(object):
         browser.open('http://www.imdb.com/title/%s' % (self.imdb_id))
 
         self.page = BeautifulSoup(browser.response().read())
+
+        print self.page
+
         self._set_rating()
 
         if not self.rating_only:

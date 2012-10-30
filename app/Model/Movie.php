@@ -56,7 +56,7 @@
 
         /**
          * cleans results after pulling from the database
-         * @author David <david@sulaco.co.uk>
+         * @author David
          */
         public function afterFind($results, $primary = false) {
 
@@ -103,10 +103,8 @@
                 }
 
                 if(isset($val['Movie']['path'])) {
-                    /*
                     $results[$key]['Movie']['path'] =
-                        urlencode($val['Movie']['path']);
-                    */
+                        'Y:\\'.str_replace('/', "\\", $val['Movie']['path']);
                 }
 
             }
@@ -118,7 +116,7 @@
 
         /**
          * constructs a join that can be used to search for genreIDs
-         * @author David <david@sulaco.co.uk>
+         * @author David
          * @param integer $genreID - id of the genre to search for
          */
         public function genreSearch($genreID) {
@@ -138,7 +136,7 @@
 
         /**
          * constructs a join that can be used to search for personIDs
-         * @author David <david@sulaco.co.uk>
+         * @author David
          * @param integer $personID - id of the genre to search for
          */
         public function personSearch($personID) {
