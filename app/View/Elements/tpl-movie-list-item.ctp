@@ -16,7 +16,7 @@
             <div class="centre">-</div>
         <% } %>
     </td>
-    <td class='centre'><%= Movie.filesize %></td>
+    <td class='centre'><%= Movie.date_added %></td>
     <td class='centre'>
         <% if(Movie.hd) { %>
             <img class="centre tick_cross" src="/assets/img/tick.png">

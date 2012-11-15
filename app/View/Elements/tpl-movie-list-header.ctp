@@ -30,10 +30,10 @@
                 Cert
             </span>
         </th>
-        <th style="width:5%">
-            <span id="filesize_sort" class="sort_link link"
-                  title="Click to sort filesize" data-sort_order="filesize">
-                GB
+        <th style="width:8%">
+            <span id="date_added_sort" class="sort_link link"
+                  title="Click to sort date_added" data-sort_order="date_added">
+                Added
             </span>
         </th>
         <th style="width:6%">
