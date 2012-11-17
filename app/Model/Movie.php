@@ -25,6 +25,20 @@
                       'finderQuery'           => '',
                       'deleteQuery'           => '',
                       'insertQuery'           => ''),
+            'Keyword' =>
+                array('className'             => 'Keyword',
+                      'joinTable'             => 'movie_keyword',
+                      'foreignKey'            => 'movie_id',
+                      'associationForeignKey' => 'keyword_id',
+                      'unique'                => true,
+                      'conditions'            => '',
+                      'fields'                => '',
+                      'order'                 => '',
+                      'limit'                 => '',
+                      'offset'                => '',
+                      'finderQuery'           => '',
+                      'deleteQuery'           => '',
+                      'insertQuery'           => ''),
             'Director' =>
                 array('className'             => 'Person',
                       'joinTable'             => 'movie_role',
@@ -65,7 +79,7 @@
                 if(isset($val['Movie']['date_added'])) {
 
                     $results[$key]['Movie']['date_added'] =
-                        date('jS M Y', strtotime($val['Movie']['date_added']));
+                        date('M y', strtotime($val['Movie']['date_added']));
 
                 }
 
@@ -141,16 +155,47 @@
          */
         public function personSearch($personID) {
 
-            return array('table' => '(SELECT person.person_id, '.
-                                    '        person.person_name, '.
-                                    '        movie_role.movie_id '.
-                                    ' FROM movie_role '.
-                                    ' JOIN person ON movie_role.person_id = '.
-                                    '                       person.person_id)',
+            $join = array('table' => '(SELECT person.person_id, '.
+                          '                   person.person_name, '.
+                          '                   movie_role.movie_id '.
+                          '           FROM movie_role '.
+                          '           JOIN person ON movie_role.person_id = '.
+                          '                          person.person_id)',
                          'alias' => 'person',
                          'conditions' => array(
-                                    'person.movie_id = Movie.movie_id',
-                                    'person.person_id = "'.$personID.'"'));
+                                           'person.movie_id = Movie.movie_id'));
+
+            if($personID) {
+                $join['conditions'][] = 'person.person_id = "'.$personID.'"';
+            }
+
+            return $join;
+
+        }
+        //end personSearch
+
+        /**
+         * constructs a join that can be used to search for personIDs
+         * @author David
+         * @param integer $keywordID - id of the keyword to search for
+         */
+        public function keywordSearch($keywordID) {
+
+            $join = array('table' => '(SELECT keyword.keyword_id, '.
+                          '                   keyword.keyword, '.
+                          '                   movie_keyword.movie_id '.
+                          '           FROM movie_keyword '.
+                          '           JOIN keyword ON movie_keyword.keyword_id = '.
+                          '                           keyword.keyword_id)',
+                         'alias' => 'keyword',
+                         'conditions' => array(
+                                           'keyword.movie_id = Movie.movie_id'));
+
+            if($keywordID) {
+                $join['conditions'][] = 'keyword.keyword_id = "'.$keywordID.'"';
+            }
+
+            return $join;
 
         }
         //end personSearch

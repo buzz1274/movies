@@ -17,6 +17,8 @@ class Config(object):
     movie_table = None
     genre_table = None
     movie_genre_table = None
+    keyword_table = None
+    movie_keyword_table = None
     role_table = None
     person_table = None
     movie_role_table = None
@@ -29,6 +31,7 @@ class Config(object):
     db = None
     backup_path = None
     backup_files_to_keep = None
+    email_address = None
 
     def __init__(self):
         """
@@ -44,6 +47,11 @@ class Config(object):
             self.genre_table = Table('genre', MetaData(), autoload=True,
                                      autoload_with=self.db)
             self.movie_genre_table = Table('movie_genre', MetaData(),
+                                           autoload=True,
+                                           autoload_with=self.db)
+            self.keyword_table = Table('keyword', MetaData(), autoload=True,
+                                       autoload_with=self.db)
+            self.movie_keyword_table = Table('movie_keyword', MetaData(),
                                            autoload=True,
                                            autoload_with=self.db)
             self.certificate_table = Table('certificate', MetaData(),
@@ -81,3 +89,4 @@ class Config(object):
         self.db_name = config.get('DB', 'db_name').strip('"')
         self.backup_path = config.get('BACKUP', 'backup_path').strip('"')
         self.backup_files_to_keep = int(config.get('BACKUP', 'backup_files_to_keep').strip('"'))
+        self.email_address = config.get('MISC', 'email_address').strip('"')

@@ -48,12 +48,23 @@
                         </dd>
                     <% }); %>
                 </dl>
+                <dl class="genres clearfix">
+                    <dt><strong>Keyword(s):</strong></dt>
+                    <% _.each(Keyword, function(keyword) { %>
+                        <dd class="pull-left">
+                            <span class="keyword_link link"
+                               data-keyword_id="<%= keyword.keyword_id %>">
+                                <a><%= keyword.keyword %></a>
+                            </span>
+                        </dd>
+                    <% }); %>
+                </dl>
                 <dl class="clearfix">
                     <dt><strong>Archived:</strong></dt>
                     <dd class="pull-left">
                         <% if(Movie.archived) { %>
                             <img style="padding-top:5px;" height="15" width="15"
-                                 src='/assets/img/ticked.png' />
+                                 src='/assets/img/tick.png' />
                         <% } else { %>
                             <img style="padding-top:5px;" height="15" width="15"
                                  src='/assets/img/cross.png' />

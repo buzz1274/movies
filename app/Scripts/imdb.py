@@ -1,10 +1,20 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import urllib
+import urllib2
 import mechanize
 import re
 import sys
+import os
+import random
 from bs4 import BeautifulSoup
+
+class IMDBException(Exception):
+    """
+    extend base excpetion
+    @todo send these exceptions to a logger
+    """
+    pass
 
 class IMDB(object):
 
@@ -32,7 +42,7 @@ class IMDB(object):
 
     certificate = None
 
-    plot_keywords = None
+    plot_keywords = []
 
     rating_only = False
 
@@ -48,59 +58,108 @@ class IMDB(object):
         self.genres = []
         self.directors = []
         self.actors = []
+        self.plot_keywords = []
         self.rating_only = rating_only
+
+        try:
+            self._get_page_mechanize()
+            #self._get_page()
+            self._set_rating()
+
+            if not self.rating_only:
+                self._set_title()
+                self._set_plot_keywords()
+                self._set_certificate()
+                self._set_runtime()
+                self._set_genres()
+                self._set_synopsis()
+                self._set_image_path()
+                self._set_release_date()
+                self._set_directors()
+                self._set_actors()
+        except Exception, e:
+            print e
+            f = open('/home/dave/'+self.imdb_id+'.html', 'w')
+            f.write(str(self.page))
+            f.close()
+
+    def _get_page(self):
+        """
+        retrieves the appropriate movie page from imdb using mechanize
+        """
+        self.page = ""
+        page = urllib2.urlopen('http://www.imdb.com/title/%s' % (self.imdb_id))
+
+        for line in page:
+            self.page += line
+
+        self.page = BeautifulSoup(str(self.page))
+
+    def _get_page_mechanize(self):
+        """
+        retrieves the appropriate movie page from imdb using mechanize
+        """
+        self.page = ""
         browser = mechanize.Browser()
         browser.set_handle_robots(False)
         browser.addheaders = [('User-agent',
-                               'Mozilla/5.0 (X11; U; Linux i686; '\
-                               'en-US; rv:1.9.0.1) Gecko/2008071615 '\
-                               'Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
+                               'Mozilla/5.0 (Windows NT 6.1; WOW64) '\
+                               'AppleWebKit/537.4 (KHTML, like Gecko) '\
+                               'Chrome/22.0.1229.94 Safari/537.4')]
         browser.open('http://www.imdb.com/title/%s' % (self.imdb_id))
-
         self.page = BeautifulSoup(browser.response().read())
 
-        print self.page
-
-        self._set_rating()
-
-        if not self.rating_only:
-            self._set_title()
-            self._set_runtime()
-            self._set_genres()
-            self._set_synopsis()
-            self._set_image_path()
-            self._set_release_date()
-            self._set_certificate()
-            self._set_directors()
-            self._set_actors()
-
-            #get plot keywords
-            browser.open('http://www.imdb.com/title/%s/keywords' %
-                         (self.imdb_id))
-            self._set_plot_keywords(BeautifulSoup(browser.response().read()))
+    def _set_rating(self):
+        """
+        sets the imdb rating for the current movie
+        """
+        try:
+            self.rating = self.page.find(True, {'class': 'star-box-giga-star'})
+            if self.rating:
+                self.rating = self.rating.contents[0]
+        except Exception, e:
+            raise IMDBException('Unable to retrieve rating(%s)(%s)' %
+                                 (self.imdb_id, e))
 
     def _set_title(self):
         """
         gets the title for the current movie
         """
-        tag = self.page.find('h1', itemprop='name').contents
-        if tag:
-            self.title = tag[0].strip()
+        try:
+            tag = self.page.find('h1', itemprop='name').contents
+            if tag:
+                self.title = tag[0].strip()
+        except Exception, e:
+            raise IMDBException('Unable to retrieve title(%s)(%s)' %
+                                 (self.imdb_id, e))
 
-    def _set_plot_keywords(self, plot_keywords_page):
+    def _set_plot_keywords(self):
         """
         sets plot keywords for current movie
         @param plot_keywords_page: string
         """
         try:
-            #print "GET PLOT KEYWORDS"
-            print plot_keywords_page
-            tags = plot_keywords_page.find(True, {'class': 'keyword'})
-            #print "TAGS ", tags
+            tags = self.page.findAll('a', href=re.compile(r"/keyword/.*"))
             if tags:
-                print tags
+                for tag in tags:
+                    try:
+                        self.plot_keywords.append(tag.contents[0])
+                    except KeyError:
+                        pass
         except Exception, e:
-            print e
+            raise IMDBException('Unable to retrieve plot keywords(%s)(%s)' %
+                                 (self.imdb_id, e))
+
+    def _set_certificate(self):
+        """
+        sets certificate for the current movie
+        """
+        infobar = self.page.find(True, {'class': 'infobar'})
+        if infobar:
+            try:
+                self.certificate = infobar.contents[1]['title']
+            except KeyError:
+                pass
 
     def _set_actors(self):
         """
@@ -115,28 +174,22 @@ class IMDB(object):
                         self.actors.append(tag.a.contents[0])
                     except KeyError:
                         pass
-        except:
-            pass
+        except Exception, e:
+            raise IMDBException('Unable to retrieve actors(%s)(%s)' %
+                                 (self.imdb_id, e))
 
     def _set_directors(self):
         """
         sets directors for the current movie
         """
-        tags = self.page.find('a', itemprop='director')
-        if tags:
-            for director in tags:
-                self.directors.append(director)
+        try:
+            tags = self.page.find('a', itemprop='director')
+            if tags:
+                for director in tags:
+                    self.directors.append(director)
 
-    def _set_certificate(self):
-        """
-        sets certificate for the current movie
-        """
-        infobar = self.page.find(True, {'class': 'infobar'})
-        if infobar:
-            try:
-                self.certificate = infobar.contents[1]['title']
-            except KeyError:
-                pass
+        except:
+            print e
 
     def _set_release_date(self):
         """
@@ -166,7 +219,6 @@ class IMDB(object):
         if self.image_path and self.image_path['src']:
             self.image_path = self.image_path['src']
 
-
     def _set_synopsis(self):
         """
         sets the movie synopsis
@@ -174,14 +226,6 @@ class IMDB(object):
         self.synopsis = self.page.find('p', itemprop='description').contents
         if self.synopsis:
             self.synopsis = self.synopsis[0].strip()
-
-    def _set_rating(self):
-        """
-        sets the imdb rating for the current movie
-        """
-        self.rating = self.page.find(True, {'class': 'star-box-giga-star'})
-        if self.rating:
-            self.rating = self.rating.contents[0]
 
     def _set_runtime(self):
         """

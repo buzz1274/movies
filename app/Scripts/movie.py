@@ -14,6 +14,9 @@ from sqlalchemy import exc
 from config import Config
 from imdb import IMDB
 
+class MovieException(Exception):
+    pass
+
 class Movie():
 
     config = None
@@ -21,9 +24,6 @@ class Movie():
     movie = []
 
     def __init__(self):
-        """
-        @author David <david@sulaco.co.uk>
-        """
         try:
             self.config = Config()
         except Exception, e:
@@ -45,6 +45,40 @@ class Movie():
                         shell=False, pty=True, combine_stderr=True)
 
         return movies
+
+    def find_invalid_movies(self):
+        """
+        scans the database for movies that have incomplete data
+        @return dictionary
+        """
+        movie_actor_query = select([self.config.movie_role_table.c.movie_id],
+                                   self.config.movie_role_table.c.role_id ==
+                                   self.config.role_table.c.role_id).\
+                            where(self.config.role_table.c.role == 'actor')
+        movie_director_query = select([self.config.movie_role_table.c.movie_id],
+                                   self.config.movie_role_table.c.role_id ==
+                                   self.config.role_table.c.role_id).\
+                            where(self.config.role_table.c.role == 'director')
+        movie_genre_query = select([self.config.movie_genre_table.c.movie_id])
+        movie_keyword_query = select([self.config.movie_keyword_table.c.movie_id])
+        query = select([self.config.movie_table.c.movie_id,
+                        self.config.movie_table.c.imdb_id,
+                        self.config.movie_table.c.title]).\
+                where((not_(self.config.movie_table.c.movie_id.in_(movie_actor_query))).\
+                __or__(not_(self.config.movie_table.c.movie_id.in_(movie_director_query))).\
+                __or__(not_(self.config.movie_table.c.movie_id.in_(movie_genre_query))).\
+                __or__(not_(self.config.movie_table.c.movie_id.in_(movie_keyword_query))).\
+                __or__(self.config.movie_table.c.certificate_id == None).\
+                __or__(self.config.movie_table.c.date_last_scanned == None).\
+                __or__(self.config.movie_table.c.imdb_rating == None).\
+                __or__(self.config.movie_table.c.synopsis == None).\
+                __or__(self.config.movie_table.c.release_year == None).\
+                __or__(self.config.movie_table.c.runtime == None).\
+                __or__(self.config.movie_table.c.runtime < 60).\
+                __or__(self.config.movie_table.c.runtime > 600)).\
+                order_by(desc(self.config.movie_table.c.movie_id))
+
+        return self.config.db.execute(query).fetchall()
 
     def rename_movie(self, old_path, new_path):
         """
@@ -69,24 +103,15 @@ class Movie():
         if movies:
             for movie in movies:
                 self.movie = movie
-
                 imdb = IMDB(movie.imdb_id, rating_only = True)
-                if imdb.directors:
-                    self._add_role(imdb.directors, 'director')
 
-                if imdb.actors:
-                    self._add_role(imdb.actors, 'actor')
-                """
                 if imdb.rating:
                     query = self.config.movie_table.update().\
                                  where(self.config.movie_table.c.imdb_id==\
                                        movie.imdb_id).\
                                  values(imdb_rating=imdb.rating,
-                                        date_last_scraped='2008-01-01')
-                                        #date_last_scraped=func.now())
+                                        date_last_scraped=func.now())
                     self.config.db.execute(query)
-                """
-
 
     def update_movies(self):
         """
@@ -133,6 +158,20 @@ class Movie():
 
             #mark as deleted all movie not seen today
 
+    def update_invalid_movies(self):
+        """
+        attempts to scrape missing data for any movies without full
+        data
+        """
+        invalid_movies = self.find_invalid_movies()
+        if invalid_movies:
+            for movie in invalid_movies:
+                try:
+                    self.scrape_imdb(movie.imdb_id)
+                except Exception, e:
+                    print e
+                    pass
+
     def due_scraping(self):
         """
         returns a list of imdb_id's that havn't already been scraped
@@ -144,7 +183,7 @@ class Movie():
                 where((self.config.movie_table.c.date_last_scraped==None).\
                 __or__(func.date_part('day', func.now() -
                                              self.config.movie_table.c.\
-                                             date_last_scraped) > 0))
+                                             date_last_scraped) > 90))
 
         return self.config.db.execute(query).fetchall()
 
@@ -156,40 +195,46 @@ class Movie():
         try:
             self.movie = self.get(imdb_id)
             imdb = IMDB(imdb_id)
-            certificate_query =\
-                select([self.config.certificate_table.c.certificate_id]).\
-                where(self.config.certificate_table.c.certificate==imdb.certificate)
+            if imdb.title:
+                certificate_query =\
+                    select([self.config.certificate_table.c.certificate_id]).\
+                    where(self.config.certificate_table.c.certificate==imdb.certificate)
 
-            query = self.config.movie_table.update().\
-                                         where(self.config.movie_table.c.imdb_id==\
-                                               imdb_id).\
-                                         values(title=imdb.title,
-                                                runtime=imdb.runtime,
-                                                imdb_rating=imdb.rating,
-                                                certificate_id=certificate_query,
-                                                synopsis=imdb.synopsis,
-                                                release_year=imdb.release_year,
-                                                has_image=bool(imdb.image_path),
-                                                date_last_scraped=func.now())
+                query = self.config.movie_table.update().\
+                                where(self.config.movie_table.c.imdb_id==\
+                                      imdb_id).\
+                                values(title=imdb.title,
+                                       runtime=imdb.runtime,
+                                       imdb_rating=imdb.rating,
+                                       certificate_id=certificate_query,
+                                       synopsis=imdb.synopsis,
+                                       release_year=imdb.release_year,
+                                       has_image=bool(imdb.image_path),
+                                       date_last_scraped=func.now())
 
-            self.config.db.execute(query)
-
-            if imdb.image_path:
+                self.config.db.execute(query)
                 save_path = "%s/%s.jpg" % (self.config.image_save_path, imdb_id)
-                image = urllib.urlretrieve(imdb.image_path, save_path)
-                #@todo: add error checking to ensure file has been saved
-                #       correctly/folder to save to exists
 
-            if imdb.directors:
-                self._add_role(imdb.directors, 'director')
+                if not os.path.isfile(save_path) and imdb.image_path:
+                    image = urllib.urlretrieve(imdb.image_path, save_path)
 
-            if imdb.actors:
-                self._add_role(imdb.actors, 'actor')
+                    if not os.path.is_file(save_path):
+                        raise MovieException('error saving movie image(%s)' %
+                                               (self.imdb_id))
 
-            if imdb.genres:
-                self._add_genre(imdb.genres)
+                if imdb.directors:
+                    self._add_role(imdb.directors, 'director')
+
+                if imdb.actors:
+                    self._add_role(imdb.actors, 'actor')
+
+                if imdb.genres:
+                    self._add_genre(imdb.genres)
+
+                if imdb.plot_keywords:
+                    self._add_keywords(imdb.plot_keywords)
+
         except Exception, e:
-            #@todo: this needs to be logged and dealt with
             pass
 
     def get(self, imdb_id):
@@ -272,6 +317,38 @@ class Movie():
                 self.config.db.execute(query)
             except exc.IntegrityError:
                 pass
+
+    def _add_keywords(self, keywords):
+        """
+        adds keywords for the current movie
+        @param genres: list
+        """
+        for keyword in keywords:
+            try:
+                query = self.config.movie_keyword_table.insert().\
+                                     values(movie_id=self.movie['movie_id'],
+                                            keyword_id=self.keyword(keyword))
+                self.config.db.execute(query)
+            except exc.IntegrityError:
+                pass
+
+    def keyword(self, keyword):
+        """
+        gets the ID for the supplied keyword, if it doesn't exist it will
+        be added to the database
+        @param keyword: string
+        @return keyword_id: integer
+        """
+        query = select([self.config.keyword_table.c.keyword_id]).\
+                where(self.config.keyword_table.c.keyword==keyword)
+        keyword_id = self.config.db.execute(query).scalar()
+
+        if not keyword_id:
+            query = self.config.keyword_table.insert().values(keyword=keyword)
+            self.config.db.execute(query)
+            keyword_id = self.keyword(keyword)
+
+        return keyword_id
 
     def _video_resolution(self, path):
         """

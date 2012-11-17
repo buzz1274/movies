@@ -148,8 +148,14 @@ window.MovieListView = Backbone.View.extend({
     tagName:"tbody",
     events: {
         'click span.genre_link': 'genreSearch',
+        'click span.keyword_link': 'keywordSearch',
         'click span.director_link': 'personSearch',
         'click span.actor_link': 'personSearch',
+    },
+    keywordSearch:function(ev) {
+        UrlParams.reset();
+        UrlParams.Params.kid = $(ev.currentTarget).attr('data-keyword_id');
+        app.navigate(UrlParams.query_string(), {'trigger':true});
     },
     personSearch:function (ev) {
         UrlParams.reset();
@@ -263,11 +269,12 @@ var AppRouter = Backbone.Router.extend({
 var UrlParams = {
     qs:'',
     Params: {
-        'p': null,
-        's': null,
-        'asc': null,
-        'pid': null,
-        'gid': null,
+        'p':null,
+        's':null,
+        'asc':null,
+        'pid':null,
+        'gid':null,
+        'kid':null,
         'search': null,
         'imdb_rating':null,
     },
@@ -277,6 +284,7 @@ var UrlParams = {
         'asc':1,
         'gid':0,
         'pid':0,
+        'kid':0,
         'search':'',
         'imdb_rating':'',
     },
