@@ -72,52 +72,41 @@
                 <li class="nav-header">
                     Certificate
                 </li>
-                <?php echo $this->App->checkboxFormatter($certificates, 'certificate') ?>
+                <?php echo $this->App->checkboxFormatter($certificates,
+                                                         'certificate') ?>
                 <li class="nav-header">
                     IMDB Rating
+                    <p class="slider_label">
+                        &nbsp;<em id="imdb_rating_label"></em>
+                        (<%= totalMovies %>)
+                    </p>
                 <li class="span12">
-                    <span class="span4" id="imdb_rating">
+                    <span class="span12" id="imdb_rating">
                         <div id="imdb_rating_slider_range"></div>
-                    </span>
-                    <span class="span8 slider_label">
-                        <input type="text" id="imdb_rating_value"
-                               style="display:none;" value="" />
-                        <p style="font-size:1.20em;">&nbsp;
-                            <em id="imdb_rating_label"></em>
-                            (<%= totalMovies %>)
-                        </p>
                     </span>
                 </li>
                 <li class="nav-header">
                     Runtime
+                    <p class="slider_label">
+                        &nbsp;<em id="runtime_label"></em>
+                        (<%= totalMovies %>)
+                    </p>
                 </li>
                 <li class="span12">
-                    <span class="span4" id="runtime">
+                    <span class="span12" id="runtime">
                         <div id="runtime_slider_range"></div>
-                    </span>
-                    <span class="span8 slider_label">
-                        <input type="text" id="runtime_value"
-                               style="display:none;" value="" />
-                        <p style="font-size:1.20em;">&nbsp;
-                            <em id="runtime_label"></em>
-                            (<%= totalMovies %>)
-                        </p>
                     </span>
                 </li>
                 <li class="nav-header">
                     Year of Release
+                    <p class="slider_label">
+                        <em id="release_year_label"></em>
+                        (<%= totalMovies %>)
+                    </p>
                 </li>
                 <li class="span12">
-                    <span class="span4" id="release_year">
+                    <span class="span12" id="release_year">
                         <div id="release_year_slider_range"></div>
-                    </span>
-                    <span class="span8 slider_label">
-                        <input type="text" id="release_year_value"
-                               style="display:none;" value="" />
-                        <p style="font-size:1.20em;">&nbsp;
-                            <em id="release_year_label"></em>
-                            (<%= totalMovies %>)
-                        </p>
                     </span>
                 </li>
                 <li>

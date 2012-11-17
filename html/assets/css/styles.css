@@ -99,9 +99,8 @@ div.no_image_holder {
     height:317px;
     background-color:#FFFFFF;
 }
-span.slider_label {
-    font-size:1.2em;
-    position:relative;
-    bottom:5px;
-    padding-left:10px;
+p.slider_label {
+    font-weight:normal;
+    text-transform:none;
+    display:inline;
 }
