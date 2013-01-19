@@ -16,6 +16,21 @@ body {
 .sidebar-nav {
     padding: 9px 0;
 }
+div#auth {
+    line-height:38px;
+    color:#FFFFFF;
+}
+div#auth span.auth_link {
+    text-decoration:underline;
+    cursor:pointer;
+}
+div#auth span#authenticated {
+    display:none;
+}
+.icon-download-alt {
+    vertical-align:text-bottom;
+    cursor:pointer;
+}
 .navbar-inner {
     padding-left: 20px;
     padding-right: 20px;
@@ -103,4 +118,31 @@ p.slider_label {
     font-weight:normal;
     text-transform:none;
     display:inline;
+}
+div.ajax_content {
+    margin:0px;
+}
+.popup_info {
+    position:absolute;
+    display:none;
+    z-index:1000 !important;
+    opacity:1.0 !important;
+}
+#opaque {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width:100%;
+    z-index: 1000;
+    display: none;
+    background-color: black;
+    filter: alpha(opacity=20);
+    opacity: 0.2;
+}
+* html #opaque {
+    position: absolute;
+}
+.menu_item {
+    cursor:pointer;
 }

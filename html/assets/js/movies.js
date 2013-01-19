@@ -1,12 +1,61 @@
+window.Login = Backbone.Model.extend({
+    url:'/login/',
+});
 window.Movie = Backbone.Model.extend({
-    url:'../../movies/',
+    url:'/movies/',
+    idAttribute: "movie_id"
 });
 window.MovieSummary = Backbone.Model.extend({
-   url:'../../movies/summary/',
+   url:'/movies/summary/',
 });
 window.MovieCollection = Backbone.Collection.extend({
     model:Movie,
-    url:'../../movies/',
+    url:'/movies/',
+});
+window.LoginView = Backbone.View.extend({
+    tagName:"div",
+    template:_.template($('#tpl-login').html()),
+    events: {
+        'click #cancelButton': 'hide_login_popup',
+        'click #loginButton': 'login',
+    },
+    render:function() {
+        $(this.el).html(this.template());
+        $('#login_popup').css('display', 'block');
+        $('#opaque').css('display', 'block');
+        return this;
+    },
+    hide_login_popup:function() {
+        $('#login_popup').html('');
+        $('#opaque').css('display', 'none');
+        $('#login_popup').css('display', 'none');
+    },
+    logout:function() {
+        UrlParams.authenticated = false;
+    },
+    login:function() {
+        console.log("LOGIN");
+        $.ajax({
+            url:'/login',
+            type:'POST',
+            dataType:"json",
+            data: 'formValues',
+            success:function (data) {
+                if(data.error) {
+                    $('.alert-error').text(data.error.text).show();
+                }
+                else {
+                    UrlParams.authenticated = true;
+                    $('#login_link').css('display', 'none');
+                    $('#authenticated_name').html(data.name);
+                    $('#authenticated').css('display', 'block');
+                    window.LoginView.hide_login_popup();
+
+                    app.navigate(UrlParams.query_string(), {'trigger':true});
+                }
+            }
+        });
+    }
 });
 window.MovieSearchView = Backbone.View.extend({
     tagName:"div",
@@ -17,11 +66,19 @@ window.MovieSearchView = Backbone.View.extend({
         'click #submitButton': 'search',
         'click #resetButton': 'reset',
         'keypress #search_input': 'search_on_enter',
-        'click #xls_icon': 'download',
+        'click #download': 'download',
     },
     render:function () {
         //assign correct values ot URLParams.SliderValues
-        $(this.$el).empty().append(this.template(this.model.toJSON()));
+        summary = this.model.toJSON();
+        UrlParams.SliderValues['imdb_rating'].current_min = summary.min_imdb_rating;
+        UrlParams.SliderValues['imdb_rating'].current_max = summary.max_imdb_rating;
+        UrlParams.SliderValues['release_year'].current_min = summary.min_release_year;
+        UrlParams.SliderValues['release_year'].current_max = summary.max_release_year;
+        UrlParams.SliderValues['runtime'].current_min = summary.min_runtime;
+        UrlParams.SliderValues['runtime'].current_max = summary.max_runtime;
+
+        $(this.$el).empty().append(this.template(summary));
 
         return this;
     },
@@ -40,7 +97,8 @@ window.MovieSearchView = Backbone.View.extend({
     search: function() {
         var search = $('#search_input').val();
         UrlParams.reset();
-        UrlParams.Params.search = search;
+        UrlParams.parse_search_form();
+        console.log(UrlParams.Params);
         app.navigate(UrlParams.query_string(), {'trigger':true});
     },
     icon_over:function() {
@@ -129,6 +187,7 @@ window.MoviePagingView = Backbone.View.extend({
         return this;
     },
     paging:function(ev) {
+        console.log(Summary);
         var paging_method = $(ev.currentTarget).attr('data_link_action');
         if(paging_method == 'first') {
             UrlParams.Params.p = 1;
@@ -184,17 +243,40 @@ window.MovieListItemView = Backbone.View.extend({
     events: {
         'mouseover': 'mouseoverrow',
         'mouseout': 'mouseoutrow',
+        'click li.media_link': 'media',
+        'click li.watched_link': 'watched',
         'click li.detail_link': 'details',
+    },
+    initialize: function() {
+        _.bindAll(this, "render");
+        this.model.bind('change', this.render);
     },
     template:_.template($('#tpl-movie-list-item').html()),
     details:function() {
-        console.log("here");
-        imdb_id = $('li.detail_link', this.el).attr('data-imdb_id');
-        if($('tr#'+imdb_id).html()) {
-            $('#'+imdb_id).remove();
+        var Movie = this.model.get('Movie');
+        if($('tr#movie_'+Movie.movie_id).html()) {
+            $('tr#movie_'+Movie.movie_id).remove();
         } else {
-            app.movieDetails(imdb_id, this.el);
+            app.movieDetails(Movie.movie_id, this.el);
         }
+    },
+    media:function() {
+        $('#opaque').css('display', 'block');
+    },
+    watched:function() {
+        var Movie = this.model.get('Movie');
+        Movie.watched = !Movie.watched;
+        this.model.save({action: "watched"},
+            {url:'/movies/watched/:id/',
+             success: function(model, response) {
+                model.set(Movie);
+            },
+            error: function(model, response) {
+                Movie.watched = !Movie.watched;
+                model.set(Movie);
+            }
+        });
+        $('#movies_table > tbody').children('tr').css("background-color","");
     },
     render:function (eventName) {
         $(this.el).html(this.template(this.model.toJSON()));
@@ -217,12 +299,14 @@ window.MovieView = Backbone.View.extend({
 });
 var AppRouter = Backbone.Router.extend({
     routes:{
+        "/login":"login",
         "":"list",
         "#":"list",
         "*query_string": "list",
-        "/movies/:imdb_id/":"movieDetails"
+        "/movies/:imdb_id/":"movieDetails",
     },
     list:function (query_string) {
+        $('#opaque').css('display', 'block');
         var movieSummary = new MovieSummary();
         var movieSearchView = new MovieSearchView({model:movieSummary});
         var movieHeaderView = new MovieHeaderView();
@@ -254,19 +338,29 @@ var AppRouter = Backbone.Router.extend({
         });
         UrlParams.fill_form();
         movieHeaderView.display_sort_icons();
+        $('#opaque').css('display', 'none');
     },
-    movieDetails:function (imdb_id, element) {
+    movieDetails:function (movie_id, element) {
         var movie = new Movie();
-        movie.url = '../../movies/'+imdb_id+'/';
+        movie.url = '../../movies/'+movie_id+'/';
         var movieView = new MovieView({model:movie});
         movie.fetch({
             success: function() {
                 movieView.render(element);
             }
         });
+    },
+    authenticate:function(action) {
+        var login = new LoginView()
+        if(action == 'login') {
+            $('#login_popup').append(login.render().el);
+        } else if(action == 'logout') {
+            login.logout();
+        }
     }
 });
 var UrlParams = {
+    authenticated:false,
     qs:'',
     Params: {
         'p':null,
@@ -277,6 +371,7 @@ var UrlParams = {
         'kid':null,
         'search': null,
         'imdb_rating':null,
+        'watched':null,
     },
     DefaultParams: {
         'p':1,
@@ -285,6 +380,7 @@ var UrlParams = {
         'gid':0,
         'pid':0,
         'kid':0,
+        'watched':'all',
         'search':'',
         'imdb_rating':'',
     },
@@ -301,8 +397,8 @@ var UrlParams = {
     },
     SliderValues: {
         imdb_rating: {
-            min:2,
-            max:9,
+            min:1,
+            max:10,
             current_min:2,
             current_max:9,
         },
@@ -359,6 +455,9 @@ var UrlParams = {
         if(UrlParams.Params.search) {
             $('#search_input').val(UrlParams.Params.search);
         }
+        if(UrlParams.Params.watched == 1 || UrlParams.Params.watched == 0) {
+            $('#watched_'+UrlParams.Params.watched).attr('checked', 'checked');
+        }
     },
     query_string:function() {
         var qs = '';
@@ -377,6 +476,10 @@ var UrlParams = {
     },
     remove_page_from_query_string:function() {
         return this.qs.replace(/&?p=[0-9]{1,}&?/gm, '');
+    },
+    parse_search_form:function() {
+        UrlParams.Params.search = $('#search_input').val();
+        UrlParams.Params.watched = $('input:radio[name=watched]:checked').val();
     },
     reset:function() {
         _.each(UrlParams.DefaultParams, function(value, key) {

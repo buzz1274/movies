@@ -107,7 +107,7 @@ class IMDB(object):
                                'AppleWebKit/537.4 (KHTML, like Gecko) '\
                                'Chrome/22.0.1229.94 Safari/537.4')]
         browser.open('http://www.imdb.com/title/%s' % (self.imdb_id))
-        self.page = BeautifulSoup(browser.response().read())
+        self.page = BeautifulSoup(browser.response().read(), "html5lib")
 
     def _set_rating(self):
         """

@@ -4,21 +4,15 @@
 
         public $paginate = false;
 
-        public $limit = 20;
-
-        public $page = 1;
-
-        public $sort = 'true';
-
-        public $sortDirection = 'asc';
-
-        public $search = false;
-
-        public $genreID = false;
-
-        public $personID = false;
-
-        public $keywordID = false;
+        public $search = array('page' => 1,
+                               'limit' => 20,
+                               'genreID' => false,
+                               'personID' => false,
+                               'keywordID' => false,
+                               'search' => '',
+                               'sort' => 'title',
+                               'sortDirection' => 'asc',
+                               'genreID' => false);
 
         /**
          * retrieves movie details for the movie matching imdb_id
@@ -29,8 +23,8 @@
             $movie = $this->Movie->find('first',
                           array('recursive' => 2,
                                 'conditions' =>
-                                    array('imdb_id' =>
-                                            $this->request->params['imdbID'])));
+                                    array('movie_id' =>
+                                            $this->request->params['movieID'])));
 
             return new CakeResponse(array('body' => json_encode($movie)));
 
@@ -38,45 +32,86 @@
         //end movie
 
         /**
+         * updates the watched status
+         * @author David
+         */
+        public function watched() {
+
+            $Movie = $this->request->input('json_decode');
+
+            if(isset($Movie->Movie->movie_id) &&
+               (int)$Movie->Movie->movie_id &&
+               isset($Movie->Movie->watched) &&
+               $this->Movie->save(
+                        array('movie_id' => $Movie->Movie->movie_id,
+                              'watched' => (boolean)$Movie->Movie->watched))) {
+
+                $response = 'success';
+
+            } else {
+
+                $response = 'failure';
+                $this->header('HTTP/1.1 400 Bad Request');
+
+            }
+
+            return new cakeresponse(array('body' =>
+                            json_encode(array('name' => $response))));
+
+        }
+        //end watched
+
+        /**
          * returns all movies that match the supplied search critera
          * @author David
          */
         public function movies() {
 
-            //error_log(json_encode($_GET));
-            $this->_parseURLVars();
+            $this->_parseQuery();
             $this->paginate = array(
                         'fields' => array('DISTINCT Movie.movie_id', '*',
                                           'Certificate.*'),
-                        'limit' => $this->limit,
+                        'limit' => $this->search['limit'],
                         'callbacks' => true,
                         'joins' => array(),
                         'conditions' => array(),
-                        'page' => $this->page,
+                        'page' => $this->search['page'],
                         'recursive' => 0,
-                        'order' => array($this->sort => $this->sortDirection));
+                        'order' => array($this->search['sort'] => $this->search['sortDirection']));
 
-            if($this->search || $this->personID) {
-                $this->paginate['joins'][] =
-                    $this->Movie->personSearch($this->personID);
+            /*
+            if($this->watched !== null) {
+                $this->paginate['conditions'][] = array('Movie.watched' =>
+                                                                $this->watched);
             }
-            if($this->search || $this->keywordID) {
+            */
+
+            if($this->search['personID'] || $this->search['search']) {
                 $this->paginate['joins'][] =
-                    $this->Movie->keywordSearch($this->keywordID);
+                $this->Movie->personSearch($this->search['personID']);
             }
-            if($this->genreID) {
+
+            if($this->search['keywordID'] || $this->search['search']) {
                 $this->paginate['joins'][] =
-                    $this->Movie->genreSearch($this->genreID);
+                $this->Movie->keywordSearch($this->search['keywordID']);
             }
-            if($this->search) {
+
+            if($this->search['genreID'] || $this->search['search']) {
+                $this->paginate['joins'][] =
+                $this->Movie->genreSearch($this->search['genreID']);
+            }
+
+            /*
+            if($this->search['search']) {
                 $this->paginate['conditions'][] =
-                    array('OR' => array(array('Movie.title ILIKE' =>
-                                                 '%'.$this->search.'%'),
-                                        array('person.person_name ILIKE' =>
-                                                 '%'.$this->search.'%'),
-                                        array('keyword.keyword ILIKE' =>
-                                                 '%'.$this->search.'%')));
+                array('OR' => array(array('Movie.title ILIKE' =>
+                                          '%'.$this->search['search'].'%'),
+                                    array('person.person_name ILIKE' =>
+                                          '%'.$this->search['search'].'%'),
+                                    array('keyword.keyword ILIKE' =>
+                                          '%'.$this->search['search'].'%')));
             }
+            */
 
             $movies = $this->paginate('Movie');
 
@@ -91,128 +126,86 @@
          */
         public function summary() {
 
-            $this->_parseURLVars();
+            $this->_parseQuery();
 
-            $searchCriteria =
-                array('fields' => "COUNT(DISTINCT Movie.movie_id) ",
-                      'recursive' => -1);
-            if($this->search) {
-                $searchCriteria['joins'] =
-                    array($this->Movie->personSearch($this->personID),
-                          $this->Movie->keywordSearch());
-                $searchCriteria['conditions'] =
-                    array('OR' => array(array('Movie.title ILIKE' =>
-                                                 '%'.$this->search.'%'),
-                                        array('person.person_name ILIKE' =>
-                                                 '%'.$this->search.'%'),
-                                        array('keyword.keyword ILIKE' =>
-                                                 '%'.$this->search.'%')));
-            } elseif($this->personID) {
-                $searchCriteria['joins'][] =
-                    $this->Movie->personSearch($this->personID);
-            } elseif($this->keywordID) {
-                $searchCriteria['joins'][] =
-                    $this->Movie->keywordSearch($this->keywordID);
-            }
-
-            if($this->genreID) {
-                $searchCriteria['joins'][] =
-                    $this->Movie->genreSearch($this->genreID);
-            }
-
-            $totalMovies = $this->Movie->find('count', $searchCriteria);
-            $startOffset = (($this->page - 1) * $this->limit) + 1;
-            $totalPages = ceil($totalMovies / $this->limit);
-            $endOffset = ($startOffset - 1) + $this->limit;
-
-            if($totalMovies == 0) {
-                $startOffset = 0;
-            }
-
-            if($endOffset > $totalMovies) {
-                $endOffset = $totalMovies;
-            }
-
-            return new CakeResponse(array('body' =>
-                            json_encode(array('totalMovies' =>
-                                                 $totalMovies,
-                                              'totalPages' =>
-                                                $totalPages,
-                                              'page' =>
-                                                $this->page))));
+            return new CakeResponse(
+                        array('body' => json_encode($this->Movie->summary($this->search))));
 
         }
         //end summary
 
         /**
-         * determines the current page of the results
+         * ensures request vars contain valid data
          * @author David <david@sulaco.co.uk>
          */
-        private function _parseURLVars() {
+        private function _parseQuery() {
 
-            if(isset($_GET['p']) && (int)$_GET['p'] > 0) {
-
-                $this->page = $_GET['p'];
-
+            if(isset($this->request->query['p']) &&
+               (int)$this->request->query['p'] > 0) {
+                $this->search['page'] = $this->request->query['p'];
             }
 
-            if(isset($_GET['search']) && !empty($_GET['search'])) {
-
-                $this->search = $_GET['search'];
-
+            if(isset($this->request->query['search']) &&
+               !empty($this->request->query['search'])) {
+                $this->search['search'] = $this->request->query['search'];
             }
 
-            if(isset($_GET['gid']) && (int)$_GET['gid'] > 0) {
-
-                $this->genreID = $_GET['gid'];
-
+            if(isset($this->request->query['gid']) &&
+               (int)$this->request->query['gid'] > 0) {
+                $this->search['genreID'] = $this->request->query['gid'];
             }
 
-            if(isset($_GET['pid']) && (int)$_GET['pid'] > 0) {
-
-                $this->personID = $_GET['pid'];
-
+            if(isset($this->request->query['pid']) &&
+               (int)$this->request->query['pid'] > 0) {
+                $this->search['personID'] = $this->request->query['pid'];
             }
 
-            if(isset($_GET['kid']) && (int)$_GET['kid'] > 0) {
-
-                $this->keywordID = $_GET['kid'];
-
+            if(isset($this->request->query['kid']) &&
+               (int)$this->request->query['kid'] > 0) {
+                $this->search['keywordID'] = $this->request->query['kid'];
             }
 
-            if(isset($_GET['s']) &&
-               in_array($_GET['s'], array('title', 'release_year',
-                                          'imdb_rating', 'hd',
-                                          'runtime', 'filesize',
-                                          'date_added', 'cert'))) {
+            if(isset($this->request->query['s']) &&
+               in_array($this->request->query['s'],
+                        array('title', 'release_year',
+                              'imdb_rating', 'hd',
+                              'runtime', 'filesize',
+                              'date_added', 'cert'))) {
 
-                $this->sort = $_GET['s'];
+                $this->search['sort'] = $this->request->query['s'];
 
-                if($this->sort == 'cert') {
+                if($this->search['sort'] == 'cert') {
+                    $this->search['sort'] = 'Certificate.order';
+                }
 
-                    $this->sort = 'Certificate.order';
+                if(isset($this->request->query['asc']) &&
+                   ($this->request->query['asc'] == 1 ||
+                    $this->request->query['asc'] == 0)) {
+
+                    if($this->request->query['asc'] == 1) {
+
+                        $this->search['sortDirection'] = 'asc';
+
+                    } else {
+
+                        $this->search['sortDirection'] = 'desc';
+
+                    }
 
                 }
 
             }
 
-            if(isset($_GET['asc']) &&
-               ($_GET['asc'] == 1 || $_GET['asc'] == 0)) {
 
-                if($_GET['asc'] == 1) {
 
-                    $this->sortDirection = 'asc';
+            if(isset($_GET['watched']) && $_GET['watched'] != 'all') {
 
-                } else {
-
-                    $this->sortDirection = 'desc';
-
-                }
+                $this->watched = (boolean)$_GET['watched'];
 
             }
 
         }
-        //end _parseURLVars
+        //end _parseQuery
 
     }
 

@@ -38,8 +38,30 @@
                 Actions <span class="caret"></span>
             </a>
             <ul class="dropdown-menu pull-right">
-                <li class="detail_link" data-imdb_id="<%= Movie.imdb_id %>">
-                    <a><i class="icon-search"></i> Details</a>
+                <li class="detail_link">
+                    <a class="menu_item">
+                        <i class="icon-search"></i>
+                        &nbsp;Details
+                    </a>
+                </li>
+                <li class="media_link">
+                    <a class="menu_item">
+                        <i class="icon-film"></i>
+                        &nbsp;Media
+                    </a>
+                </li>
+                <li class="watched_link">
+                    <% if(Movie.watched) { %>
+                        <a class="menu_item">
+                            <i class="icon-eye-open"></i>
+                            &nbsp;Mark as Unwatched
+                        </a>
+                    <% } else { %>
+                        <a class="menu_item">
+                            <i class="icon-eye-open"></i>
+                            &nbsp;Mark as Watched
+                        </a>
+                    <% } %>
                 </li>
             </ul>
         </div>

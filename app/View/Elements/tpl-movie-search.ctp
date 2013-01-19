@@ -3,6 +3,7 @@
         <fieldset>
             <legend>
                 Search Movies&nbsp;(<%= totalMovies %>)
+                <i id="download" class="icon-download-alt"></i>
             </legend>
             <ul class="nav nav-list">
                 <li class="nav-header">
@@ -25,14 +26,14 @@
                         <label class="radiobutton inline">
                             <input type="radio" value="hd"
                                    name="definition">
-                            HD
+                            HD&nbsp;(<%= hd %>)
                         </label>
                     </span>
                     <span class="offset4 span4">
                         <label class="radiobutton inline">
                             <input type="radio" value="sd"
                                    name="definition">
-                            SD
+                            SD&nbsp;(<%= sd %>)
                         </label>
                     </span>
                     <span class="offset8 span4">
@@ -50,21 +51,21 @@
                     <span class=" offset0 span4">
                         <label class="radiobutton inline">
                             <input type="radio" value="1"
-                                   name="watched">
-                            Yes
+                                   id="watched_1" name="watched">
+                            Yes&nbsp;(<%= watched %>)
                         </label>
                     </span>
                     <span class="offset4 span4">
                         <label class="radiobutton inline">
                             <input type="radio" value="0"
-                                   name="watched">
-                            No
+                                   id="watched_0" name="watched">
+                            No&nbsp;(<%= not_watched %>)
                         </label>
                     </span>
                     <span class="offset8 span4">
                         <label class="radiobutton inline">
                             <input type="radio"checked="checked"
-                                   name="watched">
+                                   name="watched" value="all">
                             All&nbsp;(<%= totalMovies %>)
                         </label>
                     </span>

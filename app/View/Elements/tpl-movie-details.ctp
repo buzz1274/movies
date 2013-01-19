@@ -1,5 +1,5 @@
 <script type="text/template" id="tpl-movie-details">
-    <tr id="<%= Movie.imdb_id %>">
+    <tr id="movie_<%= Movie.movie_id %>">
         <td class="movie_details span12" colspan="10">
             <div class="span4">
                 <% if(Movie.has_image) { %>

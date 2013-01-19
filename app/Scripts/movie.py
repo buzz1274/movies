@@ -164,6 +164,8 @@ class Movie():
         data
         """
         invalid_movies = self.find_invalid_movies()
+        print len(invalid_movies)
+        print invalid_movies
         if invalid_movies:
             for movie in invalid_movies:
                 try:

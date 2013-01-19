@@ -1,5 +1,7 @@
 <?php
 
+    ##gangster boxset asin - B00007LZ6M
+
     class Movie extends AppModel {
 
         public $name = 'movie';
@@ -67,6 +69,149 @@
                       'finderQuery'           => '',
                       'deleteQuery'           => '',
                       'insertQuery'           => ''));
+
+        /**
+         * retrieve movies that match the supplied search criteria
+         * @author David
+         */
+        public function search($resultType, $searchParams) {
+
+            if($resultType == 'summary') {
+                $limitQuery = false;
+                $selectQuery =
+                    'SELECT COUNT(summary.movie_id) AS total_movies, '.
+                    '       SUM(CASE '.
+                    '             WHEN summary.watched = True THEN 1 '.
+                    '             ELSE 0 '.
+                    '           END) AS watched, '.
+                    '       SUM(CASE '.
+                    '             WHEN summary.hd = True THEN 1 '.
+                    '             ELSE 0 '.
+                    '           END) AS hd, '.
+                    '       MIN(summary.imdb_rating) AS min_imdb_rating, '.
+                    '       MAX(summary.imdb_rating) AS max_imdb_rating, '.
+                    '       MIN(summary.runtime) AS min_runtime, '.
+                    '       MAX(summary.runtime) AS max_runtime, '.
+                    '       MIN(summary.release_year) AS min_release_year, '.
+                    '       MAX(summary.release_year) AS max_release_year';
+
+                if(is_array($Genres = $this->Genre->Find('all', array('recursive' => 0)))) {
+                    foreach($Genres as $Genre) {
+                        $label = preg_replace('/[^a-z]/i', '',
+                                              strtolower($Genre['Genre']['genre']));
+                        $selectQuery .=
+                                ', SUM(CASE '.
+                                "        WHEN '".$Genre['Genre']['genre']."' = ".
+                                "               ANY(summary.movie_genres) THEN 1 ".
+                                '        ELSE 0 '.
+                                '      END) AS "'.$label.'_genre" ';
+                    }
+
+                }
+
+            } else {
+                $selectQuery =
+                    'SELECT * ';
+                $limitQuery = false;
+            }
+
+            if(isset($searchParams['personID']) && $searchParams['personID']) {
+                $personQuery =
+                    "AND person.person_id = '".$searchParams['personID']."'";
+            } else {
+                $personQuery = false;
+            }
+
+            if(isset($searchParams['genreID']) && $searchParams['genreID']) {
+                $genreQuery =
+                    "AND '".$searchParams['genreID']."' = ANY(genre.movie_genre_ids)";
+            } else {
+                $genreQuery = false;
+            }
+
+            if(isset($searchParams['keywordID']) && $searchParams['keywordID']) {
+                $keywordQuery =
+                    "AND keyword.keyword_id = '".$searchParams['keywordID']."'";
+            } else {
+                $keywordQuery = false;
+            }
+
+            if(isset($searchParams['search']) && $searchParams['search']) {
+                $searchQuery =
+                    "AND ((Movie.title ILIKE '%".$searchParams['search']."%') OR ".
+                    "     (person.person_name ILIKE '%".$searchParams['search']."%') OR ".
+                    "     (keyword.keyword ILIKE '%".$searchParams['search']."%'))";
+
+            } else {
+                $searchQuery = false;
+            }
+
+            $query = $selectQuery.' '.
+                     'FROM   (SELECT    DISTINCT Movie.movie_id, Movie.watched, '.
+                     '                  Movie.hd, genre.movie_genres, '.
+                     '                  Movie.imdb_rating, Movie.runtime, '.
+                     '                  Movie.release_year '.
+                     '        FROM      public.movie AS Movie '.
+                     '        LEFT JOIN (SELECT person.person_id, person.person_name, '.
+                     '                          movie_role.movie_id '.
+                     '                   FROM movie_role '.
+                     '                   JOIN person ON movie_role.person_id = person.person_id '.
+                     '                  ) AS person ON (person.movie_id = Movie.movie_id) '.
+                     '        LEFT JOIN (SELECT keyword.keyword_id, keyword.keyword, '.
+                     '                          movie_keyword.movie_id '.
+                     '                   FROM movie_keyword '.
+                     '                   JOIN keyword ON movie_keyword.keyword_id = keyword.keyword_id '.
+                     '                  ) AS keyword ON (keyword.movie_id = Movie.movie_id) '.
+                     '        LEFT JOIN (SELECT movie_genre.movie_id, '.
+                     '                          ARRAY_AGG(genre.genre_id) AS movie_genre_ids, '.
+                     '                          ARRAY_AGG(genre.genre) AS movie_genres '.
+                     '                   FROM movie_genre '.
+                     '                   JOIN genre ON movie_genre.genre_id = genre.genre_id '.
+                     '                   GROUP BY movie_genre.movie_id '.
+                     '                  ) AS genre ON (genre.movie_id = Movie.movie_id) '.
+                     '        WHERE True '.
+                     $genreQuery.' '.
+                     $personQuery.' '.
+                     $keywordQuery.' '.
+                     $searchQuery.' '.
+                     '      ) AS summary '.
+                     $limitQuery;
+
+            if(is_array($results = $this->query($query))) {
+                $results = array_pop($results);
+            }
+
+            return $results;
+
+        }
+        //end search
+
+        public function summary($searchParams) {
+
+            if(!is_array($summary = $this->search('summary', $searchParams))) {
+                return false;
+            } else {
+                $summary = array_pop($summary);
+                $totalPages = ceil($summary['total_movies'] / $searchParams['limit']);
+
+                /*
+                $startOffset = (($searchParams['page'] - 1) * $searchParams['limit']) + 1;
+                $endOffset = ($startOffset - 1) + $searchParams['limit'];
+                */
+
+                return array_merge($summary,
+                                  array('totalMovies' => $summary['total_movies'],
+                                        'totalPages' => $totalPages,
+                                        'sd' => ($summary['total_movies'] -
+                                                 $summary['hd']),
+                                        'not_watched' => ($summary['total_movies'] -
+                                                          $summary['watched']),
+                                        'page' => $searchParams['page']));
+
+            }
+
+        }
+        //end summary
 
         /**
          * cleans results after pulling from the database
@@ -201,5 +346,6 @@
         //end personSearch
 
     }
+    //end Movie
 
 ?>

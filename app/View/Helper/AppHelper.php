@@ -33,12 +33,19 @@
                     $offset = 'offset6 ';
                 }
 
-                $checkboxes .= '<span class="span6 '.$offset.'" >'.
-                               '  <label class="checkbox inline nav_text">'.
-                               '    <input type="checkbox">'.
-                               $d[$dataMapper[$type]['tableName']][$dataMapper[$type]['field']].
-                               '  </label>'.
-                               '</span>';
+                $label = preg_replace('/[^a-z]/i', '',
+                                      strtolower($d[$dataMapper[$type]['tableName']]
+                                                   [$dataMapper[$type]['field']])).
+                         '_'.$type;
+
+                $checkboxes .=
+                     '<span class="span6 '.$offset.'" >'.
+                     '  <label class="checkbox inline nav_text">'.
+                     '    <input type="checkbox">'.
+                     $d[$dataMapper[$type]['tableName']][$dataMapper[$type]['field']].
+                     ($type == 'genre' ? '&nbsp;(<%= '.$label.' %>)' : '').
+                     '  </label>'.
+                     '</span>';
                 $count++;
             }
 

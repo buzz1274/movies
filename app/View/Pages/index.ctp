@@ -18,10 +18,27 @@
     <body>
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
+                <div id="auth" class="container-fluid pull-right">
+                    <span id="login_link" class="auth_link"
+                          onclick="app.authenticate('login');">
+                        Login
+                    </span>
+                    <span id="authenticated">
+                        Welcome Back&nbsp;<span id="authenticated_name"></span>,
+                        <span id="logout_link" class="auth_link"
+                              onclick="app.authenticate('logout');">
+                            Logout
+                        </span>
+                    </span>
+                </div>
                 <div class="container-fluid">
                     <a class="brand" href="/#">movieDB</a>
                 </div>
             </div>
+        </div>
+                <div id="opaque"></div>
+        <div class="container">
+            <div id="login_popup" class="offset4 span4 popup_info well"></div>
         </div>
         <div class="container-fluid">
             <div id="content" class="row-fluid">
@@ -36,6 +53,7 @@
             </div>
         </div>
 
+        <?php echo $this->element('tpl-login'); ?>
         <?php echo $this->element('tpl-movie-search'); ?>
         <?php echo $this->element('tpl-movie-paging'); ?>
         <?php echo $this->element('tpl-movie-list-header'); ?>
