@@ -104,7 +104,6 @@ window.MovieSearchView = Backbone.View.extend({
         var search = $('#search_input').val();
         UrlParams.reset();
         UrlParams.parse_search_form();
-        console.log(UrlParams.Params);
         app.navigate(UrlParams.query_string(), {'trigger':true});
     },
     icon_over:function() {
@@ -452,7 +451,18 @@ var UrlParams = {
             query_string.split('&').forEach(function(argument) {
                 if(argument) {
                     fragment = argument.split('=');
-                    UrlParams.Params[fragment[0]] = fragment[1];
+                    if(fragment[0] == 'gid') {
+                        UrlParams.Params.gid = "";
+                        fragment[1].split(',').forEach(function(gid) {
+                        if(UrlParams.Params.gid == "") {
+                            UrlParams.Params.gid += gid;
+                        } else {
+                            UrlParams.Params.gid += "," + gid;
+                        }
+                        });
+                    } else {
+                        UrlParams.Params[fragment[0]] = fragment[1];
+                    }
                     if(fragment[0] == 'p') {
                         page_in_params = true;
                     }
@@ -461,6 +471,7 @@ var UrlParams = {
             if(!page_in_params) {
                 UrlParams.Params.p = 1;
             }
+            console.log(UrlParams.Params);
         }
     },
     fill_form:function() {
@@ -470,13 +481,18 @@ var UrlParams = {
         if(UrlParams.Params.watched == 1 || UrlParams.Params.watched == 0) {
             $('#watched_'+UrlParams.Params.watched).attr('checked', 'checked');
         }
+        if(UrlParams.Params.gid) {
+            UrlParams.Params.gid.split(',').forEach(function(gid) {
+                $('input[name="genre[]"][value='+gid+']').attr("checked",true);
+            });
+        }
     },
     query_string:function() {
         var qs = '';
         _.each(UrlParams.DefaultParams, function(value, key) {
             if((UrlParams.Params[key] != UrlParams.DefaultParams[key]) &&
                 (key != 'asc' && key != 's')) {
-                qs += key+'='+UrlParams.Params[key]+"&";
+                qs += key+'='+UrlParams.Params[key].toString()+"&";
             }
         });
         if(!(UrlParams.Params['s'] == 'title' && UrlParams.Params['asc'])) {
@@ -490,8 +506,16 @@ var UrlParams = {
         return this.qs.replace(/&?p=[0-9]{1,}&?/gm, '');
     },
     parse_search_form:function() {
+        UrlParams.Params.gid = "";
         UrlParams.Params.search = $('#search_input').val();
         UrlParams.Params.watched = $('input:radio[name=watched]:checked').val();
+        $('input:checkbox[name=genre[]]:checked').each(function() {
+            if(UrlParams.Params.gid == "") {
+                UrlParams.Params.gid += $(this).val();
+            } else {
+                UrlParams.Params.gid += "," + $(this).val();
+            }
+        });
     },
     reset:function() {
         _.each(UrlParams.DefaultParams, function(value, key) {

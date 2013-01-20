@@ -33,13 +33,13 @@
                     $offset = 'offset6 ';
                 }
 
-                $label = $type.'_'.
-                         $d[$dataMapper[$type]['tableName']][$dataMapper[$type]['id']];
+                $value = $d[$dataMapper[$type]['tableName']][$dataMapper[$type]['id']];
+                $label = $type.'_'.$value;
 
                 $checkboxes .=
                      '<span class="span6 '.$offset.'" >'.
                      '  <label class="checkbox inline nav_text">'.
-                     '    <input type="checkbox">'.
+                     '    <input type="checkbox" name="'.$type.'[]" value="'.$value.'">'.
                      $d[$dataMapper[$type]['tableName']][$dataMapper[$type]['field']].
                      "&nbsp;(<%= ".$label." != 0 && ".$label." != null ? ".$label." : '-' %>)".
                      '  </label>'.

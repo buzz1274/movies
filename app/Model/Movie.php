@@ -189,7 +189,7 @@
          */
         private function _search($resultType) {
 
-            //error_log(json_encode($this->_search));
+            error_log(json_encode($this->_search));
 
             if($resultType == 'summary') {
                 $limitQuery = false;
@@ -255,8 +255,13 @@
             }
 
             if(isset($this->_search['genreID']) && $this->_search['genreID']) {
-                $genreQuery =
-                    "AND '".$searchParams['genreID']."' = ANY(genre.movie_genre_ids)";
+                $genreQuery = '';
+                foreach($this->_search['genreID'] as $genreID) {
+                    if((int)$genreID > 0) {
+                        $genreQuery .=
+                            "AND '".$genreID."' = ANY(genre.movie_genre_ids)";
+                    }
+                }
             } else {
                 $genreQuery = false;
             }
@@ -349,6 +354,8 @@
          */
         private function _parseSearchParameters($searchParams) {
 
+            error_log(json_encode($searchParams));
+
             if(isset($searchParams['p']) &&
                (int)$searchParams['p'] > 0) {
                 $this->_search['page'] = $searchParams['p'];
@@ -359,9 +366,14 @@
                 $this->_search['search'] = $searchParams['search'];
             }
 
-            if(isset($searchParams['gid']) &&
-               (int)$searchParams['gid'] > 0) {
-                $this->_search['genreID'] = $searchParams['gid'];
+            if(isset($searchParams['gid'])) {
+                $searchParams['gid'] = preg_replace('/[^0-9,]/', '',
+                                                    $searchParams['gid']);
+                error_log("here");
+                if($searchParams['gid'] &&
+                   is_array($searchParams['gid'] = explode(',', $searchParams['gid']))) {
+                    $this->_search['genreID'] = $searchParams['gid'];
+                }
             }
 
             if(isset($searchParams['pid']) &&
