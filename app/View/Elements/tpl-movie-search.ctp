@@ -2,7 +2,8 @@
     <form id="search" class="well" onsubmit="return false;">
         <fieldset>
             <legend>
-                Search Movies&nbsp;(<%= totalMovies %>)
+                Search Movies&nbsp;
+                (<%= totalMovies != 0 && totalMovies != null ? totalMovies : '-' %>)
                 <i id="download" class="icon-download-alt"></i>
             </legend>
             <ul class="nav nav-list">
@@ -26,21 +27,21 @@
                         <label class="radiobutton inline">
                             <input type="radio" value="hd"
                                    name="definition">
-                            HD&nbsp;(<%= hd %>)
+                            HD&nbsp;(<%= hd != 0 && hd != null ? hd : '-' %>)
                         </label>
                     </span>
                     <span class="offset4 span4">
                         <label class="radiobutton inline">
                             <input type="radio" value="sd"
                                    name="definition">
-                            SD&nbsp;(<%= sd %>)
+                            SD&nbsp;(<%= sd != 0 && sd != null ? sd : '-' %>)
                         </label>
                     </span>
                     <span class="offset8 span4">
                         <label class="radiobutton inline">
                             <input type="radio"checked="checked"
                                    name="definition">
-                            All&nbsp;(<%= totalMovies %>)
+                            All&nbsp;(<%= totalMovies != 0 && totalMovies != null ? totalMovies : '-' %>)
                         </label>
                     </span>
                 </li>
@@ -52,21 +53,21 @@
                         <label class="radiobutton inline">
                             <input type="radio" value="1"
                                    id="watched_1" name="watched">
-                            Yes&nbsp;(<%= watched %>)
+                            Yes&nbsp;(<%= watched != 0 && watched != null ? watched : '-' %>)
                         </label>
                     </span>
                     <span class="offset4 span4">
                         <label class="radiobutton inline">
                             <input type="radio" value="0"
                                    id="watched_0" name="watched">
-                            No&nbsp;(<%= not_watched %>)
+                            No&nbsp;(<%= not_watched != 0 && not_watched != null ? not_watched : '-' %>)
                         </label>
                     </span>
                     <span class="offset8 span4">
                         <label class="radiobutton inline">
                             <input type="radio"checked="checked"
                                    name="watched" value="all">
-                            All&nbsp;(<%= totalMovies %>)
+                            All&nbsp;(<%= totalMovies != 0 && totalMovies != null ? totalMovies : '-' %>)
                         </label>
                     </span>
                 </li>
@@ -79,7 +80,7 @@
                     IMDB Rating
                     <p class="slider_label">
                         &nbsp;<em id="imdb_rating_label"></em>
-                        (<%= totalMovies %>)
+                        (<%= totalMovies != 0 && totalMovies != null ? totalMovies : '-' %>)
                     </p>
                 <li class="span12">
                     <span class="span12" id="imdb_rating">
@@ -90,7 +91,7 @@
                     Runtime
                     <p class="slider_label">
                         &nbsp;<em id="runtime_label"></em>
-                        (<%= totalMovies %>)
+                        (<%= totalMovies != 0 && totalMovies != null ? totalMovies : '-' %>)
                     </p>
                 </li>
                 <li class="span12">
@@ -102,7 +103,7 @@
                     Year of Release
                     <p class="slider_label">
                         <em id="release_year_label"></em>
-                        (<%= totalMovies %>)
+                        (<%= totalMovies != 0 && totalMovies != null ? totalMovies : '-' %>)
                     </p>
                 </li>
                 <li class="span12">

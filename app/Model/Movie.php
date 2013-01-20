@@ -70,98 +70,248 @@
                       'deleteQuery'           => '',
                       'insertQuery'           => ''));
 
+        /*@var array - default search parameters*/
+        private $_search = array('page' => 1,
+                                'limit' => 20,
+                                'genreID' => false,
+                                'personID' => false,
+                                'keywordID' => false,
+                                'search' => '',
+                                'sort' => 'title',
+                                'sortDirection' => 'asc',
+                                'genreID' => false);
+
         /**
-         * retrieve movies that match the supplied search criteria
-         * @author David
+         * @author David <david@sulaco.co.uk>
+         * @param array
+         * @param array $searchParams
+         * @return mixed
          */
-        public function search($resultType, $searchParams) {
+        public function search($searchType, $searchParams) {
 
-            if($resultType == 'summary') {
-                $limitQuery = false;
-                $selectQuery =
-                    'SELECT COUNT(summary.movie_id) AS total_movies, '.
-                    '       SUM(CASE '.
-                    '             WHEN summary.watched = True THEN 1 '.
-                    '             ELSE 0 '.
-                    '           END) AS watched, '.
-                    '       SUM(CASE '.
-                    '             WHEN summary.hd = True THEN 1 '.
-                    '             ELSE 0 '.
-                    '           END) AS hd, '.
-                    '       MIN(summary.imdb_rating) AS min_imdb_rating, '.
-                    '       MAX(summary.imdb_rating) AS max_imdb_rating, '.
-                    '       MIN(summary.runtime) AS min_runtime, '.
-                    '       MAX(summary.runtime) AS max_runtime, '.
-                    '       MIN(summary.release_year) AS min_release_year, '.
-                    '       MAX(summary.release_year) AS max_release_year';
+            $this->_parseSearchParameters($searchParams);
+            $results = array();
 
-                if(is_array($Genres = $this->Genre->Find('all', array('recursive' => 0)))) {
-                    foreach($Genres as $Genre) {
-                        $label = preg_replace('/[^a-z]/i', '',
-                                              strtolower($Genre['Genre']['genre']));
-                        $selectQuery .=
-                                ', SUM(CASE '.
-                                "        WHEN '".$Genre['Genre']['genre']."' = ".
-                                "               ANY(summary.movie_genres) THEN 1 ".
-                                '        ELSE 0 '.
-                                '      END) AS "'.$label.'_genre" ';
+            if($searchType == 'search' &&
+               is_array($results = $this->_search($searchType))) {
+
+                $results = $this->_afterFind($results);
+
+            } elseif($searchType == 'summary' &&
+                     is_array($results = $this->_search($searchType))) {
+
+                $results = array_pop($results);
+                $totalPages = ceil($results['total_movies'] /
+                                   $this->_search['limit']);
+
+                $results = array_merge(
+                              $results,
+                              array('totalMovies' => $results['total_movies'],
+                                    'totalPages' => $totalPages,
+                                     'sd' => ($results['total_movies'] -
+                                              $results['hd']),
+                                     'not_watched' => ($results['total_movies'] -
+                                                       $results['watched']),
+                                     'page' => $this->_search['page']));
+
+            }
+
+            return is_array($results) ? $results : array();
+
+        }
+        //end search
+
+        public function afterFind($results, $primary = false) {
+
+            //error_log(json_encode($results));
+/*
+            if(isset($clean[$key]['Movie']['path'])) {
+                $clean[$key]['Movie']['path'] =
+                    'Y:\\'.str_replace('/', "\\", $clean[$key]['Movie']);
+            }
+*/
+            return $results;
+
+        }
+        //end afterFind
+
+        /**
+         * cleans and formats result set after pulling from the database
+         * @author David <david@sulaco.co.uk>
+         * @param array $results
+         * @return array $results
+         */
+        private function _afterFind($results) {
+
+            foreach ($results as $key => $val) {
+
+                $clean[$key]['Movie'] = array_pop($val);
+
+                if(isset($clean[$key]['Movie']['date_added'])) {
+                    $clean[$key]['Movie']['date_added'] =
+                        date('M y', strtotime($clean[$key]['Movie']['date_added']));
+                }
+
+                if(isset($clean[$key]['Movie']['runtime'])) {
+                    $hours = floor($clean[$key]['Movie']['runtime'] / 60);
+                    $minutes = $clean[$key]['Movie']['runtime'] % 60;
+                    $clean[$key]['Movie']['runtime'] = '';
+
+                    if($hours > 1) {
+                        $clean[$key]['Movie']['runtime'] = $hours.'hrs';
+                    } elseif($hours == 1) {
+                        $clean[$key]['Movie']['runtime'] = $hours.'hr';
+                    }
+
+                    if($minutes) {
+                        $clean[$key]['Movie']['runtime'] .= ' '.$minutes.'mins';
                     }
 
                 }
 
-            } else {
-                $selectQuery =
-                    'SELECT * ';
-                $limitQuery = false;
+                if(isset($clean[$key]['Movie']['filesize'])) {
+                    $clean[$key]['Movie']['filesize'] =
+                        number_format($clean[$key]['Movie']['filesize'] /
+                                      (1000 * 1000 * 1000), 2);
+                }
+
             }
 
-            if(isset($searchParams['personID']) && $searchParams['personID']) {
+            return $clean;
+
+        }
+        //end _afterFind
+
+        /**
+         * retrieve movies that match the supplied search criteria
+         * @author David <david@sulaco.co.uk>
+         * @param $resultType - summary|search
+         */
+        private function _search($resultType) {
+
+            //error_log(json_encode($this->_search));
+
+            if($resultType == 'summary') {
+                $limitQuery = false;
+                $orderQuery = false;
+
+                $selectQuery =
+                    'SELECT COUNT(results.movie_id) AS total_movies, '.
+                    '       SUM(CASE '.
+                    '             WHEN results.watched = True THEN 1 '.
+                    '             ELSE 0 '.
+                    '           END) AS watched, '.
+                    '       SUM(CASE '.
+                    '             WHEN results.hd = True THEN 1 '.
+                    '             ELSE 0 '.
+                    '           END) AS hd, '.
+                    '       MIN(results.imdb_rating) AS min_imdb_rating, '.
+                    '       MAX(results.imdb_rating) AS max_imdb_rating, '.
+                    '       MIN(results.runtime) AS min_runtime, '.
+                    '       MAX(results.runtime) AS max_runtime, '.
+                    '       MIN(results.release_year) AS min_release_year, '.
+                    '       MAX(results.release_year) AS max_release_year';
+
+                $genres = $this->Genre->Find('all', array('recursive' => 0));
+                if(is_array($genres)) {
+                    foreach($genres as $genre) {
+                        $label = 'genre_'.$genre['Genre']['genre_id'];
+                        $selectQuery .=
+                                ', SUM(CASE '.
+                                "        WHEN '".$genre['Genre']['genre_id']."' = ".
+                                "               ANY(results.movie_genre_ids) THEN 1 ".
+                                '        ELSE 0 '.
+                                '      END) AS "'.$label.'" ';
+                    }
+                }
+
+                $certificates = $this->Certificate->Find('all', array('recursive' => 0));
+                if(is_array($certificates)) {
+                    foreach($certificates as $certificate) {
+                        $label = 'certificate_'.$certificate['Certificate']['certificate_id'];
+                        $selectQuery .=
+                                ', SUM(CASE '.
+                                "        WHEN '".$certificate['Certificate']['certificate_id']."' = ".
+                                "               results.certificate_id THEN 1 ".
+                                '        ELSE 0 '.
+                                '      END) AS "'.$label.'" ';
+                    }
+                }
+
+            } else {
+                $selectQuery = 'SELECT * ';
+                $limitQuery = 'LIMIT 20 OFFSET '.
+                              (($this->_search['page'] - 1) *
+                                $this->_search['limit']);
+                $orderQuery = 'ORDER BY '.$this->_search['sort'].' '.
+                                          $this->_search['sortDirection'];
+            }
+
+            if(isset($this->_search['personID']) && $this->_search['personID']) {
                 $personQuery =
-                    "AND person.person_id = '".$searchParams['personID']."'";
+                    "AND person.person_id = '".$this->_search['personID']."'";
             } else {
                 $personQuery = false;
             }
 
-            if(isset($searchParams['genreID']) && $searchParams['genreID']) {
+            if(isset($this->_search['genreID']) && $this->_search['genreID']) {
                 $genreQuery =
                     "AND '".$searchParams['genreID']."' = ANY(genre.movie_genre_ids)";
             } else {
                 $genreQuery = false;
             }
 
-            if(isset($searchParams['keywordID']) && $searchParams['keywordID']) {
+            if(isset($this->_search['keywordID']) && $this->_search['keywordID']) {
                 $keywordQuery =
-                    "AND keyword.keyword_id = '".$searchParams['keywordID']."'";
+                    "AND keyword.keyword_id = '".$this->_search['keywordID']."'";
             } else {
                 $keywordQuery = false;
             }
 
-            if(isset($searchParams['search']) && $searchParams['search']) {
+            if(isset($this->_search['search']) && $this->_search['search']) {
                 $searchQuery =
-                    "AND ((Movie.title ILIKE '%".$searchParams['search']."%') OR ".
-                    "     (person.person_name ILIKE '%".$searchParams['search']."%') OR ".
-                    "     (keyword.keyword ILIKE '%".$searchParams['search']."%'))";
+                    "AND ((Movie.title ILIKE '%".$this->_search['search']."%') OR ".
+                    "     (Movie.synopsis ILIKE '%".$this->_search['search']."%') OR ".
+                    "     (person.person_name ILIKE '%".$this->_search['search']."%') OR ".
+                    "     (keyword.keyword ILIKE '%".$this->_search['search']."%'))";
 
             } else {
                 $searchQuery = false;
             }
 
+            if(isset($this->_search['watched']) &&
+               ($this->_search['watched'] === true ||
+                $this->_search['watched'] === false)) {
+                $watchedQuery =
+                    "AND movie.watched = '".(int)$this->_search['watched']."'";
+            } else {
+                $watchedQuery = false;
+            }
+
             $query = $selectQuery.' '.
                      'FROM   (SELECT    DISTINCT Movie.movie_id, Movie.watched, '.
+                     '                  Movie.imdb_id, Movie.title, '.
+                     '                  certificate.Certificate, '.
                      '                  Movie.hd, genre.movie_genres, '.
+                     '                  genre.movie_genre_ids, Movie.date_added, '.
                      '                  Movie.imdb_rating, Movie.runtime, '.
-                     '                  Movie.release_year '.
+                     '                  Movie.release_year, Movie.certificate_id, '.
+                     '                  certificate.order '.
                      '        FROM      public.movie AS Movie '.
+                     '        LEFT JOIN certificate ON '.
+                     '                  (Movie.certificate_id = certificate.certificate_id) '.
+                     ($personQuery || $searchQuery ?
                      '        LEFT JOIN (SELECT person.person_id, person.person_name, '.
                      '                          movie_role.movie_id '.
                      '                   FROM movie_role '.
                      '                   JOIN person ON movie_role.person_id = person.person_id '.
-                     '                  ) AS person ON (person.movie_id = Movie.movie_id) '.
+                     '                  ) AS person ON (person.movie_id = Movie.movie_id) ' : false).' '.
+                     ($keywordQuery || $searchQuery ?
                      '        LEFT JOIN (SELECT keyword.keyword_id, keyword.keyword, '.
                      '                          movie_keyword.movie_id '.
                      '                   FROM movie_keyword '.
                      '                   JOIN keyword ON movie_keyword.keyword_id = keyword.keyword_id '.
-                     '                  ) AS keyword ON (keyword.movie_id = Movie.movie_id) '.
+                     '                  ) AS keyword ON (keyword.movie_id = Movie.movie_id) ' : false).' '.
                      '        LEFT JOIN (SELECT movie_genre.movie_id, '.
                      '                          ARRAY_AGG(genre.genre_id) AS movie_genre_ids, '.
                      '                          ARRAY_AGG(genre.genre) AS movie_genres '.
@@ -174,176 +324,89 @@
                      $personQuery.' '.
                      $keywordQuery.' '.
                      $searchQuery.' '.
-                     '      ) AS summary '.
-                     $limitQuery;
+                     $watchedQuery.' '.
+                     $orderQuery.' '.
+                     $limitQuery.' '.
+                     '      ) AS results';
 
-            if(is_array($results = $this->query($query))) {
+            //error_log($query);
+
+            if(is_array($results = $this->query($query)) && $resultType == 'summary') {
                 $results = array_pop($results);
             }
 
             return $results;
 
         }
-        //end search
-
-        public function summary($searchParams) {
-
-            if(!is_array($summary = $this->search('summary', $searchParams))) {
-                return false;
-            } else {
-                $summary = array_pop($summary);
-                $totalPages = ceil($summary['total_movies'] / $searchParams['limit']);
-
-                /*
-                $startOffset = (($searchParams['page'] - 1) * $searchParams['limit']) + 1;
-                $endOffset = ($startOffset - 1) + $searchParams['limit'];
-                */
-
-                return array_merge($summary,
-                                  array('totalMovies' => $summary['total_movies'],
-                                        'totalPages' => $totalPages,
-                                        'sd' => ($summary['total_movies'] -
-                                                 $summary['hd']),
-                                        'not_watched' => ($summary['total_movies'] -
-                                                          $summary['watched']),
-                                        'page' => $searchParams['page']));
-
-            }
-
-        }
-        //end summary
+        //end _search
 
         /**
-         * cleans results after pulling from the database
-         * @author David
+         * parses the supplied search parameters and populates
+         * $this->_search array
+         * @author David <david@sulaco.co.uk>
+         * @param $searchParams - array - see $this->search for permitted
+         *                                key/values.
          */
-        public function afterFind($results, $primary = false) {
+        private function _parseSearchParameters($searchParams) {
 
-            foreach ($results as $key => $val) {
+            if(isset($searchParams['p']) &&
+               (int)$searchParams['p'] > 0) {
+                $this->_search['page'] = $searchParams['p'];
+            }
 
-                if(isset($val['Movie']['date_added'])) {
+            if(isset($searchParams['search']) &&
+               !empty($searchParams['search'])) {
+                $this->_search['search'] = $searchParams['search'];
+            }
 
-                    $results[$key]['Movie']['date_added'] =
-                        date('M y', strtotime($val['Movie']['date_added']));
+            if(isset($searchParams['gid']) &&
+               (int)$searchParams['gid'] > 0) {
+                $this->_search['genreID'] = $searchParams['gid'];
+            }
 
+            if(isset($searchParams['pid']) &&
+               (int)$searchParams['pid'] > 0) {
+                $this->_search['personID'] = $searchParams['pid'];
+            }
+
+            if(isset($searchParams['kid']) &&
+               (int)$searchParams['kid'] > 0) {
+                $this->_search['keywordID'] = $searchParams['kid'];
+            }
+
+            if(isset($searchParams['s']) &&
+               in_array($searchParams['s'],
+                        array('title', 'release_year',
+                              'imdb_rating', 'hd',
+                              'runtime', 'filesize',
+                              'date_added', 'cert'))) {
+
+                $this->_search['sort'] = $searchParams['s'];
+
+                if($this->_search['sort'] == 'cert') {
+                    $this->_search['sort'] = 'certificate.order';
                 }
 
-                if(isset($val['Movie']['runtime'])) {
+                if(isset($searchParams['asc']) &&
+                   ($searchParams['asc'] == 1 ||
+                    $searchParams['asc'] == 0)) {
 
-                    $hours = floor($val['Movie']['runtime'] / 60);
-                    $minutes = $val['Movie']['runtime'] % 60;
-                    $results[$key]['Movie']['runtime'] = '';
-
-                    if($hours > 1) {
-
-                        $results[$key]['Movie']['runtime'] = $hours.'hrs';
-
-                    } elseif($hours == 1) {
-
-                        $results[$key]['Movie']['runtime'] = $hours.'hr';
-
-                    }
-
-                    if($minutes) {
-
-                        $results[$key]['Movie']['runtime'] .=
-                            ' '.$minutes.'mins';
-
+                    if($searchParams['asc'] == 1) {
+                        $this->_search['sortDirection'] = 'asc';
+                    } else {
+                        $this->_search['sortDirection'] = 'desc';
                     }
 
                 }
 
-                if(isset($val['Movie']['filesize'])) {
-
-                    $results[$key]['Movie']['filesize'] =
-                        number_format($val['Movie']['filesize'] /
-                                      (1000 * 1000 * 1000), 2);
-
-                }
-
-                if(isset($val['Movie']['path'])) {
-                    $results[$key]['Movie']['path'] =
-                        'Y:\\'.str_replace('/', "\\", $val['Movie']['path']);
-                }
-
             }
 
-            return $results;
-
-        }
-        //end afterFind
-
-        /**
-         * constructs a join that can be used to search for genreIDs
-         * @author David
-         * @param integer $genreID - id of the genre to search for
-         */
-        public function genreSearch($genreID) {
-
-            return array('table' => '(SELECT genre.genre_id, genre.genre, '.
-                                    '        movie_genre.movie_id '.
-                                    ' FROM movie_genre '.
-                                    ' JOIN genre ON movie_genre.genre_id = '.
-                                    '                       genre.genre_id)',
-                         'alias' => 'genre',
-                         'conditions' => array(
-                                    'genre.movie_id = Movie.movie_id',
-                                    'genre.genre_id = "'.$genreID.'"'));
-
-        }
-        //end genreSearch
-
-        /**
-         * constructs a join that can be used to search for personIDs
-         * @author David
-         * @param integer $personID - id of the genre to search for
-         */
-        public function personSearch($personID) {
-
-            $join = array('table' => '(SELECT person.person_id, '.
-                          '                   person.person_name, '.
-                          '                   movie_role.movie_id '.
-                          '           FROM movie_role '.
-                          '           JOIN person ON movie_role.person_id = '.
-                          '                          person.person_id)',
-                         'alias' => 'person',
-                         'conditions' => array(
-                                           'person.movie_id = Movie.movie_id'));
-
-            if($personID) {
-                $join['conditions'][] = 'person.person_id = "'.$personID.'"';
+            if(isset($searchParams['watched']) && $searchParams['watched'] != 'all') {
+                $this->_search['watched'] = (boolean)$searchParams['watched'];
             }
 
-            return $join;
-
         }
-        //end personSearch
-
-        /**
-         * constructs a join that can be used to search for personIDs
-         * @author David
-         * @param integer $keywordID - id of the keyword to search for
-         */
-        public function keywordSearch($keywordID) {
-
-            $join = array('table' => '(SELECT keyword.keyword_id, '.
-                          '                   keyword.keyword, '.
-                          '                   movie_keyword.movie_id '.
-                          '           FROM movie_keyword '.
-                          '           JOIN keyword ON movie_keyword.keyword_id = '.
-                          '                           keyword.keyword_id)',
-                         'alias' => 'keyword',
-                         'conditions' => array(
-                                           'keyword.movie_id = Movie.movie_id'));
-
-            if($keywordID) {
-                $join['conditions'][] = 'keyword.keyword_id = "'.$keywordID.'"';
-            }
-
-            return $join;
-
-        }
-        //end personSearch
+        //end _parseSearchParameters
 
     }
     //end Movie

@@ -69,15 +69,21 @@ window.MovieSearchView = Backbone.View.extend({
         'click #download': 'download',
     },
     render:function () {
-        //assign correct values ot URLParams.SliderValues
         summary = this.model.toJSON();
-        UrlParams.SliderValues['imdb_rating'].current_min = summary.min_imdb_rating;
-        UrlParams.SliderValues['imdb_rating'].current_max = summary.max_imdb_rating;
-        UrlParams.SliderValues['release_year'].current_min = summary.min_release_year;
-        UrlParams.SliderValues['release_year'].current_max = summary.max_release_year;
-        UrlParams.SliderValues['runtime'].current_min = summary.min_runtime;
-        UrlParams.SliderValues['runtime'].current_max = summary.max_runtime;
-
+        if(summary.totalMovies != 0 && summary.totalMovies != null) {
+            UrlParams.SliderValues['imdb_rating'].current_min =
+                Math.floor(summary.min_imdb_rating);
+            UrlParams.SliderValues['imdb_rating'].current_max =
+                Math.ceil(summary.max_imdb_rating);
+            UrlParams.SliderValues['release_year'].current_min =
+                summary.min_release_year;
+            UrlParams.SliderValues['release_year'].current_max =
+                summary.max_release_year;
+            UrlParams.SliderValues['runtime'].current_min =
+                summary.min_runtime;
+            UrlParams.SliderValues['runtime'].current_max =
+                summary.max_runtime;
+        }
         $(this.$el).empty().append(this.template(summary));
 
         return this;
@@ -228,13 +234,14 @@ window.MovieListView = Backbone.View.extend({
     },
     render:function (eventName) {
         $('#movies_table > tbody').html('');
-         if(this.model.models.length) {
+        if(this.model.models.length) {
             _.each(this.model.models, function (movie) {
+                console.log(movie.Movie);
                 $(this.el).append(new MovieListItemView({model:movie}).render().el);
             }, this);
-         } else {
-             $(this.el).append(_.template($('#tpl-movie-list-no-results').html()));
-         }
+        } else {
+            $(this.el).append(_.template($('#tpl-movie-list-no-results').html()));
+        }
         return this;
     },
 });
@@ -332,6 +339,11 @@ var AppRouter = Backbone.Router.extend({
             async:false,
             data:UrlParams.Params,
             success: function() {
+                $('#movies_table').append(movieListView.render().el);
+                $('#movies_table').css('display', 'block');
+            },
+            error: function() {
+                //fixme:why is error called when no results returned
                 $('#movies_table').append(movieListView.render().el);
                 $('#movies_table').css('display', 'block');
             }

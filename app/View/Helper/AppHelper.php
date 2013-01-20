@@ -4,8 +4,8 @@
     class AppHelper extends Helper {
 
         /**
-         * formats checkboxes in the advanced search box
-         * @author David
+         * formats checkboxes for the advanced search box
+         * @author David <david@sulaco.co.uk>
          * @param array $data
          * @param string $type - type of data (genre|certificate)
          * @return string
@@ -33,20 +33,19 @@
                     $offset = 'offset6 ';
                 }
 
-                $label = preg_replace('/[^a-z]/i', '',
-                                      strtolower($d[$dataMapper[$type]['tableName']]
-                                                   [$dataMapper[$type]['field']])).
-                         '_'.$type;
+                $label = $type.'_'.
+                         $d[$dataMapper[$type]['tableName']][$dataMapper[$type]['id']];
 
                 $checkboxes .=
                      '<span class="span6 '.$offset.'" >'.
                      '  <label class="checkbox inline nav_text">'.
                      '    <input type="checkbox">'.
                      $d[$dataMapper[$type]['tableName']][$dataMapper[$type]['field']].
-                     ($type == 'genre' ? '&nbsp;(<%= '.$label.' %>)' : '').
+                     "&nbsp;(<%= ".$label." != 0 && ".$label." != null ? ".$label." : '-' %>)".
                      '  </label>'.
                      '</span>';
                 $count++;
+
             }
 
             return $checkboxes;

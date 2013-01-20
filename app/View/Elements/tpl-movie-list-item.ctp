@@ -9,9 +9,9 @@
     <td class='centre'><%= Movie.imdb_rating %></td>
     <td><%= Movie.runtime %></td>
     <td class='centre'>
-        <% if(Certificate.certificate) { %>
+        <% if(Movie.certificate) { %>
             <img class="centre"
-                 src='/assets/img/<%= Certificate.certificate %>.png' />
+                 src='/assets/img/<%= Movie.certificate %>.png' />
         <% } else { %>
             <div class="centre">-</div>
         <% } %>
