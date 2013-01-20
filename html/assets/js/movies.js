@@ -34,7 +34,6 @@ window.LoginView = Backbone.View.extend({
         UrlParams.authenticated = false;
     },
     login:function() {
-        console.log("LOGIN");
         $.ajax({
             url:'/login',
             type:'POST',
@@ -192,7 +191,6 @@ window.MoviePagingView = Backbone.View.extend({
         return this;
     },
     paging:function(ev) {
-        console.log(Summary);
         var paging_method = $(ev.currentTarget).attr('data_link_action');
         if(paging_method == 'first') {
             UrlParams.Params.p = 1;
@@ -235,7 +233,6 @@ window.MovieListView = Backbone.View.extend({
         $('#movies_table > tbody').html('');
         if(this.model.models.length) {
             _.each(this.model.models, function (movie) {
-                console.log(movie.Movie);
                 $(this.el).append(new MovieListItemView({model:movie}).render().el);
             }, this);
         } else {
@@ -471,7 +468,6 @@ var UrlParams = {
             if(!page_in_params) {
                 UrlParams.Params.p = 1;
             }
-            console.log(UrlParams.Params);
         }
     },
     fill_form:function() {
