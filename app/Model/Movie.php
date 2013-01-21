@@ -72,14 +72,15 @@
 
         /*@var array - default search parameters*/
         private $_search = array('page' => 1,
-                                'limit' => 20,
-                                'genreID' => false,
-                                'personID' => false,
-                                'keywordID' => false,
-                                'search' => '',
-                                'sort' => 'title',
-                                'sortDirection' => 'asc',
-                                'genreID' => false);
+                                 'limit' => 20,
+                                 'genreID' => false,
+                                 'personID' => false,
+                                 'keywordID' => false,
+                                 'search' => '',
+                                 'sort' => 'title',
+                                 'sortDirection' => 'asc',
+                                 'hd' => false,
+                                 'genreID' => false);
 
         /**
          * @author David <david@sulaco.co.uk>
@@ -284,9 +285,16 @@
                 $searchQuery = false;
             }
 
+            if(isset($this->_search['hd']) &&
+               $this->_search['hd'] !== false) {
+                $HDQuery =
+                    "AND movie.hd = '".(int)$this->_search['hd']."'";
+            } else {
+                $HDQuery = false;
+            }
+
             if(isset($this->_search['watched']) &&
-               ($this->_search['watched'] === true ||
-                $this->_search['watched'] === false)) {
+               $this->_search['watched'] !== false) {
                 $watchedQuery =
                     "AND movie.watched = '".(int)$this->_search['watched']."'";
             } else {
@@ -330,6 +338,7 @@
                      $keywordQuery.' '.
                      $searchQuery.' '.
                      $watchedQuery.' '.
+                     $HDQuery.' '.
                      $orderQuery.' '.
                      $limitQuery.' '.
                      '      ) AS results';
@@ -354,8 +363,6 @@
          */
         private function _parseSearchParameters($searchParams) {
 
-            error_log(json_encode($searchParams));
-
             if(isset($searchParams['p']) &&
                (int)$searchParams['p'] > 0) {
                 $this->_search['page'] = $searchParams['p'];
@@ -369,7 +376,6 @@
             if(isset($searchParams['gid'])) {
                 $searchParams['gid'] = preg_replace('/[^0-9,]/', '',
                                                     $searchParams['gid']);
-                error_log("here");
                 if($searchParams['gid'] &&
                    is_array($searchParams['gid'] = explode(',', $searchParams['gid']))) {
                     $this->_search['genreID'] = $searchParams['gid'];
@@ -413,12 +419,32 @@
 
             }
 
-            if(isset($searchParams['watched']) && $searchParams['watched'] != 'all') {
-                $this->_search['watched'] = (boolean)$searchParams['watched'];
+            foreach(array('hd', 'watched') as $key) {
+                if(isset($searchParams[$key]) &&
+                   $searchParams[$key] != 'all' &&
+                   ((int)$searchParams[$key] === 0 ||
+                    (int)$searchParams[$key] === 1)) {
+                        error_log("here");
+                    $this->_search[$key] = $searchParams[$key];
+                }
             }
+
+            $this->_cleanParameters();
 
         }
         //end _parseSearchParameters
+
+        /**
+         * cleans search parameters prior to use in query
+         * $this->_search array
+         * @author David <david@sulaco.co.uk>
+         */
+        private function _cleanParameters() {
+            //fo
+            //Sanitize::escape($string, $connection)
+
+        }
+        //end _cleanParameters
 
     }
     //end Movie

@@ -25,22 +25,20 @@
                 <li class="span12">
                     <span class=" offset0 span4">
                         <label class="radiobutton inline">
-                            <input type="radio" value="hd"
-                                   name="definition">
+                            <input type="radio" value="1" id="hd_1" name="hd">
                             HD&nbsp;(<%= hd != 0 && hd != null ? hd : '-' %>)
                         </label>
                     </span>
                     <span class="offset4 span4">
                         <label class="radiobutton inline">
-                            <input type="radio" value="sd"
-                                   name="definition">
+                            <input type="radio" value="0" id="hd_0" name="hd">
                             SD&nbsp;(<%= sd != 0 && sd != null ? sd : '-' %>)
                         </label>
                     </span>
                     <span class="offset8 span4">
                         <label class="radiobutton inline">
                             <input type="radio"checked="checked"
-                                   name="definition">
+                                   name="hd" value="all">
                             All&nbsp;(<%= totalMovies != 0 && totalMovies != null ? totalMovies : '-' %>)
                         </label>
                     </span>

@@ -377,6 +377,7 @@ var UrlParams = {
         'pid':null,
         'gid':null,
         'kid':null,
+        'hd':null,
         'search': null,
         'imdb_rating':null,
         'watched':null,
@@ -388,6 +389,7 @@ var UrlParams = {
         'gid':0,
         'pid':0,
         'kid':0,
+        'hd':'all',
         'watched':'all',
         'search':'',
         'imdb_rating':'',
@@ -477,6 +479,9 @@ var UrlParams = {
         if(UrlParams.Params.watched == 1 || UrlParams.Params.watched == 0) {
             $('#watched_'+UrlParams.Params.watched).attr('checked', 'checked');
         }
+        if(UrlParams.Params.hd == 1 || UrlParams.Params.hd == 0) {
+            $('#hd_'+UrlParams.Params.hd).attr('checked', 'checked');
+        }
         if(UrlParams.Params.gid) {
             UrlParams.Params.gid.split(',').forEach(function(gid) {
                 $('input[name="genre[]"][value='+gid+']').attr("checked",true);
@@ -505,6 +510,7 @@ var UrlParams = {
         UrlParams.Params.gid = "";
         UrlParams.Params.search = $('#search_input').val();
         UrlParams.Params.watched = $('input:radio[name=watched]:checked').val();
+        UrlParams.Params.hd = $('input:radio[name=hd]:checked').val();
         $('input:checkbox[name=genre[]]:checked').each(function() {
             if(UrlParams.Params.gid == "") {
                 UrlParams.Params.gid += $(this).val();
