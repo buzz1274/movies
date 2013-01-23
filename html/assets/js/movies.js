@@ -378,6 +378,7 @@ var UrlParams = {
         'gid':null,
         'kid':null,
         'hd':null,
+        'cid':null,
         'search': null,
         'imdb_rating':null,
         'watched':null,
@@ -389,6 +390,7 @@ var UrlParams = {
         'gid':0,
         'pid':0,
         'kid':0,
+        'cid':0,
         'hd':'all',
         'watched':'all',
         'search':'',
@@ -450,13 +452,13 @@ var UrlParams = {
             query_string.split('&').forEach(function(argument) {
                 if(argument) {
                     fragment = argument.split('=');
-                    if(fragment[0] == 'gid') {
-                        UrlParams.Params.gid = "";
-                        fragment[1].split(',').forEach(function(gid) {
-                        if(UrlParams.Params.gid == "") {
-                            UrlParams.Params.gid += gid;
+                    if(fragment[0] == 'gid' || fragment[0] == 'cid') {
+                        UrlParams.Params[fragment[0]] = "";
+                        fragment[1].split(',').forEach(function(id) {
+                        if(UrlParams.Params[fragment[0]] == "") {
+                            UrlParams.Params[fragment[0]] += id;
                         } else {
-                            UrlParams.Params.gid += "," + gid;
+                            UrlParams.Params[fragment[0]] += "," + id;
                         }
                         });
                     } else {
@@ -487,6 +489,11 @@ var UrlParams = {
                 $('input[name="genre[]"][value='+gid+']').attr("checked",true);
             });
         }
+        if(UrlParams.Params.cid) {
+            UrlParams.Params.cid.split(',').forEach(function(cid) {
+                $('input[name="certificate[]"][value='+cid+']').attr("checked",true);
+            });
+        }
     },
     query_string:function() {
         var qs = '';
@@ -508,14 +515,22 @@ var UrlParams = {
     },
     parse_search_form:function() {
         UrlParams.Params.gid = "";
+        UrlParams.Params.cid = "";
         UrlParams.Params.search = $('#search_input').val();
         UrlParams.Params.watched = $('input:radio[name=watched]:checked').val();
         UrlParams.Params.hd = $('input:radio[name=hd]:checked').val();
-        $('input:checkbox[name=genre[]]:checked').each(function() {
+        $('input:checkbox[name="genre[]"]:checked').each(function() {
             if(UrlParams.Params.gid == "") {
                 UrlParams.Params.gid += $(this).val();
             } else {
                 UrlParams.Params.gid += "," + $(this).val();
+            }
+        });
+        $('input:checkbox[name="certificate[]"]:checked').each(function() {
+            if(UrlParams.Params.cid == "") {
+                UrlParams.Params.cid += $(this).val();
+            } else {
+                UrlParams.Params.cid += "," + $(this).val();
             }
         });
     },

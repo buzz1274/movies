@@ -33,6 +33,10 @@
                     $offset = 'offset6 ';
                 }
 
+                if($d[$dataMapper[$type]['tableName']][$dataMapper[$type]['field']] == 'Sci-Fi') {
+                    $d[$dataMapper[$type]['tableName']][$dataMapper[$type]['field']] = 'Sci&#8209;Fi';
+                }
+
                 $value = $d[$dataMapper[$type]['tableName']][$dataMapper[$type]['id']];
                 $label = $type.'_'.$value;
 
@@ -41,7 +45,7 @@
                      '  <label class="checkbox inline nav_text">'.
                      '    <input type="checkbox" name="'.$type.'[]" value="'.$value.'">'.
                      $d[$dataMapper[$type]['tableName']][$dataMapper[$type]['field']].
-                     "&nbsp;(<%= ".$label." != 0 && ".$label." != null ? ".$label." : '-' %>)".
+                     "&nbsp;(<%= ".$label." != 0 && ".$label." != null ? ".$label." : '&#8209;' %>)".
                      '  </label>'.
                      '</span>';
                 $count++;

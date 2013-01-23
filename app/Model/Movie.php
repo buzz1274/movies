@@ -73,14 +73,14 @@
         /*@var array - default search parameters*/
         private $_search = array('page' => 1,
                                  'limit' => 20,
-                                 'genreID' => false,
+                                 'gID' => false,
                                  'personID' => false,
                                  'keywordID' => false,
                                  'search' => '',
                                  'sort' => 'title',
                                  'sortDirection' => 'asc',
                                  'hd' => false,
-                                 'genreID' => false);
+                                 'cid' => false);
 
         /**
          * @author David <david@sulaco.co.uk>
@@ -190,7 +190,7 @@
          */
         private function _search($resultType) {
 
-            error_log(json_encode($this->_search));
+            //error_log(json_encode($this->_search));
 
             if($resultType == 'summary') {
                 $limitQuery = false;
@@ -253,6 +253,25 @@
                     "AND person.person_id = '".$this->_search['personID']."'";
             } else {
                 $personQuery = false;
+            }
+
+            if(isset($this->_search['gid']) && $this->_search['gid']) {
+                $genreQuery = '';
+                foreach($this->_search['gid'] as $genreID) {
+                    if((int)$genreID > 0) {
+                        $genreQuery .=
+                            "AND '".$genreID."' = ANY(genre.movie_genre_ids)";
+                    }
+                }
+            } else {
+                $genreQuery = false;
+            }
+
+            if(isset($this->_search['cid']) && $this->_search['cid']) {
+                $certificateQuery =
+                    "AND Movie.certificate_id = ANY(ARRAY[".implode(',', $this->_search['cid'])."])";
+            } else {
+                $certificateQuery = false;
             }
 
             if(isset($this->_search['genreID']) && $this->_search['genreID']) {
@@ -334,6 +353,7 @@
                      '                  ) AS genre ON (genre.movie_id = Movie.movie_id) '.
                      '        WHERE True '.
                      $genreQuery.' '.
+                     $certificateQuery.' '.
                      $personQuery.' '.
                      $keywordQuery.' '.
                      $searchQuery.' '.
@@ -373,15 +393,6 @@
                 $this->_search['search'] = $searchParams['search'];
             }
 
-            if(isset($searchParams['gid'])) {
-                $searchParams['gid'] = preg_replace('/[^0-9,]/', '',
-                                                    $searchParams['gid']);
-                if($searchParams['gid'] &&
-                   is_array($searchParams['gid'] = explode(',', $searchParams['gid']))) {
-                    $this->_search['genreID'] = $searchParams['gid'];
-                }
-            }
-
             if(isset($searchParams['pid']) &&
                (int)$searchParams['pid'] > 0) {
                 $this->_search['personID'] = $searchParams['pid'];
@@ -419,12 +430,22 @@
 
             }
 
+            foreach(array('cid', 'gid') as $key) {
+                if(isset($searchParams[$key])) {
+                    $searchParams[$key] = preg_replace('/[^0-9,]/', '',
+                                                       $searchParams[$key]);
+                    if($searchParams[$key] &&
+                       is_array($searchParams[$key] = explode(',', $searchParams[$key]))) {
+                        $this->_search[$key] = $searchParams[$key];
+                    }
+                }
+            }
+
             foreach(array('hd', 'watched') as $key) {
                 if(isset($searchParams[$key]) &&
                    $searchParams[$key] != 'all' &&
                    ((int)$searchParams[$key] === 0 ||
                     (int)$searchParams[$key] === 1)) {
-                        error_log("here");
                     $this->_search[$key] = $searchParams[$key];
                 }
             }
