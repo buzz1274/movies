@@ -73,7 +73,7 @@
         /*@var array - default search parameters*/
         private $_search = array('page' => 1,
                                  'limit' => 20,
-                                 'gID' => false,
+                                 'gid' => false,
                                  'personID' => false,
                                  'keywordID' => false,
                                  'search' => '',
@@ -274,18 +274,6 @@
                 $certificateQuery = false;
             }
 
-            if(isset($this->_search['genreID']) && $this->_search['genreID']) {
-                $genreQuery = '';
-                foreach($this->_search['genreID'] as $genreID) {
-                    if((int)$genreID > 0) {
-                        $genreQuery .=
-                            "AND '".$genreID."' = ANY(genre.movie_genre_ids)";
-                    }
-                }
-            } else {
-                $genreQuery = false;
-            }
-
             if(isset($this->_search['keywordID']) && $this->_search['keywordID']) {
                 $keywordQuery =
                     "AND keyword.keyword_id = '".$this->_search['keywordID']."'";
@@ -382,6 +370,8 @@
          *                                key/values.
          */
         private function _parseSearchParameters($searchParams) {
+
+            //error_log(json_encode($searchParams));
 
             if(isset($searchParams['p']) &&
                (int)$searchParams['p'] > 0) {

@@ -61,6 +61,16 @@ div#auth span#authenticated {
     line-height: 1;
     color: #ffffff;
 }
+.navbar .version {
+    float: left;
+    display: block;
+    padding: 16px 0px 12px;
+    margin-left: -20px;
+    font-size: 12px;
+    font-weight: 200;
+    line-height: 1;
+    color: #ffffff;
+}
 .sidebar-nav {
     color:#999;
 }

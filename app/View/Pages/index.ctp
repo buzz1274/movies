@@ -33,6 +33,7 @@
                 </div>
                 <div class="container-fluid">
                     <a class="brand" href="/#">movieDB</a>
+                    <span class="version">v0.6</span>
                 </div>
             </div>
         </div>
