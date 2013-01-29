@@ -100,7 +100,6 @@ window.MovieSearchView = Backbone.View.extend({
         }
     },
     search: function() {
-        var search = $('#search_input').val();
         UrlParams.reset();
         UrlParams.parse_search_form();
         app.navigate(UrlParams.query_string(), {'trigger':true});
@@ -238,6 +237,7 @@ window.MovieListView = Backbone.View.extend({
         } else {
             $(this.el).append(_.template($('#tpl-movie-list-no-results').html()));
         }
+        $('#opaque').css('display', 'none');
         return this;
     },
 });
@@ -309,7 +309,9 @@ var AppRouter = Backbone.Router.extend({
         "/movies/:imdb_id/":"movieDetails",
     },
     list:function (query_string) {
+        //alert("here");
         $('#opaque').css('display', 'block');
+        //alert("done");
         var movieSummary = new MovieSummary();
         var movieSearchView = new MovieSearchView({model:movieSummary});
         var movieHeaderView = new MovieHeaderView();
@@ -346,7 +348,7 @@ var AppRouter = Backbone.Router.extend({
         });
         UrlParams.fill_form();
         movieHeaderView.display_sort_icons();
-        $('#opaque').css('display', 'none');
+        //$('#opaque').css('display', 'none');
     },
     movieDetails:function (movie_id, element) {
         var movie = new Movie();
@@ -476,7 +478,7 @@ var UrlParams = {
     },
     fill_form:function() {
         if(UrlParams.Params.search) {
-            $('#search_input').val(UrlParams.Params.search);
+            $('#search_input').val(decodeURIComponent(UrlParams.Params.search));
         }
         if(UrlParams.Params.watched == 1 || UrlParams.Params.watched == 0) {
             $('#watched_'+UrlParams.Params.watched).attr('checked', 'checked');
@@ -500,7 +502,7 @@ var UrlParams = {
         _.each(UrlParams.DefaultParams, function(value, key) {
             if((UrlParams.Params[key] != UrlParams.DefaultParams[key]) &&
                 (key != 'asc' && key != 's')) {
-                qs += key+'='+UrlParams.Params[key].toString()+"&";
+                qs += key+'='+encodeURIComponent(UrlParams.Params[key].toString())+"&";
             }
         });
         if(!(UrlParams.Params['s'] == 'title' && UrlParams.Params['asc'])) {
