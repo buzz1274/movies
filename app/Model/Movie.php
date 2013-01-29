@@ -460,8 +460,10 @@
          * @author David <david@sulaco.co.uk>
          */
         private function _cleanParameters() {
-            //fo
-            //Sanitize::escape($string, $connection)
+
+            while(list($key, $val) = each($this->_search)) {
+                $this->_search[$key] = Sanitize::escape($val, 'default');
+            }
 
         }
         //end _cleanParameters
