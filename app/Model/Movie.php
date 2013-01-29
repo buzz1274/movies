@@ -121,16 +121,25 @@
 
         }
         //end search
-
+        /**
+         * cleans results after pulling from the database will be
+         * called after any of the framework find methods
+         * @author David <david@sulaco.co.uk>
+         * @param array $results
+         * @param boolean $primary
+         * @return array $results
+         */
         public function afterFind($results, $primary = false) {
 
-            //error_log(json_encode($results));
-/*
-            if(isset($clean[$key]['Movie']['path'])) {
-                $clean[$key]['Movie']['path'] =
-                    'Y:\\'.str_replace('/', "\\", $clean[$key]['Movie']);
+            foreach ($results as $key => $val) {
+
+                if(isset($val['Movie']['path'])) {
+                    $results[$key]['Movie']['path'] =
+                        'Y:\\'.str_replace('/', "\\", $val['Movie']['path']);
+                }
+
             }
-*/
+
             return $results;
 
         }
