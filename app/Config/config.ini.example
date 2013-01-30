@@ -21,4 +21,4 @@ backup_path="" #path to backup db dump and movie images.
 backup_files_to_keep = "" #how manny back up files to keep before oldest is deleted
 
 [MISC]
-email_address="david@sulaco.co.uk"
+email_address=""
