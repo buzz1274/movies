@@ -76,7 +76,7 @@
             src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js">
         </script>
         <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="/assets/js/movies.js">
-        </script>
+        <script type="text/javascript" src="/assets/js/movies.js"></script>
+        <script type="text/javascript" src="/assets/js/autocomplete.js"></script>
     </body>
 </html>

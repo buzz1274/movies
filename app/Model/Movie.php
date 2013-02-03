@@ -72,7 +72,7 @@
 
         /*@var array - default search parameters*/
         private $_search = array('page' => 1,
-                                 'limit' => 20,
+                                 'limit' => false,
                                  'gid' => false,
                                  'personID' => false,
                                  'keywordID' => false,
@@ -250,9 +250,14 @@
 
             } else {
                 $selectQuery = 'SELECT * ';
-                $limitQuery = 'LIMIT 20 OFFSET '.
-                              (($this->_search['page'] - 1) *
-                                $this->_search['limit']);
+                if(!$this->_search['limit'] ||
+                   !(int)$this->_search['limit']) {
+                    $limitQuery = false;
+                } else {
+                    $limitQuery = 'LIMIT '.$this->_search['limit'].' OFFSET '.
+                                  (($this->_search['page'] - 1) *
+                                    $this->_search['limit']);
+                }
                 $orderQuery = 'ORDER BY '.$this->_search['sort'].' '.
                                           $this->_search['sortDirection'];
             }
@@ -382,6 +387,10 @@
 
             //error_log(json_encode($searchParams));
 
+            if(!isset($searchParams['limit'])) {
+                $this->_search['limit'] = 20;
+            }
+
             if(isset($searchParams['p']) &&
                (int)$searchParams['p'] > 0) {
                 $this->_search['page'] = $searchParams['p'];
@@ -389,7 +398,7 @@
 
             if(isset($searchParams['search']) &&
                !empty($searchParams['search'])) {
-                $this->_search['search'] = $searchParams['search'];
+                $this->_search['search'] = urldecode($searchParams['search']);
             }
 
             if(isset($searchParams['pid']) &&
@@ -449,21 +458,32 @@
                 }
             }
 
-            $this->_cleanParameters();
+            $this->_search = $this->_cleanParameters($this->_search);
 
         }
         //end _parseSearchParameters
 
         /**
          * cleans search parameters prior to use in query
-         * $this->_search array
+         *
          * @author David <david@sulaco.co.uk>
+         * @param mixed $search - data to clean
+         * @return mixed $search
          */
-        private function _cleanParameters() {
+        private function _cleanParameters($search) {
 
-            while(list($key, $val) = each($this->_search)) {
-                $this->_search[$key] = Sanitize::escape($val, 'default');
+            while(list($key, $val) = each($search)) {
+                if($val || $val === 0) {
+                    if(is_array($val)) {
+                        $search[$key] = $this->_cleanParameters($val);
+                    } else {
+                        $search[$key] = Sanitize::escape(urldecode($val),
+                                                         'default');
+                    }
+                }
             }
+
+            return $search;
 
         }
         //end _cleanParameters

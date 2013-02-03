@@ -50,8 +50,34 @@
         //end watched
 
         /**
+         * returns a list of titles matching supplied title
+         * @author David <david@sulaco.co.uk>
+         */
+        public function title() {
+
+        }
+        //end title
+
+        /**
+         * returns a csv formatted list of movies
+         * @author David <david@sulaco.co.uk>
+         */
+        public function csv() {
+
+            $data = $this->Movie->search('search',
+                                         array_merge(array('limit' => false),
+                                                           $this->request->query));
+
+            header("Content-type:application/vnd.ms-excel");
+            header("Content-disposition:attachment;filename=movies.csv");
+            $this->set(compact('data'));
+
+        }
+        //end csv
+
+        /**
          * returns all movies that match the supplied search critera
-         * @author David
+         * @author David <david@sulaco.co.uk>
          */
         public function movies() {
 

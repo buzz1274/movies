@@ -92,7 +92,8 @@ window.MovieSearchView = Backbone.View.extend({
         app.navigate(UrlParams.query_string(), {'trigger':true});
     },
     download:function() {
-        alert("COMING SOON");
+        search = window.location.hash.slice(1, window.location.hash.length);
+        window.location = "/movies/csv?"+search;
     },
     search_on_enter:function(e) {
         if(e.keyCode == 13) {
@@ -237,7 +238,6 @@ window.MovieListView = Backbone.View.extend({
         } else {
             $(this.el).append(_.template($('#tpl-movie-list-no-results').html()));
         }
-        $('#opaque').css('display', 'none');
         return this;
     },
 });
@@ -310,7 +310,7 @@ var AppRouter = Backbone.Router.extend({
     },
     list:function (query_string) {
         //alert("here");
-        $('#opaque').css('display', 'block');
+        //$('#opaque').css('display', 'block');
         //alert("done");
         var movieSummary = new MovieSummary();
         var movieSearchView = new MovieSearchView({model:movieSummary});
@@ -339,15 +339,20 @@ var AppRouter = Backbone.Router.extend({
             success: function() {
                 $('#movies_table').append(movieListView.render().el);
                 $('#movies_table').css('display', 'block');
+                //$('#opaque').css('display', 'none');
             },
             error: function() {
                 //fixme:why is error called when no results returned
                 $('#movies_table').append(movieListView.render().el);
                 $('#movies_table').css('display', 'block');
+            },
+            handleProgress:function(evt) {
+                alert('handle progress');
             }
         });
         UrlParams.fill_form();
         movieHeaderView.display_sort_icons();
+        //alert("remove");
         //$('#opaque').css('display', 'none');
     },
     movieDetails:function (movie_id, element) {
@@ -502,7 +507,12 @@ var UrlParams = {
         _.each(UrlParams.DefaultParams, function(value, key) {
             if((UrlParams.Params[key] != UrlParams.DefaultParams[key]) &&
                 (key != 'asc' && key != 's')) {
-                qs += key+'='+encodeURIComponent(UrlParams.Params[key].toString())+"&";
+                if(key == 'search') {
+                    param = encodeURIComponent(UrlParams.Params[key].toString());
+                } else {
+                    param = UrlParams.Params[key].toString();
+                }
+                qs += key+'='+param+"&";
             }
         });
         if(!(UrlParams.Params['s'] == 'title' && UrlParams.Params['asc'])) {

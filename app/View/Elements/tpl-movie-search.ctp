@@ -11,8 +11,7 @@
                     Keywords
                 </li>
                 <li>
-                    <input type="text" class="span12"
-                           autocomplete="off"
+                    <input type="text" class="span12" autocomplete="off"
                            id="search_input">
                 </li>
                 <li class="nav-header">

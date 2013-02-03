@@ -11,6 +11,9 @@
     Router::connect('/movies/summary',
                     array('controller' => 'movies',
                           'action' => 'summary'));
+    Router::connect('/movies/csv',
+                    array('controller' => 'movies',
+                          'action' => 'csv'));
     Router::connect('/movies/watched/:id/',
                     array('controller' => 'movies',
                           'action' => 'watched',
