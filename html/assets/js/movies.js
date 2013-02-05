@@ -133,7 +133,6 @@ window.MovieSearchView = Backbone.View.extend({
                     }
                     $("#"+id+"_label").html(start+" - "+end);
                 },
-
             });
             if(id == 'runtime') {
                 start = UrlParams.SliderValues.convert_to_time(
@@ -273,6 +272,19 @@ window.MovieListItemView = Backbone.View.extend({
         this.model.save({action: "watched"},
             {url:'/movies/watched/:id/',
              success: function(model, response) {
+                watched = parseInt($('#watched_yes').html().replace(/[^0-9]/gm, ''));
+                not_watched = parseInt($('#watched_no').html().replace(/[^0-9]/gm, ''));
+                watched = !watched ? 0 : watched;
+                not_watched = !not_watched ? 0 : not_watched;
+                if(Movie.watched) {
+                    watched += 1;
+                    not_watched -= 1;
+                } else {
+                    not_watched += 1;
+                    watched -= 1;
+                }
+                $('#watched_yes').html('('+(watched == 0 ? '-' : watched)+')');
+                $('#watched_no').html('('+(not_watched == 0 ? '-' : not_watched)+')')
                 model.set(Movie);
             },
             error: function(model, response) {
@@ -476,6 +488,8 @@ var UrlParams = {
                             UrlParams.Params[fragment[0]] += "," + id;
                         }
                         });
+                    } else if(fragment[0] == 'id') {
+                        console.log("OPEN MOVIE PANE");
                     } else {
                         UrlParams.Params[fragment[0]] = fragment[1];
                     }

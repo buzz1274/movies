@@ -45,7 +45,9 @@
                      '  <label class="checkbox inline nav_text">'.
                      '    <input type="checkbox" name="'.$type.'[]" value="'.$value.'">'.
                      $d[$dataMapper[$type]['tableName']][$dataMapper[$type]['field']].
-                     "&nbsp;(<%= ".$label." != 0 && ".$label." != null ? ".$label." : '&#8209;' %>)".
+                     "<span>".
+                     "(<%= ".$label." != 0 && ".$label." != null ? ".$label." : '&#8209;' %>)".
+                     "</span>".
                      '  </label>'.
                      '</span>';
                 $count++;

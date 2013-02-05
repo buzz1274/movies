@@ -2,7 +2,7 @@
     <form id="search" class="well" onsubmit="return false;">
         <fieldset>
             <legend>
-                Search Movies&nbsp;
+                Search Movies
                 (<%= totalMovies != 0 && totalMovies != null ? totalMovies : '-' %>)
                 <i id="download" class="icon-download-alt"></i>
             </legend>
@@ -25,20 +25,29 @@
                     <span class=" offset0 span4">
                         <label class="radiobutton inline">
                             <input type="radio" value="1" id="hd_1" name="hd">
-                            HD&nbsp;(<%= hd != 0 && hd != null ? hd : '-' %>)
+                            HD
+                            <span>
+                                (<%= hd != 0 && hd != null ? hd : '-' %>)
+                            </span>
                         </label>
                     </span>
                     <span class="offset4 span4">
                         <label class="radiobutton inline">
                             <input type="radio" value="0" id="hd_0" name="hd">
-                            SD&nbsp;(<%= sd != 0 && sd != null ? sd : '-' %>)
+                            SD
+                            <span>
+                                (<%= sd != 0 && sd != null ? sd : '-' %>)
+                            </span>
                         </label>
                     </span>
                     <span class="offset8 span4">
                         <label class="radiobutton inline">
                             <input type="radio"checked="checked"
                                    name="hd" value="all">
-                            All&nbsp;(<%= totalMovies != 0 && totalMovies != null ? totalMovies : '-' %>)
+                            All
+                            <span>
+                                (<%= totalMovies != 0 && totalMovies != null ? totalMovies : '-' %>)
+                            </span>
                         </label>
                     </span>
                 </li>
@@ -50,21 +59,30 @@
                         <label class="radiobutton inline">
                             <input type="radio" value="1"
                                    id="watched_1" name="watched">
-                            Yes&nbsp;(<%= watched != 0 && watched != null ? watched : '-' %>)
+                            Yes
+                            <span id="watched_yes">
+                                (<%= watched != 0 && watched != null ? watched : '-' %>)
+                            </span>
                         </label>
                     </span>
                     <span class="offset4 span4">
                         <label class="radiobutton inline">
                             <input type="radio" value="0"
                                    id="watched_0" name="watched">
-                            No&nbsp;(<%= not_watched != 0 && not_watched != null ? not_watched : '-' %>)
+                            No
+                            <span id="watched_no">
+                                (<%= not_watched != 0 && not_watched != null ? not_watched : '-' %>)
+                            </span>
                         </label>
                     </span>
                     <span class="offset8 span4">
                         <label class="radiobutton inline">
                             <input type="radio"checked="checked"
                                    name="watched" value="all">
-                            All&nbsp;(<%= totalMovies != 0 && totalMovies != null ? totalMovies : '-' %>)
+                            All
+                            <span>
+                                (<%= totalMovies != 0 && totalMovies != null ? totalMovies : '-' %>)
+                            </span>
                         </label>
                     </span>
                 </li>
