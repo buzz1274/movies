@@ -36,7 +36,7 @@
                 <% if(page >= totalPages) {%>
                     <a>Next</a>
                 <% } else { %>
-                    <a href="#p=<%= (parseInt(page) + 1) %>&<%= UrlParams.remove_page_from_query_string() %>">
+                    <a href="#p=<%= (parseInt(page) + 1) %><%= UrlParams.remove_page_from_query_string() %>">
                         Next
                     </a>
                 <% } %>

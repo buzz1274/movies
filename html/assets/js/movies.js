@@ -551,7 +551,8 @@ var UrlParams = {
         return this.qs;
     },
     remove_page_from_query_string:function() {
-        return this.qs.replace(/&?p=[0-9]{1,}&?/gm, '');
+        qs = this.qs.replace(/&?p=[0-9]{1,}&?/gm, '');
+        return qs.length ? '&'+qs : '';
     },
     parse_search_form:function() {
         UrlParams.Params.gid = "";
