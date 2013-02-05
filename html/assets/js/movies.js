@@ -88,7 +88,7 @@ window.MovieSearchView = Backbone.View.extend({
         return this;
     },
     reset:function() {
-        UrlParams.reset();
+        UrlParams.reset(true);
         app.navigate(UrlParams.query_string(), {'trigger':true});
     },
     download:function() {
@@ -101,7 +101,7 @@ window.MovieSearchView = Backbone.View.extend({
         }
     },
     search: function() {
-        UrlParams.reset();
+        UrlParams.reset(false);
         UrlParams.parse_search_form();
         app.navigate(UrlParams.query_string(), {'trigger':true});
     },
@@ -123,6 +123,7 @@ window.MovieSearchView = Backbone.View.extend({
                     var id = $(event.target).parent().attr('id');
                     UrlParams.SliderValues[id].current_min = ui.values[0];
                     UrlParams.SliderValues[id].current_max = ui.values[1];
+                    UrlParams.SliderValues[id].active = true;
                     if(id == 'runtime') {
                         start = UrlParams.SliderValues.convert_to_time(ui.values[0]);
                         end = UrlParams.SliderValues.convert_to_time(ui.values[1]);
@@ -215,17 +216,17 @@ window.MovieListView = Backbone.View.extend({
         'click span.actor_link': 'personSearch',
     },
     keywordSearch:function(ev) {
-        UrlParams.reset();
+        UrlParams.reset(true);
         UrlParams.Params.kid = $(ev.currentTarget).attr('data-keyword_id');
         app.navigate(UrlParams.query_string(), {'trigger':true});
     },
     personSearch:function (ev) {
-        UrlParams.reset();
+        UrlParams.reset(true);
         UrlParams.Params.pid = $(ev.currentTarget).attr('data-person_id');
         app.navigate(UrlParams.query_string(), {'trigger':true});
     },
     genreSearch:function (ev) {
-        UrlParams.reset();
+        UrlParams.reset(true);
         UrlParams.Params.gid = $(ev.currentTarget).attr('data-genre_id');
         app.navigate(UrlParams.query_string(), {'trigger':true});
     },
@@ -405,7 +406,7 @@ var UrlParams = {
     },
     SortDefaults: {
         'title': 1,
-        'release_year': 0,
+        'release_yearrelease_year': 0,
         'imdb_rating': 0,
         'runtime': 0,
         'filesize': 0,
@@ -416,6 +417,7 @@ var UrlParams = {
     },
     SliderValues: {
         imdb_rating: {
+            active:false,
             min:1,
             max:10,
             current_min:2,
@@ -452,7 +454,7 @@ var UrlParams = {
     },
     parse:function(query_string) {
         if(query_string == undefined || !query_string) {
-            UrlParams.reset();
+            UrlParams.reset(true);
         } else {
             this.qs = query_string;
             var page_in_params = false;
@@ -501,18 +503,37 @@ var UrlParams = {
                 $('input[name="certificate[]"][value='+cid+']').attr("checked",true);
             });
         }
+        _.each(UrlParams.SliderValues, function(value, key) {
+            if(UrlParams.SliderValues[key].active && UrlParams.Params[key]) {
+                values = UrlParams.Params[key].split(',');
+                if(values[0] && values[1]) {
+                    var movieSearchView = new MovieSearchView();
+                    UrlParams.SliderValues[key].current_min = values[0];
+                    UrlParams.SliderValues[key].current_max = values[1];
+                    movieSearchView.render_slider(key);
+                }
+            }
+        });
     },
     query_string:function() {
         var qs = '';
         _.each(UrlParams.DefaultParams, function(value, key) {
             if((UrlParams.Params[key] != UrlParams.DefaultParams[key]) &&
-                (key != 'asc' && key != 's')) {
+                (key != 'asc' && key != 's' && key != 'imdb_rating' &&
+                 key != 'runtime' && key != 'release_year')) {
                 if(key == 'search') {
                     param = encodeURIComponent(UrlParams.Params[key].toString());
                 } else {
                     param = UrlParams.Params[key].toString();
                 }
                 qs += key+'='+param+"&";
+            }
+            if(key == 'imdb_rating') {
+                values = UrlParams.Params[key].split(',');
+                if(values[0] && values[1] &&
+                   (UrlParams.SliderValues[key].active)) {
+                    qs += key+'='+UrlParams.Params[key]+"&";
+                }
             }
         });
         if(!(UrlParams.Params['s'] == 'title' && UrlParams.Params['asc'])) {
@@ -545,19 +566,23 @@ var UrlParams = {
                 UrlParams.Params.cid += "," + $(this).val();
             }
         });
+        if(UrlParams.SliderValues.imdb_rating.active) {
+            UrlParams.Params.imdb_rating =
+                UrlParams.SliderValues.imdb_rating.current_min+","+
+                UrlParams.SliderValues.imdb_rating.current_max;
+        }
     },
-    reset:function() {
+    reset:function(reset_sliders) {
         _.each(UrlParams.DefaultParams, function(value, key) {
             UrlParams.Params[key] = value;
         });
-        _.each(UrlParams.SliderValues, function(value, key) {
-            UrlParams.SliderValues[key].current_min =
-                UrlParams.SliderValues[key].min;
-            UrlParams.SliderValues[key].current_max =
-                UrlParams.SliderValues[key].max;
-        });
+        if(reset_sliders) {
+            _.each(UrlParams.SliderValues, function(value, key) {
+                UrlParams.SliderValues[key].active = false;
+            });
+        }
     }
 };
-UrlParams.reset();
+UrlParams.reset(true);
 var app = new AppRouter();
 Backbone.history.start();

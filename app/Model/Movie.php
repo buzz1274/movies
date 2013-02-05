@@ -80,6 +80,7 @@
                                  'sort' => 'title',
                                  'sortDirection' => 'asc',
                                  'hd' => false,
+                                 'imdb_rating' => false,
                                  'cid' => false);
 
         /**
@@ -152,6 +153,8 @@
          * @return array $results
          */
         private function _afterFind($results) {
+
+            $clean = false;
 
             foreach ($results as $key => $val) {
 
@@ -322,6 +325,16 @@
                 $watchedQuery = false;
             }
 
+            if(isset($this->_search['imdb_rating']) &&
+               is_array($this->_search['imdb_rating'])) {
+                $imdbRatingQuery = 'AND Movie.imdb_rating BETWEEN
+                                   '.$this->_search['imdb_rating']['min'].' AND '.
+                                   $this->_search['imdb_rating']['max'];
+
+            } else {
+                $imdbRatingQuery = false;
+            }
+
             $query = $selectQuery.' '.
                      'FROM   (SELECT    DISTINCT Movie.movie_id, Movie.watched, '.
                      '                  Movie.imdb_id, Movie.title, '.
@@ -361,6 +374,7 @@
                      $searchQuery.' '.
                      $watchedQuery.' '.
                      $HDQuery.' '.
+                     $imdbRatingQuery.' '.
                      $orderQuery.' '.
                      $limitQuery.' '.
                      '      ) AS results';
@@ -409,6 +423,24 @@
             if(isset($searchParams['kid']) &&
                (int)$searchParams['kid'] > 0) {
                 $this->_search['keywordID'] = $searchParams['kid'];
+            }
+
+            if(isset($searchParams['imdb_rating'])) {
+                $searchParams['imdb_rating'] =
+                    explode(',', $searchParams['imdb_rating']);
+
+                if(isset($searchParams['imdb_rating'][0]) &&
+                   (int)$searchParams['imdb_rating'][0] &&
+                   isset($searchParams['imdb_rating'][1]) &&
+                   (int)$searchParams['imdb_rating'][1] &&
+                   (int)$searchParams['imdb_rating'][0] <
+                   (int)$searchParams['imdb_rating'][1]) {
+                    $this->_search['imdb_rating'] =
+                            array('min' => $searchParams['imdb_rating'][0],
+                                  'max' => $searchParams['imdb_rating'][1]);
+
+                }
+
             }
 
             if(isset($searchParams['s']) &&
