@@ -390,6 +390,8 @@ var UrlParams = {
         'search': null,
         'imdb_rating':null,
         'watched':null,
+        'runtime':'',
+        'release_year':''
     },
     DefaultParams: {
         'p':1,
@@ -403,6 +405,8 @@ var UrlParams = {
         'watched':'all',
         'search':'',
         'imdb_rating':'',
+        'runtime':'',
+        'release_year':''
     },
     SortDefaults: {
         'title': 1,
@@ -424,12 +428,14 @@ var UrlParams = {
             current_max:9,
         },
         runtime: {
+            active:false,
             min:22,
             max:229,
             current_min:22,
             current_max:229,
         },
         release_year: {
+            active:false,
             min:1945,
             max:2012,
             current_min:1945,
@@ -528,7 +534,8 @@ var UrlParams = {
                 }
                 qs += key+'='+param+"&";
             }
-            if(key == 'imdb_rating') {
+            if(key == 'imdb_rating' || key == 'release_year' ||
+               key == 'runtime') {
                 values = UrlParams.Params[key].split(',');
                 if(values[0] && values[1] &&
                    (UrlParams.SliderValues[key].active)) {
@@ -566,11 +573,14 @@ var UrlParams = {
                 UrlParams.Params.cid += "," + $(this).val();
             }
         });
-        if(UrlParams.SliderValues.imdb_rating.active) {
-            UrlParams.Params.imdb_rating =
-                UrlParams.SliderValues.imdb_rating.current_min+","+
-                UrlParams.SliderValues.imdb_rating.current_max;
-        }
+        _.each(UrlParams.SliderValues, function(value, key) {
+            if(typeof UrlParams.SliderValues[key] == 'object' &&
+               UrlParams.SliderValues[key].active) {
+                UrlParams.Params[key] =
+                    UrlParams.SliderValues[key].current_min+","+
+                    UrlParams.SliderValues[key].current_max;
+            }
+        });
     },
     reset:function(reset_sliders) {
         _.each(UrlParams.DefaultParams, function(value, key) {
@@ -578,7 +588,9 @@ var UrlParams = {
         });
         if(reset_sliders) {
             _.each(UrlParams.SliderValues, function(value, key) {
-                UrlParams.SliderValues[key].active = false;
+                if(typeof UrlParams.SliderValues[key] == 'object') {
+                    UrlParams.SliderValues[key].active = false;
+                }
             });
         }
     }

@@ -81,10 +81,12 @@
                                  'sortDirection' => 'asc',
                                  'hd' => false,
                                  'imdb_rating' => false,
+                                 'runtime' => false,
+                                 'release_year' => false,
                                  'cid' => false);
 
         /**
-         * @author David <david@sulaco.co.uk>
+         * @author David
          * @param array
          * @param array $searchParams
          * @return mixed
@@ -125,7 +127,7 @@
         /**
          * cleans results after pulling from the database will be
          * called after any of the framework find methods
-         * @author David <david@sulaco.co.uk>
+         * @author David
          * @param array $results
          * @param boolean $primary
          * @return array $results
@@ -148,7 +150,7 @@
 
         /**
          * cleans and formats result set after pulling from the database
-         * @author David <david@sulaco.co.uk>
+         * @author David
          * @param array $results
          * @return array $results
          */
@@ -197,7 +199,7 @@
 
         /**
          * retrieve movies that match the supplied search criteria
-         * @author David <david@sulaco.co.uk>
+         * @author David
          * @param $resultType - summary|search
          */
         private function _search($resultType) {
@@ -325,14 +327,15 @@
                 $watchedQuery = false;
             }
 
-            if(isset($this->_search['imdb_rating']) &&
-               is_array($this->_search['imdb_rating'])) {
-                $imdbRatingQuery = 'AND Movie.imdb_rating BETWEEN
-                                   '.$this->_search['imdb_rating']['min'].' AND '.
-                                   $this->_search['imdb_rating']['max'];
+            foreach(array('imdb_rating', 'release_year', 'runtime') as $field) {
+                ${$field.'Query'} = false;
+                if(isset($this->_search[$field]) &&
+                   is_array($this->_search[$field])) {
+                    ${$field.'Query'} = 'AND Movie.'.$field.' BETWEEN
+                                        '.$this->_search[$field]['min'].' AND '.
+                                        $this->_search[$field]['max'];
 
-            } else {
-                $imdbRatingQuery = false;
+                }
             }
 
             $query = $selectQuery.' '.
@@ -374,12 +377,12 @@
                      $searchQuery.' '.
                      $watchedQuery.' '.
                      $HDQuery.' '.
-                     $imdbRatingQuery.' '.
+                     $imdb_ratingQuery.' '.
+                     $release_yearQuery.' '.
+                     $runtimeQuery.' '.
                      $orderQuery.' '.
                      $limitQuery.' '.
                      '      ) AS results';
-
-            //error_log($query);
 
             if(is_array($results = $this->query($query)) && $resultType == 'summary') {
                 $results = array_pop($results);
@@ -393,7 +396,7 @@
         /**
          * parses the supplied search parameters and populates
          * $this->_search array
-         * @author David <david@sulaco.co.uk>
+         * @author David
          * @param $searchParams - array - see $this->search for permitted
          *                                key/values.
          */
@@ -425,22 +428,26 @@
                 $this->_search['keywordID'] = $searchParams['kid'];
             }
 
-            if(isset($searchParams['imdb_rating'])) {
-                $searchParams['imdb_rating'] =
-                    explode(',', $searchParams['imdb_rating']);
+            foreach(array('imdb_rating', 'runtime',
+                          'release_year') as $field) {
 
-                if(isset($searchParams['imdb_rating'][0]) &&
-                   (int)$searchParams['imdb_rating'][0] &&
-                   isset($searchParams['imdb_rating'][1]) &&
-                   (int)$searchParams['imdb_rating'][1] &&
-                   (int)$searchParams['imdb_rating'][0] <
-                   (int)$searchParams['imdb_rating'][1]) {
-                    $this->_search['imdb_rating'] =
-                            array('min' => $searchParams['imdb_rating'][0],
-                                  'max' => $searchParams['imdb_rating'][1]);
+                if(isset($searchParams[$field])) {
+                    $searchParams[$field] =
+                        explode(',', $searchParams[$field]);
+
+                    if(isset($searchParams[$field][0]) &&
+                       (int)$searchParams[$field][0] &&
+                       isset($searchParams[$field][1]) &&
+                       (int)$searchParams[$field][1] &&
+                       (int)$searchParams[$field][0] <
+                       (int)$searchParams[$field][1]) {
+                        $this->_search[$field] =
+                                array('min' => $searchParams[$field][0],
+                                      'max' => $searchParams[$field][1]);
+
+                    }
 
                 }
-
             }
 
             if(isset($searchParams['s']) &&
@@ -498,7 +505,7 @@
         /**
          * cleans search parameters prior to use in query
          *
-         * @author David <david@sulaco.co.uk>
+         * @author David
          * @param mixed $search - data to clean
          * @return mixed $search
          */
