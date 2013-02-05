@@ -343,7 +343,7 @@
                      '                  genre.movie_genre_ids, Movie.date_added, '.
                      '                  Movie.imdb_rating, Movie.runtime, '.
                      '                  Movie.release_year, Movie.certificate_id, '.
-                     '                  certificate.order '.
+                     '                  certificate.order, Movie.filesize '.
                      '        FROM      public.movie AS Movie '.
                      '        LEFT JOIN certificate ON '.
                      '                  (Movie.certificate_id = certificate.certificate_id) '.
