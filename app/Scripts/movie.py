@@ -80,6 +80,24 @@ class Movie():
 
         return self.config.db.execute(query).fetchall()
 
+    def find_missing_images(self):
+        """
+        finds movies with missing cover images
+        @return: dictionary
+        """
+        movies_without_image = []
+        query = select([self.config.movie_table.c.movie_id,
+                        self.config.movie_table.c.imdb_id,
+                        self.config.movie_table.c.title]).\
+                where(self.config.movie_table.c.deleted == False)
+
+        movies = self.config.db.execute(query).fetchall()
+        for movie in movies:
+            if not os.path.exists(self.config.image_save_path+'/'+movie.imdb_id+'.jpg'):
+                movies_without_image.append(movie)
+
+        return movies_without_image
+
     def rename_movie(self, old_path, new_path):
         """
         renames a movie

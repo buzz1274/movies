@@ -13,13 +13,25 @@ movie.update_invalid_movies()
 
 try:
     invalid_movies = movie.find_invalid_movies()
-    if invalid_movies:
-        body = "Total Movies(%d)\n" % (len(invalid_movies))
-        for movie in invalid_movies:
-            body += "%s %s %s\n" % (movie.movie_id, movie.imdb_id, movie.title)
+    movies_missing_image = movie.find_missing_images()
+    if invalid_movies or movies_missing_images:
+        body = ""
+        if invalid_movies:
+            body = "Movies with Incomplete Data(%d)\n" % (len(invalid_movies))
+            for invalid_movie in invalid_movies:
+                body += "%s %s %s\n" % (invalid_movie.movie_id,
+                                        invalid_movie.imdb_id,
+                                        invalid_movie.title)
+            body += "\n"
+        if movies_missing_image:
+            body += "Movies with Missing Image(%d)\n" % (len(movies_missing_image))
+            for movies_missing_image in movies_missing_image:
+                body += "%s %s %s\n" % (movies_missing_image.movie_id,
+                                        movies_missing_image.imdb_id,
+                                        movies_missing_image.title)
 
         message = MIMEText(body)
-        message['Subject'] = 'Movies with Incomplete Data'
+        message['Subject'] = 'Movie Spidering Issues'
         message['From'] = config.email_address
         message['To'] = config.email_address
 
@@ -28,4 +40,5 @@ try:
                       message.as_string())
         mail.quit()
 except Exception, e:
+    print e
     pass
