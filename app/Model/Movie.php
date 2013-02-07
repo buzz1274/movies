@@ -305,6 +305,7 @@
                     "AND ((Movie.title ILIKE '%".$this->_search['search']."%') OR ".
                     "     (Movie.synopsis ILIKE '%".$this->_search['search']."%') OR ".
                     "     (person.person_name ILIKE '%".$this->_search['search']."%') OR ".
+                    "     (Movie.imdb_id = '".$this->_search['search']."') OR ".
                     "     (keyword.keyword ILIKE '%".$this->_search['search']."%'))";
 
             } else {
