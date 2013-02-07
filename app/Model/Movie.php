@@ -99,7 +99,14 @@
             if($searchType == 'search' &&
                is_array($results = $this->_search($searchType))) {
 
-                $results = $this->_afterFind($results);
+                while(list($key, $val) = each($results)) {
+                    $movie[$key]['Movie'] = array_pop($val);
+                    $clean[$key] = array_pop($this->afterFind($movie));
+                }
+
+                $results = $clean;
+                unset($movie);
+                unset($clean);
 
             } elseif($searchType == 'summary' &&
                      is_array($results = $this->_search($searchType))) {
@@ -134,11 +141,39 @@
          */
         public function afterFind($results, $primary = false) {
 
-            foreach ($results as $key => $val) {
+             foreach ($results as $key => $val) {
 
-                if(isset($val['Movie']['path'])) {
+                if(isset($results[$key]['Movie']['path'])) {
                     $results[$key]['Movie']['path'] =
-                        'Y:\\'.str_replace('/', "\\", $val['Movie']['path']);
+                        'Y:\\'.str_replace('/', "\\", $results[$key]['Movie']['path']);
+                }
+
+                if(isset($results[$key]['Movie']['date_added'])) {
+                    $results[$key]['Movie']['date_added'] =
+                        date('M y', strtotime($results[$key]['Movie']['date_added']));
+                }
+
+                if(isset($results[$key]['Movie']['runtime'])) {
+                    $hours = floor($results[$key]['Movie']['runtime'] / 60);
+                    $minutes = $results[$key]['Movie']['runtime'] % 60;
+                    $results[$key]['Movie']['runtime'] = '';
+
+                    if($hours > 1) {
+                        $results[$key]['Movie']['runtime'] = $hours.'hrs';
+                    } elseif($hours == 1) {
+                        $results[$key]['Movie']['runtime'] = $hours.'hr';
+                    }
+
+                    if($minutes) {
+                        $results[$key]['Movie']['runtime'] .= ' '.$minutes.'mins';
+                    }
+
+                }
+
+                if(isset($results[$key]['Movie']['filesize'])) {
+                    $results[$key]['Movie']['filesize'] =
+                        number_format($results[$key]['Movie']['filesize'] /
+                                      (1000 * 1000 * 1000), 2);
                 }
 
             }
@@ -147,55 +182,6 @@
 
         }
         //end afterFind
-
-        /**
-         * cleans and formats result set after pulling from the database
-         * @author David
-         * @param array $results
-         * @return array $results
-         */
-        private function _afterFind($results) {
-
-            $clean = false;
-
-            foreach ($results as $key => $val) {
-
-                $clean[$key]['Movie'] = array_pop($val);
-
-                if(isset($clean[$key]['Movie']['date_added'])) {
-                    $clean[$key]['Movie']['date_added'] =
-                        date('M y', strtotime($clean[$key]['Movie']['date_added']));
-                }
-
-                if(isset($clean[$key]['Movie']['runtime'])) {
-                    $hours = floor($clean[$key]['Movie']['runtime'] / 60);
-                    $minutes = $clean[$key]['Movie']['runtime'] % 60;
-                    $clean[$key]['Movie']['runtime'] = '';
-
-                    if($hours > 1) {
-                        $clean[$key]['Movie']['runtime'] = $hours.'hrs';
-                    } elseif($hours == 1) {
-                        $clean[$key]['Movie']['runtime'] = $hours.'hr';
-                    }
-
-                    if($minutes) {
-                        $clean[$key]['Movie']['runtime'] .= ' '.$minutes.'mins';
-                    }
-
-                }
-
-                if(isset($clean[$key]['Movie']['filesize'])) {
-                    $clean[$key]['Movie']['filesize'] =
-                        number_format($clean[$key]['Movie']['filesize'] /
-                                      (1000 * 1000 * 1000), 2);
-                }
-
-            }
-
-            return $clean;
-
-        }
-        //end _afterFind
 
         /**
          * retrieve movies that match the supplied search criteria
