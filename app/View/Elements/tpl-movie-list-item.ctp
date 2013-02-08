@@ -50,11 +50,24 @@
                         &nbsp;Media
                     </a>
                 </li>
+                <li class="favourites_link">
+                    <% if(Movie.watched) { %>
+                        <a class="menu_item">
+                            <i class="icon-star"></i>
+                            &nbsp;Mark as Favourite
+                        </a>
+                    <% } else { %>
+                        <a class="menu_item">
+                            <i class="icon-star"></i>
+                            &nbsp;Mark as Not Favourite
+                        </a>
+                    <% } %>
+                </li>
                 <li class="watched_link">
                     <% if(Movie.watched) { %>
                         <a class="menu_item">
                             <i class="icon-eye-open"></i>
-                            &nbsp;Mark as Unwatched
+                            &nbsp;Mark as Not Watched
                         </a>
                     <% } else { %>
                         <a class="menu_item">

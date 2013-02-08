@@ -3,9 +3,13 @@
         <ul>
             <li class="<% if(page <= 1) {%>disabled<%}%>">
                 <% if(page <= 1) {%>
+                    <a>First</a>
                     <a>Prev</a>
                 <% } else { %>
-                    <a href="#p=<%= (parseInt(page) - 1) %>&<%= UrlParams.remove_page_from_query_string() %>">
+                    <a href="#p=1&<%= UrlParams.remove_page_from_query_string() %>">
+                        First
+                    </a>
+                    <a href="#p=1<%= (parseInt(page) - 1) %>&<%= UrlParams.remove_page_from_query_string() %>">
                         Prev
                     </a>
                 <% } %>
@@ -35,9 +39,13 @@
             <li class="<% if(page >= totalPages) {%>disabled<%}%>">
                 <% if(page >= totalPages) {%>
                     <a>Next</a>
+                    <a>Last</a>
                 <% } else { %>
                     <a href="#p=<%= (parseInt(page) + 1) %><%= UrlParams.remove_page_from_query_string() %>">
                         Next
+                    </a>
+                    <a href="#p=<%= totalPages %><%= UrlParams.remove_page_from_query_string() %>">
+                        Last
                     </a>
                 <% } %>
             </li>

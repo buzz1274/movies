@@ -72,7 +72,7 @@
 
         /*@var array - default search parameters*/
         private $_search = array('page' => 1,
-                                 'limit' => false,
+                                 'limit' => 25,
                                  'gid' => false,
                                  'personID' => false,
                                  'keywordID' => false,
@@ -119,11 +119,13 @@
                               $results,
                               array('totalMovies' => $results['total_movies'],
                                     'totalPages' => $totalPages,
-                                     'sd' => ($results['total_movies'] -
-                                              $results['hd']),
-                                     'not_watched' => ($results['total_movies'] -
-                                                       $results['watched']),
-                                     'page' => $this->_search['page']));
+                                    'not_favourites' => ($results['total_movies'] -
+                                                         $results['favourites']),
+                                    'sd' => ($results['total_movies'] -
+                                             $results['hd']),
+                                    'not_watched' => ($results['total_movies'] -
+                                                      $results['watched']),
+                                    'page' => $this->_search['page']));
 
             }
 
@@ -206,6 +208,7 @@
                     '             WHEN results.hd = True THEN 1 '.
                     '             ELSE 0 '.
                     '           END) AS hd, '.
+                    '       0 AS favourites, '.
                     '       MIN(results.imdb_rating) AS min_imdb_rating, '.
                     '       MAX(results.imdb_rating) AS max_imdb_rating, '.
                     '       MIN(results.runtime) AS min_runtime, '.
@@ -390,10 +393,6 @@
         private function _parseSearchParameters($searchParams) {
 
             //error_log(json_encode($searchParams));
-
-            if(!isset($searchParams['limit'])) {
-                $this->_search['limit'] = 20;
-            }
 
             if(isset($searchParams['p']) &&
                (int)$searchParams['p'] > 0) {

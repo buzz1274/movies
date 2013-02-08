@@ -87,6 +87,41 @@
                     </span>
                 </li>
                 <li class="nav-header">
+                    Favourties
+                </li>
+                <li class="span12">
+                    <span class=" offset0 span4">
+                        <label class="radiobutton inline">
+                            <input type="radio" value="1"
+                                   id="favourites_1" name="favourites">
+                            Yes
+                            <span id="favourites_yes">
+                                (<%= favourites != 0 && favourites != null ? favourites : '-' %>)
+                            </span>
+                        </label>
+                    </span>
+                    <span class="offset4 span4">
+                        <label class="radiobutton inline">
+                            <input type="radio" value="0"
+                                   id="favourites_0" name="favourites">
+                            No
+                            <span id="favourites_no">
+                                (<%= not_favourites != 0 && not_favourites != null ? not_favourites : '-' %>)
+                            </span>
+                        </label>
+                    </span>
+                    <span class="offset8 span4">
+                        <label class="radiobutton inline">
+                            <input type="radio"checked="checked"
+                                   name="favourites" value="all">
+                            All
+                            <span>
+                                (<%= totalMovies != 0 && totalMovies != null ? totalMovies : '-' %>)
+                            </span>
+                        </label>
+                    </span>
+                </li>
+                <li class="nav-header">
                     Certificate
                 </li>
                 <?php echo $this->App->checkboxFormatter($certificates,
@@ -129,6 +164,10 @@
                 <li>
                     <button type="submit" class="btn" id="submitButton">
                         Submit
+                    </button>
+                    <button type="reset" class="btn" id="luckyButton"
+                            title="Return a random movie that matches the search criteria.">
+                        I'm Feeling Lucky
                     </button>
                     <button type="reset" class="btn" id="resetButton">
                         Reset
