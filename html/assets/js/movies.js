@@ -426,7 +426,7 @@ var UrlParams = {
     },
     SortDefaults: {
         'title': 1,
-        'release_yearrelease_year': 0,
+        'release_year': 0,
         'imdb_rating': 0,
         'runtime': 0,
         'filesize': 0,
