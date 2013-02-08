@@ -9,7 +9,7 @@
                     <a href="#p=1&<%= UrlParams.remove_page_from_query_string() %>">
                         First
                     </a>
-                    <a href="#p=1<%= (parseInt(page) - 1) %>&<%= UrlParams.remove_page_from_query_string() %>">
+                    <a href="#p=<%= (parseInt(page) - 1) %>&<%= UrlParams.remove_page_from_query_string() %>">
                         Prev
                     </a>
                 <% } %>
