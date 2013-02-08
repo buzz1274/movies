@@ -1,4 +1,11 @@
 <script type="text/template" id="tpl-movie-search">
+    <section id="slider_init_values"
+            data-min-imdb-rating="<?php echo $summary['min_imdb_rating']; ?>"
+            data-max-imdb-rating="<?php echo $summary['max_imdb_rating']; ?>"
+            data-min-runtime="<?php echo $summary['min_runtime']; ?>"
+            data-max-runtime="<?php echo $summary['max_runtime']; ?>"
+            data-min-release-year="<?php echo $summary['min_release_year']; ?>"
+            data-max-release-year="<?php echo $summary['max_release_year']; ?>" />
     <form id="search" class="well" onsubmit="return false;">
         <fieldset>
             <legend>

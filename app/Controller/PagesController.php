@@ -8,7 +8,8 @@
 
             $this->helpers[] = 'App';
             $this->set(
-                array('genres' => $this->Genre->find('all'),
+                array('summary' => $this->Movie->search('summary', false),
+                      'genres' => $this->Genre->find('all'),
                       'certificates' => $this->Certificate->find('all',
                                                 array('recursive' => false))));
         }

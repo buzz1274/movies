@@ -438,26 +438,34 @@ var UrlParams = {
     SliderValues: {
         imdb_rating: {
             active:false,
-            min:1,
-            max:10,
-            current_min:2,
-            current_max:9,
+            min:false,
+            max:false,
+            current_min:false,
+            current_max:false,
         },
         runtime: {
             active:false,
-            min:22,
-            max:229,
-            current_min:22,
-            current_max:229,
+            min:false,
+            max:false,
+            current_min:false,
+            current_max:false,
         },
         release_year: {
             active:false,
-            min:1945,
-            max:2012,
-            current_min:1945,
-            current_max:2012,
+            min:false,
+            max:false,
+            current_min:false,
+            current_max:false,
         },
-       convert_to_time:function(minutes) {
+        init:function() {
+            this.imdb_rating.min = Math.floor($('section').data('min-imdb-rating'));
+            this.imdb_rating.max = Math.ceil($('section').data('max-imdb-rating'));
+            this.runtime.min = $('section').data('min-runtime');
+            this.runtime.max = $('section').data('max-runtime');
+            this.release_year.min = $('section').data('min-release-year');
+            this.release_year.max = $('section').data('max-release-year');
+        },
+        convert_to_time:function(minutes) {
             if(minutes < 60) {
                 return minutes + "mins";
             } else {
@@ -617,3 +625,4 @@ var UrlParams = {
 UrlParams.reset(true);
 var app = new AppRouter();
 Backbone.history.start();
+UrlParams.SliderValues.init();

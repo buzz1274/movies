@@ -133,6 +133,7 @@
 
         }
         //end search
+
         /**
          * cleans results after pulling from the database will be
          * called after any of the framework find methods
@@ -425,7 +426,7 @@
                        (int)$searchParams[$field][0] &&
                        isset($searchParams[$field][1]) &&
                        (int)$searchParams[$field][1] &&
-                       (int)$searchParams[$field][0] <
+                       (int)$searchParams[$field][0] <=
                        (int)$searchParams[$field][1]) {
                         $this->_search[$field] =
                                 array('min' => $searchParams[$field][0],
