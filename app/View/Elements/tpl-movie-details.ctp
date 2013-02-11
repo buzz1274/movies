@@ -59,16 +59,104 @@
                         </dd>
                     <% }); %>
                 </dl>
-                <dl class="clearfix">
-                    <dt><strong>Archived:</strong></dt>
-                    <dd class="pull-left">
-                        <% if(Movie.archived) { %>
-                            <img style="padding-top:5px;" height="15" width="15"
-                                 src='/assets/img/tick.png' />
-                        <% } else { %>
-                            <img style="padding-top:5px;" height="15" width="15"
-                                 src='/assets/img/cross.png' />
-                        <% } %>
+                <dl>
+                    <dt><strong>Media:</strong></dt>
+                    <br style="clear:both;" />
+                    <dd style="font-size:0.85em;border:solid 1px #ddd;">
+                        <span class="span12">
+                            <span class="span4">
+                                <strong>Archived:</strong>&nbsp;
+                                <% if(Movie.media_id) { %>
+                                    <img style="padding-top:-2px;" height="15"
+                                         width="15" src='/assets/img/tick.png' />
+                                <% } else { %>
+                                    <img style="padding-top:-5px;" height="15"
+                                         width="15" src='/assets/img/cross.png' />
+                                <% } %>
+                            </span>
+                            <span class="span4">
+                                <strong>Storage:</strong>&nbsp;
+                                <% if(Media.Storage &&
+                                      Media.Storage.media_storage) { %>
+                                    <%= Media.Storage.media_storage %>
+                                <% } else { %>
+                                    -
+                                <% } %>
+                            </span>
+                            <span class="span4">
+                                <strong>Format:</strong>&nbsp;
+                                <% if(Media.MediaFormat &&
+                                      Media.MediaFormat.media_format) { %>
+                                    <%= Media.MediaFormat.media_format %>
+                                <% } else { %>
+                                    -
+                                <% } %>
+                            </span>
+                        </span>
+                        <span class="span12">
+                            <span class="span4">
+                                <strong>Region:</strong>&nbsp;
+                                <% if(Media.Region &&
+                                      Media.Region.region) { %>
+                                    <%= Media.Region.region %>
+                                <% } else { %>
+                                    -
+                                <% } %>
+                            </span>
+                            <span class="span4">
+                                <strong>Special Edition:</strong>&nbsp;
+                                <% if(Media.special_edition) { %>
+                                    <img height="15" width="15" src='/assets/img/tick.png' />
+                                <% } else { %>
+                                    <img height="15" width="15" src='/assets/img/cross.png' />
+                                <% } %>
+                            </span>
+                            <span class="span4">
+                                <strong>Boxed Set:</strong>&nbsp;
+                                <% if(Media.boxset) { %>
+                                    <img height="15" width="15" src='/assets/img/tick.png' />
+                                <% } else { %>
+                                    <img height="15" width="15" src='/assets/img/cross.png' />
+                                <% } %>
+                            </span>
+                        </span>
+                        <span class="span12">
+                            <span class="span4">
+                                <strong>Purchase Price:</strong>&nbsp;
+                               <% if(Media.purchase_price) { %>
+                                    £<%= Media.purchase_price %>
+                                <% } else { %>
+                                    -
+                                <% } %>
+                            </span>
+                            <span class="span4">
+                                <strong>Current Price:</strong>&nbsp;
+                                <% if(Media.current_price) { %>
+                                    £<%= Media.current_price %>
+                                <% } else { %>
+                                    -
+                                <% } %>
+                            </span>
+                            <span class="span4">
+                                <strong>Amazon:</strong>&nbsp;
+                                <% if(Media.amazon_asin) { %>
+                                    <a href="http://www.amazon.co.uk/gp/offer-listing/<%= Media.amazon_asin %>/"
+                                       class="black" target="_blank">
+                                        <%= Media.amazon_asin %>
+                                    </a>
+                                <% } else { %>
+                                    n/a
+                                <% } %>
+                            </span>
+                        </span>
+                        <span class="span12">
+                            <strong>Notes:</strong>&nbsp;
+                            <% if(Media.notes) { %>
+                                <%= Media.notes %>
+                            <% } else { %>
+                                -
+                            <% } %>
+                        </span>
                     </dd>
                 </dl>
                 <dl class="clearfix">

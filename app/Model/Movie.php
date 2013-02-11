@@ -10,7 +10,10 @@
 
         public $primaryKey = 'movie_id';
 
-        public $belongsTo = 'Certificate';
+        public $belongsTo = array('Certificate' =>
+                                        array('className' => 'Certificate',
+                                              'foreignKey' => 'certificate_id'),
+                                   'Media');
 
         public $hasAndBelongsToMany = array(
             'Genre' =>

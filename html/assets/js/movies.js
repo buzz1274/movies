@@ -97,6 +97,7 @@ window.MovieSearchView = Backbone.View.extend({
         window.location = "/movies/csv?"+search;
     },
     lucky:function() {
+        console.log("here");
         this.search();
     },
     search_on_enter:function(e) {

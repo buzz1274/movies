@@ -245,7 +245,7 @@ class IMDB(object):
         """
         sets the genres for the current movie
         """
-        genres = self.page.findAll('a', itemprop='genre')
+        genres = self.page.findAll('div', itemprop='genre')
         if genres:
             for genre in genres:
                 self.genres.append(genre.contents[0])
