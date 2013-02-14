@@ -18,6 +18,9 @@
  * @since         CakePHP(tm) v 0.2.9
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
+
+date_default_timezone_set('UTC');
+
 /**
  * Use the DS to separate the directories in other defines
  */
@@ -35,7 +38,7 @@ if (!defined('DS')) {
  *
  */
 if (!defined('ROOT')) {
-    define('ROOT', DS.'var'.DS.'www'.DS.'movies');
+    define('ROOT', DS.'var'.DS.'www'.DS.'movies.zz50.co.uk');
 }
 /**
  * The actual directory name for the "app".
