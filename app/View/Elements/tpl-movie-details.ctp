@@ -73,11 +73,11 @@
                                 <td><strong>Archived:</strong></td>
                                 <td>
                                     <% if(Movie.media_id) { %>
-                                        <img style="padding-top:-2px;" height="15"
-                                             width="15" src='/assets/img/tick.png' />
+                                        <img height="15" width="15"
+                                             src='/assets/img/tick.png' />
                                     <% } else { %>
-                                        <img style="padding-top:-5px;" height="15"
-                                             width="15" src='/assets/img/cross.png' />
+                                        <img height="15" width="15"
+                                             src='/assets/img/cross.png' />
                                     <% } %>
                                 </td>
                                 <td><strong>Storage:</strong></td>

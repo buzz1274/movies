@@ -248,6 +248,7 @@
 
             } else {
                 $selectQuery = 'SELECT * ';
+                error_log($this->_search['limit']);
                 if(!$this->_search['limit'] ||
                    !(int)$this->_search['limit']) {
                     $limitQuery = false;
@@ -398,6 +399,12 @@
         private function _parseSearchParameters($searchParams) {
 
             //error_log(json_encode($searchParams));
+
+            if(isset($searchParams['limit']) &&
+               ($searchParams['limit'] === false ||
+                (int)$searchParams['limit'] > 0)) {
+                $this->_search['limit'] = $searchParams['limit'];
+            }
 
             if(isset($searchParams['p']) &&
                (int)$searchParams['p'] > 0) {
