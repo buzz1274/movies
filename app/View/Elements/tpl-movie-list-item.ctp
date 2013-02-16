@@ -44,12 +44,6 @@
                         &nbsp;Details
                     </a>
                 </li>
-                <li class="media_link">
-                    <a class="menu_item">
-                        <i class="icon-film"></i>
-                        &nbsp;Media
-                    </a>
-                </li>
                 <li class="favourites_link">
                     <% if(Movie.watched) { %>
                         <a class="menu_item">

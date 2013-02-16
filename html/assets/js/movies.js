@@ -218,6 +218,10 @@ window.MovieListView = Backbone.View.extend({
         'click span.keyword_link': 'keywordSearch',
         'click span.director_link': 'personSearch',
         'click span.actor_link': 'personSearch',
+        'click a.edit_media': 'editMedia',
+    },
+    editMedia:function(ev) {
+        alert("EDIT MEDIA ---- COMING SOON");
     },
     keywordSearch:function(ev) {
         UrlParams.reset(true);
@@ -251,7 +255,6 @@ window.MovieListItemView = Backbone.View.extend({
     events: {
         'mouseover': 'mouseoverrow',
         'mouseout': 'mouseoutrow',
-        'click li.media_link': 'media',
         'click li.watched_link': 'watched',
         'click li.detail_link': 'details',
     },
