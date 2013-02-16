@@ -218,7 +218,7 @@ window.MovieListView = Backbone.View.extend({
         'click span.keyword_link': 'keywordSearch',
         'click span.director_link': 'personSearch',
         'click span.actor_link': 'personSearch',
-        'click a.edit_media': 'editMedia',
+        'click span.edit_media': 'editMedia',
     },
     editMedia:function(ev) {
         alert("EDIT MEDIA ---- COMING SOON");
@@ -270,9 +270,6 @@ window.MovieListItemView = Backbone.View.extend({
         } else {
             app.movieDetails(Movie.movie_id, this.el);
         }
-    },
-    media:function() {
-        $('#opaque').css('display', 'block');
     },
     watched:function() {
         var Movie = this.model.get('Movie');
@@ -411,7 +408,8 @@ var UrlParams = {
         'imdb_rating':null,
         'watched':null,
         'runtime':'',
-        'release_year':''
+        'release_year':'',
+        'lucky':null
     },
     DefaultParams: {
         'p':1,
@@ -426,7 +424,8 @@ var UrlParams = {
         'search':'',
         'imdb_rating':'',
         'runtime':'',
-        'release_year':''
+        'release_year':'',
+        'lucky':0,
     },
     SortDefaults: {
         'title': 1,

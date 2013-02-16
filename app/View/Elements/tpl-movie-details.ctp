@@ -62,9 +62,9 @@
                 <dl>
                     <dt>
                         <strong>Media:</strong>
-                        <a href="#" class="edit_media">
-                            <i class="icon-edit" />
-                        </a>
+                        <span class="edit_media">
+                            <a class="menu_item"><i class="icon-edit" /></a>
+                        </span>
                     </dt>
                     <dd style="font-size:0.85em;border:solid 1px #ddd;">
                         <table style="width:100%;" cellpadding="0"
