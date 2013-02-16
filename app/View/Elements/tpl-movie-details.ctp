@@ -66,9 +66,8 @@
                             <a class="menu_item"><i class="icon-edit" /></a>
                         </span>
                     </dt>
-                    <dd style="font-size:0.85em;border:solid 1px #ddd;">
-                        <table style="width:100%;" cellpadding="0"
-                               cellspacing="0">
+                    <dd style="font-size:0.85em;">
+                        <table class="table table-bordered table-condensed">
                             <tr>
                                 <td><strong>Archived:</strong></td>
                                 <td>

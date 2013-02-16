@@ -241,10 +241,12 @@ window.MovieListView = Backbone.View.extend({
     render:function (eventName) {
         $('#movies_table > tbody').html('');
         if(this.model.models.length) {
+            $('#movies_table').addClass('table-condensed');
             _.each(this.model.models, function (movie) {
                 $(this.el).append(new MovieListItemView({model:movie}).render().el);
             }, this);
         } else {
+            $('#movies_table').removeClass('table-condensed');
             $(this.el).append(_.template($('#tpl-movie-list-no-results').html()));
         }
         return this;
