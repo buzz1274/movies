@@ -378,7 +378,8 @@
                      $limitQuery.' '.
                      '      ) AS results';
 
-            if(is_array($results = $this->query($query)) && $resultType == 'summary') {
+            if(is_array($results = $this->query($query)) &&
+               $resultType == 'summary') {
                 $results = array_pop($results);
             }
 

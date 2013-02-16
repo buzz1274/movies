@@ -1,3 +1,5 @@
 /app/Config/config.ini
 /html/assets/img/movies
 /app/tmp/logs/error.log
+*.pyc
+.project
