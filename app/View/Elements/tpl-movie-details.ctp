@@ -61,6 +61,27 @@
                 </dl>
                 <dl>
                     <dt>
+                        <strong>File:</strong>
+                    </dt>
+                    <dd style="font-size:0.85em;">
+                        <table class="table table-bordered table-condensed">
+                            <tr>
+                                <td><strong>Filesize:</strong></td>
+                                <td><%= Movie.filesize %>GB</td>
+                                <td><strong>Resolution:</strong></td>
+                                <td>
+                                    n/a
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Path:</strong></td>
+                                <td colspan="3"><%= Movie.path %></td>
+                            </tr>
+                        </table>
+                    </dd>
+                </dl>
+                <dl>
+                    <dt>
                         <strong>Media:</strong>
                         <span class="edit_media">
                             <a class="menu_item"><i class="icon-edit" /></a>
@@ -178,10 +199,6 @@
                             </tr>
                         </table>
                     </dd>
-                </dl>
-                <dl class="clearfix">
-                    <dt><strong>Path:</strong></dt>
-                    <dd class="puil-left"><%= Movie.path %></dd>
                 </dl>
             </div>
         </td>
