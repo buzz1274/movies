@@ -63,8 +63,8 @@
                     <dt>
                         <strong>File:</strong>
                     </dt>
-                    <dd style="font-size:0.85em;">
-                        <table class="table table-bordered table-condensed">
+                    <dd>
+                        <table class="table table-bordered table-condensed file">
                             <tr>
                                 <td><strong>Filesize:</strong></td>
                                 <td><%= Movie.filesize %>GB</td>
@@ -87,8 +87,8 @@
                             <a class="menu_item"><i class="icon-edit" /></a>
                         </span>
                     </dt>
-                    <dd style="font-size:0.85em;">
-                        <table class="table table-bordered table-condensed">
+                    <dd>
+                        <table class="table table-bordered table-condensed media">
                             <tr>
                                 <td><strong>Archived:</strong></td>
                                 <td>

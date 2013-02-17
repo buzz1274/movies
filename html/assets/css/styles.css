@@ -160,3 +160,9 @@ td#no_results {
     text-align:center;
     color:#FF0000;
 }
+table.file, table.media {
+    font-size:0.85em;
+}
+table.file td {
+    width:25%;
+}
