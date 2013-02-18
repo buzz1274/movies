@@ -1,7 +1,5 @@
 <?php
 
-    ##gangster boxset asin - B00007LZ6M
-
     class Movie extends AppModel {
 
         public $name = 'movie';
