@@ -1,19 +1,21 @@
 <script type="text/template" id="tpl-movie-paging">
     <% if(totalPages > 1) { %>
         <ul>
-            <li class="<% if(page <= 1) {%>disabled<%}%>">
-                <% if(page <= 1) {%>
-                    <a>First</a>
-                    <a>Prev</a>
-                <% } else { %>
+            <% if(page <= 1) {%>
+                <li class="disabled"><a>First</a></li>
+                <li class="disabled"><a>Prev</a></li>
+            <% } else { %>
+                <li>
                     <a href="#p=1&<%= UrlParams.remove_page_from_query_string() %>">
                         First
                     </a>
+                </li>
+                <li>
                     <a href="#p=<%= (parseInt(page) - 1) %><%= UrlParams.remove_page_from_query_string() %>">
                         Prev
                     </a>
-                <% } %>
-            </li>
+                </li>
+            <% } %>
             <% if(totalPages > 10 && page > 6) {
                 var loopEnd = parseInt(page) + 5;
                 if(loopEnd > totalPages) {
@@ -36,19 +38,21 @@
                     <% } %>
                 </li>
             <% } %>
-            <li class="<% if(page >= totalPages) {%>disabled<%}%>">
-                <% if(page >= totalPages) {%>
-                    <a>Next</a>
-                    <a>Last</a>
-                <% } else { %>
+            <% if(page >= totalPages) {%>
+                <li class="disabled"><a>Next</a></li>
+                <li class="disabled"><a>Last</a></li>
+            <% } else { %>
+                <li>
                     <a href="#p=<%= (parseInt(page) + 1) %><%= UrlParams.remove_page_from_query_string() %>">
                         Next
                     </a>
+                </li>
+                <li>
                     <a href="#p=<%= totalPages %><%= UrlParams.remove_page_from_query_string() %>">
                         Last
                     </a>
-                <% } %>
-            </li>
+                </li>
+            <% } %>
         </ul>
     <% } %>
 </script>
