@@ -93,10 +93,10 @@
                                 <td><strong>Archived:</strong></td>
                                 <td>
                                     <% if(Movie.media_id) { %>
-                                        <img height="15" width="15"
+                                        <img class="centre tick_cross"
                                              src='/assets/img/tick.png' />
                                     <% } else { %>
-                                        <img height="15" width="15"
+                                        <img class="centre tick_cross"
                                              src='/assets/img/cross.png' />
                                     <% } %>
                                 </td>
@@ -133,10 +133,10 @@
                                 <td>
                                     <% if(Movie.media_id) { %>
                                         <% if(Media.special_edition) { %>
-                                            <img height="15" width="15"
+                                            <img class="centre tick_cross"
                                                  src='/assets/img/tick.png' />
                                         <% } else { %>
-                                            <img height="15" width="15"
+                                            <img class="centre tick_cross"
                                                  src='/assets/img/cross.png' />
                                         <% } %>
                                     <% } else { %>
@@ -147,10 +147,10 @@
                                 <td>
                                     <% if(Movie.media_id) { %>
                                         <% if(Media.boxset) { %>
-                                            <img height="15" width="15"
+                                            <img class="centre tick_cross"
                                                  src='/assets/img/tick.png' />
                                         <% } else { %>
-                                            <img height="15" width="15"
+                                            <img class="centre tick_cross"
                                                  src='/assets/img/cross.png' />
                                         <% } %>
                                     <% } else { %>
