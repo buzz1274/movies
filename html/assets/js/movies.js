@@ -302,6 +302,7 @@ window.MovieListItemView = Backbone.View.extend({
         $('#movies_table > tbody').children('tr').css("background-color","");
     },
     render:function (eventName) {
+        $('#opaque').css('display', 'none');
         $(this.el).html(this.template(this.model.toJSON()));
         return this;
     },
@@ -330,7 +331,7 @@ var AppRouter = Backbone.Router.extend({
     },
     list:function (query_string) {
         //alert("here");
-        //$('#opaque').css('display', 'block');
+        $('#opaque').css('display', 'block');
         //alert("done");
         var movieSummary = new MovieSummary();
         var movieSearchView = new MovieSearchView({model:movieSummary});
@@ -359,16 +360,12 @@ var AppRouter = Backbone.Router.extend({
             success: function() {
                 $('#movies_table').append(movieListView.render().el);
                 $('#movies_table').css('display', 'block');
-                //$('#opaque').css('display', 'none');
             },
             error: function() {
                 //fixme:why is error called when no results returned
                 $('#movies_table').append(movieListView.render().el);
                 $('#movies_table').css('display', 'block');
             },
-            handleProgress:function(evt) {
-                alert('handle progress');
-            }
         });
         UrlParams.fill_form();
         movieHeaderView.display_sort_icons();
