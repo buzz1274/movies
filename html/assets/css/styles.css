@@ -27,6 +27,17 @@ div#auth span.auth_link {
 div#auth span#authenticated {
     display:none;
 }
+div#loading {
+    position:fixed;
+    display:none;
+    text-align:center;
+    top:50%;
+    margin-top:-20px
+}
+div#loading img {
+    width:15;
+    height:15;
+}
 .icon-download-alt {
     vertical-align:text-bottom;
     cursor:pointer;

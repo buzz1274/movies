@@ -37,7 +37,11 @@
                 </div>
             </div>
         </div>
-                <div id="opaque"></div>
+        <div id="opaque">
+        </div>
+        <div id="loading" class="offset7 span4">
+            <img height="30" width="30" src="/assets/img/spinner.gif">
+        </div>
         <div class="container">
             <div id="login_popup" class="offset4 span4 popup_info well"></div>
         </div>

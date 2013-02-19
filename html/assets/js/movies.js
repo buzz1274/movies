@@ -302,7 +302,6 @@ window.MovieListItemView = Backbone.View.extend({
         $('#movies_table > tbody').children('tr').css("background-color","");
     },
     render:function (eventName) {
-        $('#opaque').css('display', 'none');
         $(this.el).html(this.template(this.model.toJSON()));
         return this;
     },
@@ -330,9 +329,7 @@ var AppRouter = Backbone.Router.extend({
         "/movies/:imdb_id/":"movieDetails",
     },
     list:function (query_string) {
-        //alert("here");
-        $('#opaque').css('display', 'block');
-        //alert("done");
+        this.loadingImage(true);
         var movieSummary = new MovieSummary();
         var movieSearchView = new MovieSearchView({model:movieSummary});
         var movieHeaderView = new MovieHeaderView();
@@ -369,8 +366,7 @@ var AppRouter = Backbone.Router.extend({
         });
         UrlParams.fill_form();
         movieHeaderView.display_sort_icons();
-        //alert("remove");
-        //$('#opaque').css('display', 'none');
+        this.loadingImage(false);
     },
     movieDetails:function (movie_id, element) {
         var movie = new Movie();
@@ -389,6 +385,16 @@ var AppRouter = Backbone.Router.extend({
         } else if(action == 'logout') {
             login.logout();
         }
+    },
+    loadingImage:function(on) {
+        if(on) {
+            $('#opaque').css('display', 'block');
+            $('#loading').css('display', 'block');
+        } else {
+            $('#opaque').css('display', 'none');
+            $('#loading').css('display', 'none');
+        }
+
     }
 });
 var UrlParams = {
