@@ -3,3 +3,4 @@
 /app/tmp/logs/error.log
 *.pyc
 .project
+movies.komodoproject
