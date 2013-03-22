@@ -1,11 +1,11 @@
 <script type="text/template" id="tpl-movie-search">
     <section id="slider_init_values"
-            data-min-imdb-rating="<?php echo $summary['min_imdb_rating']; ?>"
-            data-max-imdb-rating="<?php echo $summary['max_imdb_rating']; ?>"
-            data-min-runtime="<?php echo $summary['min_runtime']; ?>"
-            data-max-runtime="<?php echo $summary['max_runtime']; ?>"
-            data-min-release-year="<?php echo $summary['min_release_year']; ?>"
-            data-max-release-year="<?php echo $summary['max_release_year']; ?>" />
+             data-min-imdb-rating="<?php echo $summary['min_imdb_rating']; ?>"
+             data-max-imdb-rating="<?php echo $summary['max_imdb_rating']; ?>"
+             data-min-runtime="<?php echo $summary['min_runtime']; ?>"
+             data-max-runtime="<?php echo $summary['max_runtime']; ?>"
+             data-min-release-year="<?php echo $summary['min_release_year']; ?>"
+             data-max-release-year="<?php echo $summary['max_release_year']; ?>" />
     <form id="search" class="well" onsubmit="return false;">
         <fieldset>
             <legend>
@@ -17,9 +17,30 @@
                 <li class="nav-header">
                     Keywords
                 </li>
-                <li>
+                <li class="span12" style="border-bottom:1px solid #e5e5e5;padding-bottom:5px;margin-bottom:10px;">
                     <input type="text" class="span12" autocomplete="off"
                            id="search_input">
+                    <span class="offset0 span4">
+                        <label class="radiobutton inline">
+                            <input type="radio" value="cast" id="search_type" name="search_type">
+                            Cast
+                        </label>
+                    </span>
+                    <span class="offset4 span4">
+                        <label class="radiobutton inline">
+                            <input type="radio" value="keyword" id="search_type" name="search_type">
+                            Keyword
+                        </label>
+                    </span>
+                    <span class="offset8 span4">
+                        <label class="radiobutton inline">
+                            <input type="radio" value="all" id="search_type" name="search_type">
+                            All
+                        </label>
+                    </span>
+                    <span class="pull-right">
+                        <a style="color:#000;">Advanced Search</a>
+                    </span>
                 </li>
                 <li class="nav-header">
                     Genre
@@ -29,7 +50,7 @@
                     Picture Quality
                 </li>
                 <li class="span12">
-                    <span class=" offset0 span4">
+                    <span class="offset0 span4">
                         <label class="radiobutton inline">
                             <input type="radio" value="1" id="hd_1" name="hd">
                             HD
