@@ -21,7 +21,7 @@
                         <dd class="pull-left">
                             <span class="director_link link"
                                data-person_id="<%= director.person_id %>">
-                                <a></1><%= director.person_name %></a>
+                                <a><%= director.person_name %></a>
                             </span>
                         </dd>
                     <% }); %>

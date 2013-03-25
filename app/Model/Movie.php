@@ -246,7 +246,6 @@
 
             } else {
                 $selectQuery = 'SELECT * ';
-                error_log($this->_search['limit']);
                 if(!$this->_search['limit'] ||
                    !(int)$this->_search['limit']) {
                     $limitQuery = false;
@@ -293,13 +292,24 @@
             }
 
             if(isset($this->_search['search']) && $this->_search['search']) {
-                $searchQuery =
-                    "AND ((Movie.title ILIKE '%".$this->_search['search']."%') OR ".
-                    "     (Movie.synopsis ILIKE '%".$this->_search['search']."%') OR ".
-                    "     (person.person_name ILIKE '%".$this->_search['search']."%') OR ".
-                    "     (Movie.imdb_id = '".$this->_search['search']."') OR ".
-                    "     (keyword.keyword ILIKE '%".$this->_search['search']."%'))";
-
+                if($this->_search['search_type'] == 'all') {
+                    $searchQuery =
+                        "AND ((Movie.title ILIKE '%".$this->_search['search']."%') OR ".
+                        "     (Movie.synopsis ILIKE '%".$this->_search['search']."%') OR ".
+                        "     (person.person_name ILIKE '%".$this->_search['search']."%') OR ".
+                        "     (Movie.imdb_id = '".$this->_search['search']."') OR ".
+                        "     (keyword.keyword ILIKE '%".$this->_search['search']."%'))";
+                } elseif($this->_search['search_type'] == 'keyword' &&
+                         !isset($this->_search['keywordID'])) {
+                    $searchQuery =
+                        "AND keyword.keyword ILIKE '%".$this->_search['search']."%' ";
+                } elseif($this->_search['search_type'] == 'cast' &&
+                         !isset($this->_search['personID'])) {
+                    $searchQuery =
+                        "AND person.person_name ILIKE '%".$this->_search['search']."%' ";
+                } else {
+                    $searchQuery = false;
+                }
             } else {
                 $searchQuery = false;
             }
@@ -412,6 +422,12 @@
             if(isset($searchParams['search']) &&
                !empty($searchParams['search'])) {
                 $this->_search['search'] = urldecode($searchParams['search']);
+            }
+
+            if(!isset($searchParams['search_type']) || empty($searchParams['search_type'])) {
+                $this->_search['search_type'] = 'all';
+            } else {
+                $this->_search['search_type'] = $searchParams['search_type'];
             }
 
             if(isset($searchParams['pid']) &&

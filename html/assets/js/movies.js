@@ -226,11 +226,15 @@ window.MovieListView = Backbone.View.extend({
     keywordSearch:function(ev) {
         UrlParams.reset(true);
         UrlParams.Params.kid = $(ev.currentTarget).attr('data-keyword_id');
+        UrlParams.Params.search = $(ev.currentTarget).find('a').html();
+        UrlParams.Params.search_type = 'keyword';
         app.navigate(UrlParams.query_string(), {'trigger':true});
     },
     personSearch:function (ev) {
         UrlParams.reset(true);
         UrlParams.Params.pid = $(ev.currentTarget).attr('data-person_id');
+        UrlParams.Params.search = $(ev.currentTarget).find('a').html();
+        UrlParams.Params.search_type = 'cast';
         app.navigate(UrlParams.query_string(), {'trigger':true});
     },
     genreSearch:function (ev) {
@@ -409,7 +413,8 @@ var UrlParams = {
         'kid':null,
         'hd':null,
         'cid':null,
-        'search': null,
+        'search':null,
+        'search_type':null,
         'imdb_rating':null,
         'watched':null,
         'runtime':'',
@@ -426,6 +431,7 @@ var UrlParams = {
         'cid':0,
         'hd':'all',
         'watched':'all',
+        'search_type':'all',
         'search':'',
         'imdb_rating':'',
         'runtime':'',
@@ -510,6 +516,8 @@ var UrlParams = {
                         });
                     } else if(fragment[0] == 'id') {
                         //console.log("OPEN MOVIE PANE");
+                    } else if (fragment[0] == 'search') {
+                        UrlParams.Params['search'] = decodeURIComponent(fragment[1]);
                     } else {
                         UrlParams.Params[fragment[0]] = fragment[1];
                     }
@@ -529,6 +537,10 @@ var UrlParams = {
         }
         if(UrlParams.Params.watched == 1 || UrlParams.Params.watched == 0) {
             $('#watched_'+UrlParams.Params.watched).attr('checked', 'checked');
+        }
+        if(UrlParams.Params.search_type == 'keyword' ||
+           UrlParams.Params.search_type == 'cast') {
+            $('#search_type_'+UrlParams.Params.search_type).attr('checked', 'checked');
         }
         if(UrlParams.Params.hd == 1 || UrlParams.Params.hd == 0) {
             $('#hd_'+UrlParams.Params.hd).attr('checked', 'checked');
@@ -593,6 +605,7 @@ var UrlParams = {
         UrlParams.Params.cid = "";
         UrlParams.Params.search = $('#search_input').val();
         UrlParams.Params.watched = $('input:radio[name=watched]:checked').val();
+        UrlParams.Params.search_type = $('input:radio[name=search_type]:checked').val();
         UrlParams.Params.hd = $('input:radio[name=hd]:checked').val();
         $('input:checkbox[name="genre[]"]:checked').each(function() {
             if(UrlParams.Params.gid == "") {

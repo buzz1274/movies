@@ -22,24 +22,24 @@
                            id="search_input">
                     <span class="offset0 span4">
                         <label class="radiobutton inline">
-                            <input type="radio" value="cast" id="search_type" name="search_type">
+                            <input type="radio" value="cast" id="search_type_cast"
+                                   name="search_type">
                             Cast
                         </label>
                     </span>
                     <span class="offset4 span4">
                         <label class="radiobutton inline">
-                            <input type="radio" value="keyword" id="search_type" name="search_type">
+                            <input type="radio" value="keyword" id="search_type_keyword"
+                                   name="search_type">
                             Keyword
                         </label>
                     </span>
                     <span class="offset8 span4">
                         <label class="radiobutton inline">
-                            <input type="radio" value="all" id="search_type" name="search_type">
+                            <input type="radio" value="all" id="search_type_all"
+                                   name="search_type" checked="checked">
                             All
                         </label>
-                    </span>
-                    <span class="pull-right">
-                        <a style="color:#000;">Advanced Search</a>
                     </span>
                 </li>
                 <li class="nav-header">
