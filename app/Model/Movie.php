@@ -300,11 +300,12 @@
                         "     (Movie.imdb_id = '".$this->_search['search']."') OR ".
                         "     (keyword.keyword ILIKE '%".$this->_search['search']."%'))";
                 } elseif($this->_search['search_type'] == 'keyword' &&
-                         !isset($this->_search['keywordID'])) {
+                         !$this->_search['keywordID']) {
                     $searchQuery =
                         "AND keyword.keyword ILIKE '%".$this->_search['search']."%' ";
                 } elseif($this->_search['search_type'] == 'cast' &&
-                         !isset($this->_search['personID'])) {
+                         !$this->_search['personID']) {
+
                     $searchQuery =
                         "AND person.person_name ILIKE '%".$this->_search['search']."%' ";
                 } else {
