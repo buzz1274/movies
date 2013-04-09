@@ -6,9 +6,7 @@ import stat
 import json
 import sys
 import urllib
-from fabric.api import settings, hide
-from fabric.operations import get
-from fabric.operations import run
+import subprocess
 from sqlalchemy import *
 from sqlalchemy import exc
 from config import Config
@@ -34,15 +32,13 @@ class Movie():
         spiders the supplied drives and directories for files
         @return string
         """
-        movies = ""
-        with settings(hide('running', 'stdout'), warn_only=True,
-                      host_string=self.config.hostname,
-                      user=self.config.username,
-                      password=self.config.password):
-            for path in ['movies', 'movies2']:
-                 movies += \
-                    run(("find %s -type f -print0 | xargs -0 ls -la" % path),
-                        shell=False, pty=True, combine_stderr=True)
+        movies = []
+        p = os.popen('find %s -type f -print0 | xargs -0 ls -l' % (self.config.path,))
+        while True:
+            line = p.readline()
+            if not line:
+                break
+            movies.append(line)
 
         return movies
 
@@ -137,9 +133,8 @@ class Movie():
         adds, updates and deletes movies as appropriate
         """
         movies = self.scan_folders()
-
         if movies:
-            for line in movies.split("\r\n"):
+            for line in movies:
                 line = re.search(self.config.regex_pattern, line)
                 if (line and line.group(1) and line.group(2) and
                     line.group(3) and line.group(4) and
@@ -182,8 +177,6 @@ class Movie():
         data
         """
         invalid_movies = self.find_invalid_movies()
-        print len(invalid_movies)
-        print invalid_movies
         if invalid_movies:
             for movie in invalid_movies:
                 try:

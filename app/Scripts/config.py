@@ -9,9 +9,8 @@ class Config(object):
 
     CONFIG_PATH = re.sub('Scripts.*', 'Config/',
                          os.path.dirname(os.path.abspath(__file__))) + 'config.ini'
-    hostname = None
-    username = None
-    password = None
+
+    path = None
     regex_pattern = None
     image_save_path = None
     movie_table = None
@@ -76,9 +75,7 @@ class Config(object):
         """
         config = ConfigParser.ConfigParser()
         config.read(self.CONFIG_PATH)
-        self.hostname = config.get('MEDIASERVER', 'hostname').strip('"')
-        self.username = config.get('MEDIASERVER', 'username').strip('"')
-        self.password = config.get('MEDIASERVER', 'password').strip('"')
+        self.path = config.get('MEDIASERVER', 'path').strip('"')
         self.regex_pattern = config.get('MEDIASERVER', 'regex_pattern').strip('"')
         self.image_save_path = config.get('WEBESERVER', 'image_save_path').strip('"')
         self.db_engine = config.get('DB', 'db_engine').strip('"')

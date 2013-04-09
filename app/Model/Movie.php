@@ -373,7 +373,7 @@
                      '                   JOIN genre ON movie_genre.genre_id = genre.genre_id '.
                      '                   GROUP BY movie_genre.movie_id '.
                      '                  ) AS genre ON (genre.movie_id = Movie.movie_id) '.
-                     '        WHERE True '.
+                     '        WHERE Movie.deleted = False '.
                      $genreQuery.' '.
                      $certificateQuery.' '.
                      $personQuery.' '.

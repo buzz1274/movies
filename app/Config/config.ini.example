@@ -11,9 +11,7 @@ db_name""
 image_save_path="" #location to save downloaded movie posters
 
 [MEDIASERVER]
-hostname="" #hostname or ip address for the mediaserver
-username="" #username for mediaserver
-password="" #password for mediaserver
+path="" #path to movie samba share
 regex_pattern=".*wheel\s+([0-9]{1,})\s.*?((movies|movies2)\/(.*?)\[(.*?)\].*)" #pattern to identify movie files
 
 [BACKUP]
