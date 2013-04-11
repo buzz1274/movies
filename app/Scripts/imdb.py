@@ -19,31 +19,18 @@ class IMDBException(Exception):
 class IMDB(object):
 
     title = None
-
     imdb_id = None
-
     page = None
-
     rating = None
-
     runtime = None
-
     synopsis = None
-
     genres = []
-
     directors = []
-
     actors = []
-
     image_path = None
-
     release_year = None
-
     certificate = None
-
     plot_keywords = []
-
     rating_only = False
 
     def __init__(self, imdb_id, rating_only = False):
@@ -63,7 +50,6 @@ class IMDB(object):
 
         try:
             self._get_page_mechanize()
-            #self._get_page()
             self._set_rating()
 
             if not self.rating_only:
@@ -79,21 +65,6 @@ class IMDB(object):
                 self._set_actors()
         except Exception, e:
             print e
-            f = open('/home/dave/'+self.imdb_id+'.html', 'w')
-            f.write(str(self.page))
-            f.close()
-
-    def _get_page(self):
-        """
-        retrieves the appropriate movie page from imdb using mechanize
-        """
-        self.page = ""
-        page = urllib2.urlopen('http://www.imdb.com/title/%s' % (self.imdb_id))
-
-        for line in page:
-            self.page += line
-
-        self.page = BeautifulSoup(str(self.page))
 
     def _get_page_mechanize(self):
         """
@@ -107,7 +78,8 @@ class IMDB(object):
                                'AppleWebKit/537.4 (KHTML, like Gecko) '\
                                'Chrome/22.0.1229.94 Safari/537.4')]
         browser.open('http://www.imdb.com/title/%s' % (self.imdb_id))
-        self.page = BeautifulSoup(browser.response().read(), "html5lib")
+        self.page = BeautifulSoup(browser.response().read(), "html5lib",
+                                  from_encoding='utf-8')
 
     def _set_rating(self):
         """
@@ -126,11 +98,51 @@ class IMDB(object):
         gets the title for the current movie
         """
         try:
-            tag = self.page.find('h1', itemprop='name').contents
+            tag = self.page.find('span', itemprop='name').contents
             if tag:
                 self.title = tag[0].strip()
         except Exception, e:
             raise IMDBException('Unable to retrieve title(%s)(%s)' %
+                                 (self.imdb_id, e))
+
+    def _set_directors(self):
+        """
+        sets directors for the current movie
+        """
+        try:
+            tags = self.page.find('div', itemprop='director')
+            if tags:
+                tags = tags.findAll('span', itemprop='name')
+                if tags:
+                    for director in tags:
+                        try:
+                            director = director.contents[0].strip()
+                            if len(director) > 0:
+                                self.directors.append(director)
+                        except KeyError:
+                            pass
+        except Exception, e:
+            raise IMDBException('Unable to retrieve director(%s)(%s)' %
+                                 (self.imdb_id, e))
+
+    def _set_genres(self):
+        """
+        sets the genres for the current movie
+        """
+        try:
+            genres = self.page.find('div', itemprop='genre')
+            if genres:
+                genres = genres.findAll('a')
+                if genres:
+                    for genre in genres:
+                        try:
+                            genre = genre.contents[0].strip()
+                            if len(genre) > 0:
+                                self.genres.append(genre)
+                        except KeyError:
+                            pass
+        except Exception, e:
+            raise IMDBException('Unable to retrieve genre(%s)(%s)' %
                                  (self.imdb_id, e))
 
     def _set_plot_keywords(self):
@@ -177,19 +189,6 @@ class IMDB(object):
         except Exception, e:
             raise IMDBException('Unable to retrieve actors(%s)(%s)' %
                                  (self.imdb_id, e))
-
-    def _set_directors(self):
-        """
-        sets directors for the current movie
-        """
-        try:
-            tags = self.page.find('a', itemprop='director')
-            if tags:
-                for director in tags:
-                    self.directors.append(director)
-
-        except:
-            print e
 
     def _set_release_date(self):
         """
@@ -240,12 +239,3 @@ class IMDB(object):
 
         if tags:
             self.runtime = re.sub('[^0-9]', '', str(tags.contents[offset]))
-
-    def _set_genres(self):
-        """
-        sets the genres for the current movie
-        """
-        genres = self.page.findAll('div', itemprop='genre')
-        if genres:
-            for genre in genres:
-                self.genres.append(genre.contents[0])
