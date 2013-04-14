@@ -19,6 +19,11 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
+ $config = parse_ini_file(dirname(__FILE__).'/config.ini');
+ define('IMAGE_SAVE_PATH', $config['image_save_path']);
+
+
+
 /**
  * CakePHP Debug Level:
  *

@@ -50,7 +50,7 @@
                       'unique'                => true,
                       'conditions'            => array('role_id=1'),
                       'fields'                => '',
-                      'order'                 => '',
+                      'order'                 => 'order',
                       'limit'                 => '',
                       'offset'                => '',
                       'finderQuery'           => '',
@@ -64,7 +64,7 @@
                       'unique'                => true,
                       'conditions'            => array('role_id=2'),
                       'fields'                => '',
-                      'order'                 => '',
+                      'order'                 => 'order',
                       'limit'                 => '',
                       'offset'                => '',
                       'finderQuery'           => '',
@@ -149,12 +149,31 @@
 
                 if(isset($results[$key]['Movie']['path'])) {
                     $results[$key]['Movie']['path'] =
-                        'Y:\\'.str_replace('/', "\\", $results[$key]['Movie']['path']);
+                        'V:\\'.str_replace('/', "\\", $results[$key]['Movie']['path']);
                 }
 
                 if(isset($results[$key]['Movie']['date_added'])) {
                     $results[$key]['Movie']['date_added'] =
                         date('M y', strtotime($results[$key]['Movie']['date_added']));
+                }
+
+                foreach(array('Director', 'Actor') as $role) {
+                    if(isset($results[$key][$role]) &&
+                       is_array($results[$key][$role])) {
+
+                        foreach($results[$key][$role] as $keyRole => $person) {
+                            if(file_exists(IMAGE_SAVE_PATH.'/cast/'.
+                                           $person['person_imdb_id'].'.jpg')) {
+                                $results[$key][$role][$keyRole]['cast_image'] = true;
+                            } else {
+                                $results[$key][$role][$keyRole]['cast_image'] = false;
+                            }
+
+                            $results[$key][$role][$keyRole]['movie_count'] =
+                                $this->MovieRole->find('count',
+                                    array('conditions' => array('person_id' => $person['person_id'])));
+                        }
+                    }
                 }
 
                 if(isset($results[$key]['Movie']['runtime'])) {

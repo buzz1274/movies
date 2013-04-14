@@ -219,6 +219,7 @@ window.MovieListView = Backbone.View.extend({
         'click span.director_link': 'personSearch',
         'click span.actor_link': 'personSearch',
         'click span.edit_media': 'editMedia',
+        'click span.show_all_cast': 'showAllCast',
     },
     editMedia:function(ev) {
         alert("EDIT MEDIA ---- COMING SOON");
@@ -233,7 +234,7 @@ window.MovieListView = Backbone.View.extend({
     personSearch:function (ev) {
         UrlParams.reset(true);
         UrlParams.Params.pid = $(ev.currentTarget).attr('data-person_id');
-        UrlParams.Params.search = $(ev.currentTarget).find('a').html();
+        UrlParams.Params.search = $(ev.currentTarget).attr('data-person_name');
         UrlParams.Params.search_type = 'cast';
         app.navigate(UrlParams.query_string(), {'trigger':true});
     },
@@ -241,6 +242,15 @@ window.MovieListView = Backbone.View.extend({
         UrlParams.reset(true);
         UrlParams.Params.gid = $(ev.currentTarget).attr('data-genre_id');
         app.navigate(UrlParams.query_string(), {'trigger':true});
+    },
+    showAllCast:function(ev) {
+        if($('#all_cast').css('display') == 'none') {
+            $('#all_cast').css('display', 'block');
+            $('.show_all_cast').html('<a>Hide Complete Cast</a>');
+        } else {
+            $('#all_cast').css('display', 'none');
+            $('.show_all_cast').html('<a>Show Complete Cast</a>');
+        }
     },
     render:function (eventName) {
         $('#movies_table > tbody').html('');

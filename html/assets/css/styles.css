@@ -129,6 +129,10 @@ td.movie_details ul, td.movie_details li {
 img.movie_image {
     border:1px solid #000000;
 }
+img.cast_image {
+    width:21px;
+    height:28px;
+}
 div.no_image_holder {
     border:1px solid #000000;
     text-align:center;
@@ -176,4 +180,8 @@ table.file, table.media {
 }
 table.file td {
     width:25%;
+}
+span.show-all-link {
+    cursor:pointer;
+    padding:10px 10px 0 0;
 }

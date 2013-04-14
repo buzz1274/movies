@@ -19,23 +19,53 @@
                     <dt><strong>Director(s):</strong></dt>
                     <% _.each(Director, function(director) { %>
                         <dd class="pull-left">
+                            <% if (director.cast_image) { %>
+                                <img class="cast_image"
+                                     src="/assets/img/cast/<%= director.person_imdb_id %>.jpg" />
+                            <% } else { %>
+                                <img class="cast_image" src="/assets/img/no_photo.png" />
+                            <% } %>
+                            <a target="_blank" href="http://www.imdb.com/name/<%= director.person_imdb_id %>">
+                                <%= director.person_name %></a>
                             <span class="director_link link"
-                               data-person_id="<%= director.person_id %>">
-                                <a><%= director.person_name %></a>
+                                  data-person_name="<%= director.person_name %>"
+                                  data-person_id="<%= director.person_id %>">
+                                  (<a><%= director.movie_count %></a>)
                             </span>
                         </dd>
                     <% }); %>
                 </dl>
                 <dl class="actors clearfix">
                     <dt><strong>Actors(s):</strong></dt>
+                    <% cast_count = 0; var hidden = false; %>
                     <% _.each(Actor, function(actor) { %>
-                        <dd class="pull-left">
+                        <% cast_count = cast_count + 1;
+                           if(cast_count > 10 && !hidden) { hidden = true; %>
+                            <div id="all_cast" style="display:none;">
+                        <% } %>
+                        <dd class="pull-left" style="line-height:32px;">
+                            <% if (actor.cast_image) { %>
+                                <img class="cast_image"
+                                     src="/assets/img/cast/<%= actor.person_imdb_id %>.jpg" />
+                            <% } else { %>
+                                <img class="cast_image" src="/assets/img/no_photo.png" />
+                            <% } %>
+                            <a target="_blank" href="http://www.imdb.com/name/<%= actor.person_imdb_id %>">
+                                <%= actor.person_name %></a>
                             <span class="actor_link link"
-                               data-person_id="<%= actor.person_id %>">
-                                <a><%= actor.person_name %></a>
+                                  data-person_name="<%= actor.person_name %>"
+                                  data-person_id="<%= actor.person_id %>">
+                                (<a><%= actor.movie_count %></a>)
                             </span>
                         </dd>
                     <% }); %>
+                    <% if (hidden) {%>
+                        </div>
+                        <br style="clear:both;" />
+                        <span class="pull-right show-all-link show_all_cast">
+                            <a>Show Complete Cast</a>
+                        </span>
+                    <% } %>
                 </dl>
                 <dl class="genres clearfix">
                     <dt><strong>Genre(s):</strong></dt>

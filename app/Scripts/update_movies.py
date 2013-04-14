@@ -7,10 +7,10 @@ from movie import Movie
 config = Config()
 movie = Movie()
 
-movie.update_rating()
-movie.update_movies()
+#movie.update_rating()
+#movie.update_movies()
 movie.update_invalid_movies()
-
+'''
 try:
     invalid_movies = movie.find_invalid_movies()
     movies_missing_image = movie.find_missing_images()
@@ -42,3 +42,4 @@ try:
 except Exception, e:
     print e
     pass
+'''

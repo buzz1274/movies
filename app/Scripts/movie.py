@@ -18,7 +18,6 @@ class MovieException(Exception):
 class Movie():
 
     config = None
-
     movie = []
 
     def __init__(self):
@@ -72,7 +71,7 @@ class Movie():
                 __or__(self.config.movie_table.c.runtime == None).\
                 __or__(self.config.movie_table.c.runtime < 60).\
                 __or__(self.config.movie_table.c.runtime > 600)).\
-                order_by(desc(self.config.movie_table.c.movie_id))
+                order_by(asc(self.config.movie_table.c.title))
 
         return self.config.db.execute(query).fetchall()
 
@@ -182,13 +181,12 @@ class Movie():
                 try:
                     self.scrape_imdb(movie.imdb_id)
                 except Exception, e:
-                    print e
                     pass
 
     def due_scraping(self):
         """
         returns a list of imdb_id's that havn't already been scraped
-        or havn't been scraped in the last month
+        or havn't been scraped in the last 3 months
         @return list
         """
         query = select([self.config.movie_table.c.imdb_id,
@@ -226,12 +224,12 @@ class Movie():
                                        date_last_scraped=func.now())
 
                 self.config.db.execute(query)
-                save_path = "%s/%s.jpg" % (self.config.image_save_path, imdb_id)
+                save_path = "%s/%s/%s.jpg" % (self.config.image_save_path, 'movies', imdb_id)
 
                 if not os.path.isfile(save_path) and imdb.image_path:
                     image = urllib.urlretrieve(imdb.image_path, save_path)
 
-                    if not os.path.is_file(save_path):
+                    if not os.path.isfile(save_path):
                         raise MovieException('error saving movie image(%s)' %
                                                (self.imdb_id))
 
@@ -264,19 +262,20 @@ class Movie():
 
         return self.config.db.execute(query).fetchone()
 
-    def person(self, person_name):
+    def person(self, person):
         """
         gets the id for the supplied name
         """
         query = select([self.config.person_table.c.person_id]).\
-                where(self.config.person_table.c.person_name==person_name)
+                where(self.config.person_table.c.person_imdb_id==person['id'])
         person_id = self.config.db.execute(query).scalar()
 
         if not person_id:
             query = self.config.person_table.insert().values(
-                                                person_name=person_name)
+                                                person_name=person['name'],
+                                                person_imdb_id=person['id'])
             self.config.db.execute(query)
-            person_id = self.person(person_name)
+            person_id = self.person(person)
 
         return person_id
 
@@ -305,15 +304,31 @@ class Movie():
         query = select([self.config.role_table.c.role_id]).\
                 where(self.config.role_table.c.role==role)
         role_id = self.config.db.execute(query).scalar()
+        i = 0
 
         for name in names:
             try:
+                i = i + 1
                 person_id = self.person(name)
                 query = self.config.movie_role_table.insert().\
                                          values(movie_id=self.movie['movie_id'],
                                                 person_id=person_id,
+                                                order=i,
                                                 role_id=role_id)
                 self.config.db.execute(query)
+
+                if role == 'actor' and name['image_src']:
+                    save_path = "%s/%s/%s.jpg" %\
+                                   (self.config.image_save_path,
+                                    'cast', name['id'],)
+
+                    if not os.path.isfile(save_path) and name['image_src']:
+                        image = urllib.urlretrieve(name['image_src'], save_path)
+
+                        if not os.path.isfile(save_path):
+                            raise MovieException('error saving cast image(%s)' %
+                                                  (self.imdb_id))
+
             except exc.IntegrityError:
                 pass
 

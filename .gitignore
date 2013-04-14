@@ -1,6 +1,7 @@
 /app/Config/config.ini
 /html/assets/img/movies
 /app/tmp/logs/error.log
+/html/assets/img/cast/
 *.pyc
 .project
 movies.komodoproject

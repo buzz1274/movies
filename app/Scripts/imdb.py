@@ -21,6 +21,7 @@ class IMDB(object):
     title = None
     imdb_id = None
     page = None
+    cast_page = None
     rating = None
     runtime = None
     synopsis = None
@@ -49,7 +50,9 @@ class IMDB(object):
         self.rating_only = rating_only
 
         try:
-            self._get_page_mechanize()
+            self.page =\
+                self._get_page_mechanize('http://www.imdb.com/title/%s' %\
+                                         (self.imdb_id,))
             self._set_rating()
 
             if not self.rating_only:
@@ -61,25 +64,29 @@ class IMDB(object):
                 self._set_synopsis()
                 self._set_image_path()
                 self._set_release_date()
+
+                self.cast_page =\
+                    self._get_page_mechanize('http://www.imdb.com/title/%s/fullcredits' %\
+                                             (self.imdb_id,))
                 self._set_directors()
                 self._set_actors()
+
         except Exception, e:
             print e
 
-    def _get_page_mechanize(self):
+    def _get_page_mechanize(self, page):
         """
         retrieves the appropriate movie page from imdb using mechanize
         """
-        self.page = ""
         browser = mechanize.Browser()
         browser.set_handle_robots(False)
         browser.addheaders = [('User-agent',
                                'Mozilla/5.0 (Windows NT 6.1; WOW64) '\
                                'AppleWebKit/537.4 (KHTML, like Gecko) '\
                                'Chrome/22.0.1229.94 Safari/537.4')]
-        browser.open('http://www.imdb.com/title/%s' % (self.imdb_id))
-        self.page = BeautifulSoup(browser.response().read(), "html5lib",
-                                  from_encoding='utf-8')
+        browser.open(page)
+        return BeautifulSoup(browser.response().read(), "html5lib",
+                             from_encoding='utf-8')
 
     def _set_rating(self):
         """
@@ -105,6 +112,43 @@ class IMDB(object):
             raise IMDBException('Unable to retrieve title(%s)(%s)' %
                                  (self.imdb_id, e))
 
+    def _set_actors(self):
+        """
+        sets actors for the current movie
+        """
+        try:
+            tags = self.cast_page.find('table', {'class': 'cast'}).findAll('tr')
+            if tags:
+                for tag in tags:
+                    try:
+                        image = tag.find('td', {'class': 'hs'}).find('img')
+                        actor = tag.find('td', {'class': 'nm'}).find('a')
+                        actor_id = None
+                        if actor:
+                            actor_id = re.match('\/name\/(.*)\/', actor['href'])
+                            actor = actor.contents[0]
+                            if actor_id and actor_id.group(1):
+                                actor_id = actor_id.group(1)
+                        if image:
+                            if (image['src'] and
+                                not re.match('.*no_photo.png', image['src'])):
+                                image_src = image['src']
+                            else:
+                                image_src = None
+
+                        self.actors.append({'id': actor_id,
+                                            'name': actor,
+                                            'image_src': image_src})
+
+                    except KeyError:
+                        pass
+                    except AttributeError:
+                        pass
+
+        except Exception, e:
+            raise IMDBException('Unable to retrieve actors(%s)(%s)' %
+                                 (self.imdb_id, e))
+
     def _set_directors(self):
         """
         sets directors for the current movie
@@ -112,13 +156,15 @@ class IMDB(object):
         try:
             tags = self.page.find('div', itemprop='director')
             if tags:
-                tags = tags.findAll('span', itemprop='name')
+                tags = tags.findAll('a', itemprop='url')
                 if tags:
                     for director in tags:
                         try:
-                            director = director.contents[0].strip()
-                            if len(director) > 0:
-                                self.directors.append(director)
+                            match = re.match('\/name\/(.*)\/\?.*', director['href'])
+                            director = director.find('span').contents[0]
+                            if len(director) > 0 and match and match.group(1):
+                                self.directors.append({'id':  match.group(1),
+                                                       'name': director})
                         except KeyError:
                             pass
         except Exception, e:
@@ -172,23 +218,6 @@ class IMDB(object):
                 self.certificate = infobar.contents[1]['title']
             except KeyError:
                 pass
-
-    def _set_actors(self):
-        """
-        sets actors for the current movie
-        """
-        try:
-            tags = self.page.find(True, {'class': 'cast_list'}).\
-                             findAll(True, {'class': 'name'})
-            if tags:
-                for tag in tags:
-                    try:
-                        self.actors.append(tag.a.contents[0])
-                    except KeyError:
-                        pass
-        except Exception, e:
-            raise IMDBException('Unable to retrieve actors(%s)(%s)' %
-                                 (self.imdb_id, e))
 
     def _set_release_date(self):
         """
