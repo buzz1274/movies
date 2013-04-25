@@ -41,7 +41,7 @@
                     <% _.each(Actor, function(actor) { %>
                         <% cast_count = cast_count + 1;
                            if(cast_count > 10 && !hidden) { hidden = true; %>
-                            <div id="all_cast" style="display:none;">
+                            <div id="all_cast_<%= Movie.movie_id %>" style="display:none;">
                         <% } %>
                         <dd class="pull-left" style="line-height:32px;">
                             <% if (actor.cast_image) { %>
@@ -62,8 +62,10 @@
                     <% if (hidden) {%>
                         </div>
                         <br style="clear:both;" />
-                        <span class="pull-right show-all-link show_all_cast">
-                            <a>Show Complete Cast</a>
+                        <span id="show_all_cast_<%= Movie.movie_id %>"
+                              data-movie-id="<%= Movie.movie_id %>"
+                              class="pull-right show-all-link">
+                            <a class="btn">Show All</a>
                         </span>
                     <% } %>
                 </dl>
@@ -100,7 +102,7 @@
                                 <td><%= Movie.filesize %>GB</td>
                                 <td><strong>Resolution:</strong></td>
                                 <td>
-                                    n/a
+                                    <%= Movie.width %>x<%= Movie.height %>
                                 </td>
                             </tr>
                             <tr>

@@ -171,7 +171,8 @@
 
                             $results[$key][$role][$keyRole]['movie_count'] =
                                 $this->MovieRole->find('count',
-                                    array('conditions' => array('person_id' => $person['person_id'])));
+                                    array('fields' => 'COUNT(DISTINCT movie_id) as count',
+                                          'conditions' => array('person_id' => $person['person_id'])));
                         }
                     }
                 }

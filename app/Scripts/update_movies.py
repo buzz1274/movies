@@ -7,10 +7,10 @@ from movie import Movie
 config = Config()
 movie = Movie()
 
-#movie.update_rating()
-#movie.update_movies()
+movie.update_rating()
+movie.update_movies()
 movie.update_invalid_movies()
-'''
+
 try:
     invalid_movies = movie.find_invalid_movies()
     movies_missing_image = movie.find_missing_images()
@@ -28,7 +28,7 @@ try:
             for movies_missing_image in movies_missing_image:
                 body += "%s %s %s\n" % (movies_missing_image.movie_id,
                                         movies_missing_image.imdb_id,
-                                        movies_missing_image.title)
+                                        movies_missing_image)
 
         message = MIMEText(body)
         message['Subject'] = 'Movie Spidering Issues'
@@ -40,6 +40,5 @@ try:
                       message.as_string())
         mail.quit()
 except Exception, e:
-    print e
+    print e, type(e)
     pass
-'''

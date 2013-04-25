@@ -88,7 +88,8 @@ class Movie():
 
         movies = self.config.db.execute(query).fetchall()
         for movie in movies:
-            if not os.path.exists(self.config.image_save_path+'/'+movie.imdb_id+'.jpg'):
+            if (not os.path.exists(self.config.image_save_path+'/movies/'+movie.imdb_id+'.jpg') or
+                os.path.getsize(self.config.image_save_path+'/movies/'+movie.imdb_id+'.jpg') < 2000):
                 movies_without_image.append(movie)
 
         return movies_without_image
@@ -147,20 +148,36 @@ class Movie():
                     self.movie = self.get(imdb_id)
 
                     if self.movie:
-                        if int(self.movie['filesize']) != int(filesize):
-                            self._video_resolution(path)
+                        if (int(self.movie['filesize']) != int(filesize) or
+                            not self.movie['runtime'] or not self.movie['width'] or
+                            not self.movie['height']):
+                            runtime, width, height, hd = self._scan_video(path)
+                        else:
+                            runtime = self.movie['runtime']
+                            hd = self.movie['hd']
+                            width = self.movie['width']
+                            height = self.movie['height']
+
                         query = self.config.movie_table.update().\
                                      where(self.config.movie_table.c.imdb_id==\
                                            imdb_id).\
                                      values(filesize=filesize,
+                                            runtime=runtime,
+                                            hd=hd,
+                                            width=width,
+                                            height=height,
                                             path=path,
                                             date_last_scanned=func.now())
                         self.config.db.execute(query)
                     else:
-                        self._video_resolution(path)
+                        runtime, width, height, hd = self._scan_video(path)
                         query = self.config.movie_table.insert().\
                                      values(imdb_id=imdb_id,
                                             filesize=filesize,
+                                            runtime=runtime,
+                                            hd=hd,
+                                            width=width,
+                                            height=height,
                                             path=path,
                                             title=title,
                                             date_last_scanned=func.now())
@@ -215,7 +232,6 @@ class Movie():
                                 where(self.config.movie_table.c.imdb_id==\
                                       imdb_id).\
                                 values(title=imdb.title,
-                                       runtime=imdb.runtime,
                                        imdb_rating=imdb.rating,
                                        certificate_id=certificate_query,
                                        synopsis=imdb.synopsis,
@@ -257,6 +273,10 @@ class Movie():
         query = select([self.config.movie_table.c.movie_id,
                         self.config.movie_table.c.imdb_id,
                         self.config.movie_table.c.path,
+                        self.config.movie_table.c.width,
+                        self.config.movie_table.c.height,
+                        self.config.movie_table.c.hd,
+                        self.config.movie_table.c.runtime,
                         self.config.movie_table.c.filesize]).\
                 where(self.config.movie_table.c.imdb_id==imdb_id)
 
@@ -378,9 +398,44 @@ class Movie():
 
         return keyword_id
 
-    def _video_resolution(self, path):
+    def _scan_video(self, path):
         """
         retrieves the video resolution for the video at the supplied path
         """
-        print "SCAN FILE " + path
+        lines = []
+        path = '%s/%s' % (self.config.path.replace('/Movies', ''),
+                          path,)
 
+        output = subprocess.Popen(["ffmpeg","-i", path],
+                                  stdout=subprocess.PIPE,
+                                  stderr=subprocess.STDOUT)
+
+        while True:
+            line =  output.stdout.readline()
+            if line != '':
+                lines.append(line)
+            else:
+                break
+
+        output = ' '.join(lines)
+        duration = re.search('Duration:\s([0-9]{1,}):([0-5]{1}[0-9]{1})', output)
+        resolution = re.search('Stream\s.*?([0-9]{3,})x([0-9]{3,})', output)
+
+        if resolution and resolution.group(1) and resolution.group(2):
+            width = int(resolution.group(1))
+            height = int(resolution.group(2))
+        else:
+            width = 0
+            height = 0
+
+        if duration and duration.group(1) and duration.group(2):
+            runtime = (int(duration.group(1)) * 60) + int(duration.group(2))
+        else:
+            runtime = 0
+
+        if width >= 1280 and height >= 720:
+            hd = True
+        else:
+            hd = False
+
+        return [runtime, width, height, hd]

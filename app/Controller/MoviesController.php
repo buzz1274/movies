@@ -50,15 +50,6 @@
         //end watched
 
         /**
-         * returns a list of titles matching supplied title
-         * @author David <david@sulaco.co.uk>
-         */
-        public function title() {
-
-        }
-        //end title
-
-        /**
          * returns a csv formatted list of movies
          * @author David <david@sulaco.co.uk>
          */

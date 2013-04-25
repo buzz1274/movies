@@ -23,7 +23,6 @@ class IMDB(object):
     page = None
     cast_page = None
     rating = None
-    runtime = None
     synopsis = None
     genres = []
     directors = []
@@ -51,23 +50,24 @@ class IMDB(object):
 
         try:
             self.page =\
-                self._get_page_mechanize('http://www.imdb.com/title/%s' %\
+                self._get_page_mechanize('http://uk.imdb.com/title/%s' %\
                                          (self.imdb_id,))
+
             self._set_rating()
 
             if not self.rating_only:
                 self._set_title()
                 self._set_plot_keywords()
                 self._set_certificate()
-                self._set_runtime()
                 self._set_genres()
                 self._set_synopsis()
                 self._set_image_path()
                 self._set_release_date()
 
                 self.cast_page =\
-                    self._get_page_mechanize('http://www.imdb.com/title/%s/fullcredits' %\
+                    self._get_page_mechanize('http://uk.imdb.com/title/%s/fullcredits' %\
                                              (self.imdb_id,))
+
                 self._set_directors()
                 self._set_actors()
 
@@ -254,17 +254,3 @@ class IMDB(object):
         self.synopsis = self.page.find('p', itemprop='description').contents
         if self.synopsis:
             self.synopsis = self.synopsis[0].strip()
-
-    def _set_runtime(self):
-        """
-        sets the runtime for the current movie
-        """
-        offset = 0
-        tags = self.page.find('time', itemprop='duration')
-
-        if not tags:
-            offset = 1
-            tags = self.page.find(True, {'class': 'infobar'})
-
-        if tags:
-            self.runtime = re.sub('[^0-9]', '', str(tags.contents[offset]))
