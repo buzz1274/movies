@@ -113,11 +113,13 @@ class Movie():
         last 28days with
         """
         movies = self.due_scraping()
-
         if movies:
             for movie in movies:
                 self.movie = movie
                 imdb = IMDB(movie.imdb_id, rating_only = True)
+
+                if imdb.plot_keywords:
+                    self._add_keywords(imdb.plot_keywords)
 
                 if imdb.rating:
                     query = self.config.movie_table.update().\
@@ -185,8 +187,6 @@ class Movie():
                         self.movie = self.get(imdb_id)
                         self.scrape_imdb(imdb_id)
 
-            #mark as deleted all movie not seen today
-
     def update_invalid_movies(self):
         """
         attempts to scrape missing data for any movies without full
@@ -211,7 +211,9 @@ class Movie():
                 where((self.config.movie_table.c.date_last_scraped==None).\
                 __or__(func.date_part('day', func.now() -
                                              self.config.movie_table.c.\
-                                             date_last_scraped) > 90))
+                                             date_last_scraped) > 1)).\
+                order_by(self.config.movie_table.c.date_last_scraped.desc()).\
+                limit(30)
 
         return self.config.db.execute(query).fetchall()
 
@@ -371,12 +373,21 @@ class Movie():
         adds keywords for the current movie
         @param genres: list
         """
+        i = 0
+        if keywords:
+            self.config.movie_keyword_table.delete(
+               movie_id=self.movie['movie_id'])
         for keyword in keywords:
             try:
-                query = self.config.movie_keyword_table.insert().\
-                                     values(movie_id=self.movie['movie_id'],
-                                            keyword_id=self.keyword(keyword))
-                self.config.db.execute(query)
+                keyword = keyword.strip()
+                if len(keyword):
+                    i = i + 1
+                    keyword_id = self.keyword(keyword)
+                    query = self.config.movie_keyword_table.insert().\
+                                         values(movie_id=self.movie['movie_id'],
+                                                order=i,
+                                                keyword_id=keyword_id)
+                    self.config.db.execute(query)
             except exc.IntegrityError:
                 pass
 

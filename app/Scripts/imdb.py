@@ -54,10 +54,10 @@ class IMDB(object):
                                          (self.imdb_id,))
 
             self._set_rating()
+            self._set_plot_keywords()
 
             if not self.rating_only:
                 self._set_title()
-                self._set_plot_keywords()
                 self._set_certificate()
                 self._set_genres()
                 self._set_synopsis()
@@ -197,11 +197,18 @@ class IMDB(object):
         @param plot_keywords_page: string
         """
         try:
-            tags = self.page.findAll('a', href=re.compile(r"/keyword/.*"))
+            keyword_page =\
+                self._get_page_mechanize('http://uk.imdb.com/title/%s/keywords' %\
+                                         (self.imdb_id,))
+
+            tags = keyword_page.find('div', {'id': 'keywords_content'}).findAll('tr')
             if tags:
                 for tag in tags:
                     try:
-                        self.plot_keywords.append(tag.contents[0])
+                        keyword = tag.find('a')
+                        keyword = keyword.contents[0].strip()
+                        if keyword:
+                            self.plot_keywords.append(keyword)
                     except KeyError:
                         pass
         except Exception, e:
