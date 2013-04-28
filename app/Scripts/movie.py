@@ -211,7 +211,7 @@ class Movie():
                 where((self.config.movie_table.c.date_last_scraped==None).\
                 __or__(func.date_part('day', func.now() -
                                              self.config.movie_table.c.\
-                                             date_last_scraped) > 1)).\
+                                             date_last_scraped) > 90)).\
                 order_by(self.config.movie_table.c.date_last_scraped.desc()).\
                 limit(30)
 
