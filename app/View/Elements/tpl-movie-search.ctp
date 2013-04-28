@@ -20,21 +20,28 @@
                 <li class="span12" style="border-bottom:1px solid #e5e5e5;padding-bottom:5px;margin-bottom:10px;">
                     <input type="text" class="span12" autocomplete="off"
                            id="search_input">
-                    <span class="offset0 span4">
+                    <span class="offset0 span3">
                         <label class="radiobutton inline">
                             <input type="radio" value="cast" id="search_type_cast"
                                    name="search_type">
                             Cast
                         </label>
                     </span>
-                    <span class="offset4 span4">
+                    <span class="offset3 span4">
                         <label class="radiobutton inline">
                             <input type="radio" value="keyword" id="search_type_keyword"
                                    name="search_type">
                             Keyword
                         </label>
                     </span>
-                    <span class="offset8 span4">
+                    <span class="offset7 span3">
+                        <label class="radiobutton inline">
+                            <input type="radio" value="title" id="search_type_title"
+                                   name="search_type">
+                            Title
+                        </label>
+                    </span>
+                    <span class="offset10 span2">
                         <label class="radiobutton inline">
                             <input type="radio" value="all" id="search_type_all"
                                    name="search_type" checked="checked">

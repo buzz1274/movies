@@ -325,9 +325,11 @@
                         "AND keyword.keyword ILIKE '%".$this->_search['search']."%' ";
                 } elseif($this->_search['search_type'] == 'cast' &&
                          !$this->_search['personID']) {
-
                     $searchQuery =
                         "AND person.person_name ILIKE '%".$this->_search['search']."%' ";
+                } elseif($this->_search['search_type'] == 'title') {
+                    $searchQuery =
+                        "AND Movie.title ILIKE '%".$this->_search['search']."%' ";
                 } else {
                     $searchQuery = false;
                 }

@@ -551,7 +551,8 @@ var UrlParams = {
             $('#watched_'+UrlParams.Params.watched).attr('checked', 'checked');
         }
         if(UrlParams.Params.search_type == 'keyword' ||
-           UrlParams.Params.search_type == 'cast') {
+           UrlParams.Params.search_type == 'cast' ||
+           UrlParams.Params.search_type == 'title') {
             $('#search_type_'+UrlParams.Params.search_type).attr('checked', 'checked');
         }
         if(UrlParams.Params.hd == 1 || UrlParams.Params.hd == 0) {
