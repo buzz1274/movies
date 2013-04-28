@@ -383,6 +383,7 @@ var AppRouter = Backbone.Router.extend({
         UrlParams.fill_form();
         movieHeaderView.display_sort_icons();
         this.loadingImage(false);
+        $(document).scrollTop(0);
     },
     movieDetails:function (movie_id, element) {
         var movie = new Movie();
