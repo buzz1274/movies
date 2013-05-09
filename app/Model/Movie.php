@@ -161,6 +161,8 @@
                     if(isset($results[$key][$role]) &&
                        is_array($results[$key][$role])) {
 
+                       // $userCount = $this->MovieRole->find('all',
+
                         foreach($results[$key][$role] as $keyRole => $person) {
                             if(file_exists(IMAGE_SAVE_PATH.'/cast/'.
                                            $person['person_imdb_id'].'.jpg')) {

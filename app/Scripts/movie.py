@@ -172,6 +172,7 @@ class Movie():
                                             date_last_scanned=func.now())
                         self.config.db.execute(query)
                     else:
+                        print title, path
                         runtime, width, height, hd = self._scan_video(path)
                         query = self.config.movie_table.insert().\
                                      values(imdb_id=imdb_id,
@@ -213,7 +214,7 @@ class Movie():
                                              self.config.movie_table.c.\
                                              date_last_scraped) > 90)).\
                 order_by(self.config.movie_table.c.date_last_scraped.desc()).\
-                limit(30)
+                limit(10)
 
         return self.config.db.execute(query).fetchall()
 
@@ -375,8 +376,12 @@ class Movie():
         """
         i = 0
         if keywords:
-            self.config.movie_keyword_table.delete(
-               movie_id=self.movie['movie_id'])
+            query = self.config.movie_keyword_table.delete().\
+                               where(self.config.movie_keyword_table.c.movie_id ==
+                                     self.movie['movie_id'])
+
+            self.config.db.execute(query)
+
         for keyword in keywords:
             try:
                 keyword = keyword.strip()
@@ -413,6 +418,7 @@ class Movie():
         """
         retrieves the video resolution for the video at the supplied path
         """
+        print path
         lines = []
         path = '%s/%s' % (self.config.path.replace('/Movies', ''),
                           path,)

@@ -245,6 +245,7 @@ window.MovieListView = Backbone.View.extend({
     },
     showAll:function(ev) {
         var id = $(ev.currentTarget).attr('data-movie-id');
+        alert($(ev.currentTarget).attr('id'));
 
         if($('#all_cast_'+id).css('display') == 'none') {
             $('#all_cast_'+id).css('display', 'block');
@@ -521,11 +522,11 @@ var UrlParams = {
                     if(fragment[0] == 'gid' || fragment[0] == 'cid') {
                         UrlParams.Params[fragment[0]] = "";
                         fragment[1].split(',').forEach(function(id) {
-                        if(UrlParams.Params[fragment[0]] == "") {
-                            UrlParams.Params[fragment[0]] += id;
-                        } else {
-                            UrlParams.Params[fragment[0]] += "," + id;
-                        }
+                            if(UrlParams.Params[fragment[0]] == "") {
+                                UrlParams.Params[fragment[0]] += id;
+                            } else {
+                                UrlParams.Params[fragment[0]] += "," + id;
+                            }
                         });
                     } else if(fragment[0] == 'id') {
                         //console.log("OPEN MOVIE PANE");

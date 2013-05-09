@@ -73,23 +73,43 @@
                     <dt><strong>Genre(s):</strong></dt>
                     <% _.each(Genre, function(genre) { %>
                         <dd class="pull-left">
+                            <a target="_blank" href="http://www.imdb.com/genre/<%= genre.genre.toLowerCase() %>">
+                                <%= genre.genre %>
+                            </a>
                             <span class="genre_link link"
                                data-genre_id="<%= genre.genre_id %>">
-                                <a><%= genre.genre %></a>
+                                (<a><%= 0 %></a>)
                             </span>
                         </dd>
                     <% }); %>
                 </dl>
-                <dl class="genres clearfix">
+                <dl class="keywords clearfix">
                     <dt><strong>Keyword(s):</strong></dt>
+                    <% keyword_count = 0; var hidden = false; %>
                     <% _.each(Keyword, function(keyword) { %>
+                        <% keyword_count = keyword_count + 1;
+                           if(keyword_count > 10 && !hidden) { hidden = true; %>
+                                <div id="all_keyword_<%= Movie.movie_id %>" style="display:none;">
+                        <% } %>
                         <dd class="pull-left">
+                            <a target="_blank" href="http://www.imdb.com/keyword/<%= keyword.keyword.toLowerCase() %>">
+                                <%= keyword.keyword %>
+                            </a>
                             <span class="keyword_link link"
                                data-keyword_id="<%= keyword.keyword_id %>">
-                                <a><%= keyword.keyword %></a>
+                                (<a><%= 0 %></a>)
                             </span>
                         </dd>
                     <% }); %>
+                    <% if (hidden) {%>
+                        </div>
+                        <br style="clear:both;" />
+                        <span id="show_all_keyword_<%= Movie.movie_id %>"
+                              data-movie-id="<%= Movie.movie_id %>"
+                              class="pull-right show-all-link">
+                            <a class="btn">Show All</a>
+                        </span>
+                    <% } %>
                 </dl>
                 <dl>
                     <dt>

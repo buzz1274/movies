@@ -13,7 +13,7 @@ movie.update_invalid_movies()
 
 try:
     invalid_movies = movie.find_invalid_movies()
-    movies_missing_image = movie.find_missing_images()
+    movies_missing_images = movie.find_missing_images()
     if invalid_movies or movies_missing_images:
         body = ""
         if invalid_movies:
@@ -23,9 +23,9 @@ try:
                                         invalid_movie.imdb_id,
                                         invalid_movie.title)
             body += "\n"
-        if movies_missing_image:
-            body += "Movies with Missing Image(%d)\n" % (len(movies_missing_image))
-            for movies_missing_image in movies_missing_image:
+        if movies_missing_images:
+            body += "Movies with Missing Image(%d)\n" % (len(movies_missing_images))
+            for movies_missing_image in movies_missing_images:
                 body += "%s %s %s\n" % (movies_missing_image.movie_id,
                                         movies_missing_image.imdb_id,
                                         movies_missing_image)

@@ -63,16 +63,11 @@ class IMDB(object):
                 self._set_synopsis()
                 self._set_image_path()
                 self._set_release_date()
-
-                self.cast_page =\
-                    self._get_page_mechanize('http://uk.imdb.com/title/%s/fullcredits' %\
-                                             (self.imdb_id,))
-
                 self._set_directors()
                 self._set_actors()
 
         except Exception, e:
-            print e
+            print "failed", e
 
     def _get_page_mechanize(self, page):
         """
@@ -116,6 +111,10 @@ class IMDB(object):
         """
         sets actors for the current movie
         """
+        self.cast_page =\
+            self._get_page_mechanize('http://uk.imdb.com/title/%s/fullcredits' %\
+                                     (self.imdb_id,))
+
         try:
             tags = self.cast_page.find('table', {'class': 'cast'}).findAll('tr')
             if tags:
@@ -201,14 +200,15 @@ class IMDB(object):
                 self._get_page_mechanize('http://uk.imdb.com/title/%s/keywords' %\
                                          (self.imdb_id,))
 
-            tags = keyword_page.find('div', {'id': 'keywords_content'}).findAll('tr')
+            tags = keyword_page.find('div', {'id': 'keywords_content'}).findAll('td')
             if tags:
                 for tag in tags:
                     try:
                         keyword = tag.find('a')
-                        keyword = keyword.contents[0].strip()
                         if keyword:
-                            self.plot_keywords.append(keyword)
+                            keyword = keyword.contents[0].strip()
+                            if len(keyword) > 0:
+                                self.plot_keywords.append(keyword)
                     except KeyError:
                         pass
         except Exception, e:
@@ -258,6 +258,11 @@ class IMDB(object):
         """
         sets the movie synopsis
         """
-        self.synopsis = self.page.find('p', itemprop='description').contents
-        if self.synopsis:
-            self.synopsis = self.synopsis[0].strip()
+        try:
+            tags = self.page.find('p', itemprop='description')
+            if tags:
+                tags = tags.contents
+                self.synopsis = tags[0].strip()
+        except Exception, e:
+            raise IMDBException('Unable to retrieve synopsis(%s)(%s)' %
+                                 (self.imdb_id, e))
