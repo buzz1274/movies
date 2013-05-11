@@ -227,7 +227,7 @@ window.MovieListView = Backbone.View.extend({
     keywordSearch:function(ev) {
         UrlParams.reset(true);
         UrlParams.Params.kid = $(ev.currentTarget).attr('data-keyword_id');
-        UrlParams.Params.search = $(ev.currentTarget).find('a').html();
+        UrlParams.Params.search = $(ev.currentTarget).attr('data-keyword');
         UrlParams.Params.search_type = 'keyword';
         app.navigate(UrlParams.query_string(), {'trigger':true});
     },
@@ -245,14 +245,14 @@ window.MovieListView = Backbone.View.extend({
     },
     showAll:function(ev) {
         var id = $(ev.currentTarget).attr('data-movie-id');
-        alert($(ev.currentTarget).attr('id'));
+        var type = $(ev.currentTarget).attr('id').match(/keyword|cast/g);
 
-        if($('#all_cast_'+id).css('display') == 'none') {
-            $('#all_cast_'+id).css('display', 'block');
-            $('#show_all_cast_'+id).html('<a class="btn">Hide All</a>');
+        if($('#all_'+type+'_'+id).css('display') == 'none') {
+            $('#all_'+type+'_'+id).css('display', 'block');
+            $('#show_all_'+type+'_'+id).html('<a class="btn">Hide All</a>');
         } else {
-            $('#all_cast_'+id).css('display', 'none');
-            $('#show_all_cast_'+id).html('<a class="btn">Show All</a>');
+            $('#all_'+type+'_'+id).css('display', 'none');
+            $('#show_all_'+type+'_'+id).html('<a class="btn">Show All</a>');
         }
     },
     render:function (eventName) {

@@ -172,7 +172,6 @@ class Movie():
                                             date_last_scanned=func.now())
                         self.config.db.execute(query)
                     else:
-                        print title, path
                         runtime, width, height, hd = self._scan_video(path)
                         query = self.config.movie_table.insert().\
                                      values(imdb_id=imdb_id,
@@ -418,7 +417,6 @@ class Movie():
         """
         retrieves the video resolution for the video at the supplied path
         """
-        print path
         lines = []
         path = '%s/%s' % (self.config.path.replace('/Movies', ''),
                           path,)

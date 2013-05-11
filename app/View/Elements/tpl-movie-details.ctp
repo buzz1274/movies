@@ -96,7 +96,8 @@
                                 <%= keyword.keyword %>
                             </a>
                             <span class="keyword_link link"
-                               data-keyword_id="<%= keyword.keyword_id %>">
+                                  data-keyword="<%= keyword.keyword %>"
+                                  data-keyword_id="<%= keyword.keyword_id %>">
                                 (<a><%= 0 %></a>)
                             </span>
                         </dd>
