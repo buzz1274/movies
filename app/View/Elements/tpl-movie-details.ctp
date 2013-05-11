@@ -126,10 +126,14 @@
                                 <td>
                                     <%= Movie.width %>x<%= Movie.height %>
                                 </td>
+                                <td><strong>File Type:</strong></td>
+                                <td>
+                                    <%= Movie.path.replace(/.*?\./g, '') %>
+                                </td>
                             </tr>
                             <tr>
                                 <td><strong>Path:</strong></td>
-                                <td colspan="3"><%= Movie.path %></td>
+                                <td colspan="5"><%= Movie.path %></td>
                             </tr>
                         </table>
                     </dd>
