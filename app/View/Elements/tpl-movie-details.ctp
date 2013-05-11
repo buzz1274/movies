@@ -73,7 +73,7 @@
                     <dt><strong>Genre(s):</strong></dt>
                     <% _.each(Genre, function(genre) { %>
                         <dd class="pull-left">
-                            <a target="_blank" href="http://www.imdb.com/genre/<%= genre.genre.toLowerCase() %>">
+                            <a target="_blank" href="http://www.imdb.com/genre/<%= genre.genre.toLowerCase().replace(/-/g, '_') %>">
                                 <%= genre.genre %>
                             </a>
                             <span class="genre_link link"
@@ -92,7 +92,8 @@
                                 <div id="all_keyword_<%= Movie.movie_id %>" style="display:none;">
                         <% } %>
                         <dd class="pull-left">
-                            <a target="_blank" href="http://www.imdb.com/keyword/<%= keyword.keyword.toLowerCase() %>">
+                            <a target="_blank"
+                               href="http://www.imdb.com/keyword/<%= keyword.keyword.toLowerCase().replace(/\s/g, '-') %>">
                                 <%= keyword.keyword %>
                             </a>
                             <span class="keyword_link link"
