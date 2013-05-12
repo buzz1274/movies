@@ -65,7 +65,7 @@
                         <span id="show_all_cast_<%= Movie.movie_id %>"
                               data-movie-id="<%= Movie.movie_id %>"
                               class="pull-right show-all-link">
-                            <a class="btn">Show All</a>
+                            <a class="btn btn-mini">Show All</a>
                         </span>
                     <% } %>
                 </dl>
@@ -109,7 +109,7 @@
                         <span id="show_all_keyword_<%= Movie.movie_id %>"
                               data-movie-id="<%= Movie.movie_id %>"
                               class="pull-right show-all-link">
-                            <a class="btn">Show All</a>
+                            <a class="btn btn-mini">Show All</a>
                         </span>
                     <% } %>
                 </dl>
