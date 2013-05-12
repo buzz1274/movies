@@ -53,7 +53,7 @@
                     <% } else { %>
                         <a class="menu_item">
                             <i class="icon-star"></i>
-                            &nbsp;Mark as Not Favourite
+                            &nbsp;Remove from Favourites
                         </a>
                     <% } %>
                 </li>

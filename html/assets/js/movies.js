@@ -96,18 +96,25 @@ window.MovieSearchView = Backbone.View.extend({
         search = window.location.hash.slice(1, window.location.hash.length);
         window.location = "/movies/csv?"+search;
     },
-    lucky:function() {
-        console.log("here");
-        this.search();
+    lucky:function(e) {
+        this.search(e, true);
     },
     search_on_enter:function(e) {
         if(e.keyCode == 13) {
-            this.search();
+            this.search(e, false);
         }
     },
-    search:function(lucky) {
+    search:function(e, lucky) {
+        if (lucky) {
+            lucky = UrlParams.Params.lucky == 1 ? 2 : 1;
+        }
         UrlParams.reset(false);
         UrlParams.parse_search_form();
+        if(lucky){
+            UrlParams.Params.lucky = lucky;
+        } else {
+            UrlParams.Params.lucky = 0;
+        }
         app.navigate(UrlParams.query_string(), {'trigger':true});
     },
     icon_over:function() {
@@ -609,6 +616,7 @@ var UrlParams = {
                             UrlParams.Params['asc']+'&';
         }
         this.qs = qs.slice(0, -1);
+
         return this.qs;
     },
     remove_page_from_query_string:function() {

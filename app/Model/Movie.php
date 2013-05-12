@@ -366,9 +366,15 @@
                 }
             }
 
+
+            if($this->_search['lucky']) {
+                $orderQuery = 'ORDER BY rand ';
+                $limitQuery = 'LIMIT 1';
+            }
+
             $query = $selectQuery.' '.
                      'FROM   (SELECT    DISTINCT Movie.movie_id, Movie.watched, '.
-                     '                  Movie.imdb_id, Movie.title, '.
+                     '                  Movie.imdb_id, Movie.title, random() AS rand, '.
                      '                  certificate.Certificate, '.
                      '                  Movie.hd, genre.movie_genres, '.
                      '                  genre.movie_genre_ids, Movie.date_added, '.
@@ -437,6 +443,12 @@
                ($searchParams['limit'] === false ||
                 (int)$searchParams['limit'] > 0)) {
                 $this->_search['limit'] = $searchParams['limit'];
+            }
+
+            if(isset($searchParams['lucky']) && $searchParams['lucky']) {
+                $this->_search['lucky'] = true;
+            } else {
+                $this->_search['lucky'] = false;
             }
 
             if(isset($searchParams['p']) &&
