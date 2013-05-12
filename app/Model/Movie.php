@@ -368,13 +368,16 @@
 
 
             if($this->_search['lucky']) {
+                $randQuery = 'random() AS rand,';
                 $orderQuery = 'ORDER BY rand ';
                 $limitQuery = 'LIMIT 1';
+            } else {
+                $randQuery = false;
             }
 
             $query = $selectQuery.' '.
                      'FROM   (SELECT    DISTINCT Movie.movie_id, Movie.watched, '.
-                     '                  Movie.imdb_id, Movie.title, random() AS rand, '.
+                     '                  Movie.imdb_id, Movie.title, '.$randQuery.' '.
                      '                  certificate.Certificate, '.
                      '                  Movie.hd, genre.movie_genres, '.
                      '                  genre.movie_genre_ids, Movie.date_added, '.
