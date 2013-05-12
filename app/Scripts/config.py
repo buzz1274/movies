@@ -62,6 +62,8 @@ class Config(object):
                                       autoload_with=self.db)
             self.movie_role_table = Table('movie_role', MetaData(),
                                           autoload=True, autoload_with=self.db)
+            self.media_table = Table('media', MetaData(),
+                                     autoload=True, autoload_with=self.db)
 
         except ConfigParser.Error, e:
             sys.exit('Invalid config file(%s)' % e.message)

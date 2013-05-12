@@ -11,12 +11,14 @@ from sqlalchemy import *
 from sqlalchemy import exc
 from config import Config
 from imdb import IMDB
+from amazon import Amazon
 
 class MovieException(Exception):
     pass
 
 class Movie():
 
+    days_before_price_update_due = 5
     config = None
     movie = []
 
@@ -75,6 +77,39 @@ class Movie():
 
         return self.config.db.execute(query).fetchall()
 
+    def due_price_updates(self):
+        """
+        returns all movies requiring price updates
+        @return dictionary
+        """
+        query = select([self.config.media_table.c.media_id,
+                        self.config.media_table.c.amazon_asin,
+                        self.config.media_table.c.current_price]).\
+                where(func.date_part('day', func.now() -
+                      self.config.media_table.c.date_price_last_updated) >
+                      self.days_before_price_update_due).\
+                limit(100)
+
+        return self.config.db.execute(query)
+
+    def prices_updated(self):
+        """
+        determines if any movies have had their prices updated
+        in the last n days
+        """
+        query = select([func.count(self.config.media_table.c.media_id)]).\
+                where(func.date_part('day', func.now() -
+                      self.config.media_table.c.date_price_last_updated) <
+                      self.days_before_price_update_due)
+
+        count = self.config.db.execute(query)
+        if count:
+            for c in count:
+                if c[0] > 0:
+                    return True
+                else:
+                    return False
+
     def find_missing_images(self):
         """
         finds movies with missing cover images
@@ -106,6 +141,23 @@ class Movie():
                       password=self.config.password):
             run(('mv "%s" "%s"' % (old_path, new_path)),
                 shell=False, pty=True, combine_stderr=True)
+
+    def update_prices(self):
+        """
+        updates prices for movies
+        """
+        movies = self.due_price_updates()
+        if movies:
+            amazon = Amazon()
+            for movie in movies:
+                price = amazon.get_secondhandprice(movie['amazon_asin'])
+                if price:
+                    query = self.config.media_table.update().\
+                                 where(self.config.media_table.c.media_id==\
+                                       movie['media_id']).\
+                                 values(current_price=price,
+                                        date_price_last_updated=func.now())
+                    self.config.db.execute(query)
 
     def update_rating(self):
         """
