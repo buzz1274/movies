@@ -120,20 +120,22 @@
                     <dd>
                         <table class="table table-bordered table-condensed file">
                             <tr>
+                                <td><strong>ID:</strong></td>
+                                <td><%= Movie.movie_id %></td>
                                 <td><strong>Filesize:</strong></td>
                                 <td><%= Movie.filesize %>GB</td>
                                 <td><strong>Resolution:</strong></td>
                                 <td>
                                     <%= Movie.width %>x<%= Movie.height %>
                                 </td>
-                                <td><strong>File Type:</strong></td>
+                                <td><strong>Type:</strong></td>
                                 <td>
                                     <%= Movie.path.replace(/.*?\./g, '') %>
                                 </td>
                             </tr>
                             <tr>
                                 <td><strong>Path:</strong></td>
-                                <td colspan="5"><%= Movie.path %></td>
+                                <td colspan="7"><%= Movie.path %></td>
                             </tr>
                         </table>
                     </dd>
