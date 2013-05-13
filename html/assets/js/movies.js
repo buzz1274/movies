@@ -256,10 +256,10 @@ window.MovieListView = Backbone.View.extend({
 
         if($('#all_'+type+'_'+id).css('display') == 'none') {
             $('#all_'+type+'_'+id).css('display', 'block');
-            $('#show_all_'+type+'_'+id).html('<a class="btn">Hide All</a>');
+            $('#show_all_'+type+'_'+id).html('<a class="btn btn-mini">Hide All</a>');
         } else {
             $('#all_'+type+'_'+id).css('display', 'none');
-            $('#show_all_'+type+'_'+id).html('<a class="btn">Show All</a>');
+            $('#show_all_'+type+'_'+id).html('<a class="btn btn-mini">Show All</a>');
         }
     },
     render:function (eventName) {
