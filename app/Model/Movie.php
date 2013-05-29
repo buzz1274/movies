@@ -161,8 +161,6 @@
                     if(isset($results[$key][$role]) &&
                        is_array($results[$key][$role])) {
 
-                       // $userCount = $this->MovieRole->find('all',
-
                         foreach($results[$key][$role] as $keyRole => $person) {
                             if(file_exists(IMAGE_SAVE_PATH.'/cast/'.
                                            $person['person_imdb_id'].'.jpg')) {
@@ -176,6 +174,31 @@
                                     array('fields' => 'COUNT(DISTINCT movie_id) as count',
                                           'conditions' => array('person_id' => $person['person_id'])));
                         }
+                    }
+                }
+
+                if(isset($results[$key]['Genre']) &&
+                   is_array($results[$key]['Genre'])) {
+
+                    foreach($results[$key]['Genre'] as $keyGenre => $genre) {
+
+                        $results[$key]['Genre'][$keyGenre]['movie_count'] =
+                            $this->MovieGenre->find('count',
+                                array('fields' => 'COUNT(DISTINCT movie_id) as count',
+                                      'conditions' => array('genre_id' => $genre['genre_id'])));
+                    }
+                }
+
+                if(isset($results[$key]['Keyword']) &&
+                   is_array($results[$key]['Keyword'])) {
+
+                    foreach($results[$key]['Keyword'] as $k => $keyword) {
+
+                        $results[$key]['Keyword'][$k]['movie_count'] =
+                            $this->MovieKeyword->find('count',
+                                array('fields' => 'COUNT(DISTINCT movie_id) as count',
+                                      'conditions' => array('keyword_id' => $keyword['keyword_id'])));
+
                     }
                 }
 

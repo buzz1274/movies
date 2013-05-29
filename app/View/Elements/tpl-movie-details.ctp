@@ -78,7 +78,7 @@
                             </a>
                             <span class="genre_link link"
                                data-genre_id="<%= genre.genre_id %>">
-                                (<a><%= 0 %></a>)
+                                (<a><%= genre.movie_count %></a>)
                             </span>
                         </dd>
                     <% }); %>
@@ -99,7 +99,7 @@
                             <span class="keyword_link link"
                                   data-keyword="<%= keyword.keyword %>"
                                   data-keyword_id="<%= keyword.keyword_id %>">
-                                (<a><%= 0 %></a>)
+                                (<a><%= keyword.movie_count %></a>)
                             </span>
                         </dd>
                     <% }); %>
