@@ -54,7 +54,7 @@
             <div id="content" class="row-fluid">
                 <div id="movies_search" class="span4">
                 </div>
-                <div class="span8" style="position:relative;min-height:960px;">
+                <div id="movies_list" class="span8">
                     <div id="loading">
                         <img src="/assets/img/spinner.gif">
                     </div>

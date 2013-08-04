@@ -27,6 +27,10 @@ div#auth span.auth_link {
 div#auth span#authenticated {
     display:none;
 }
+div #movies_list {
+    position:relative;
+    min-height:960px;
+}
 div#loading {
     position:absolute;
     z-index:1000;
