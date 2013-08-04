@@ -236,6 +236,7 @@
          * retrieve movies that match the supplied search criteria
          * @author David
          * @param $resultType - summary|search
+         * @return mixed
          */
         private function _search($resultType) {
 

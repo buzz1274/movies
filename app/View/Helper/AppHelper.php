@@ -57,7 +57,7 @@
             return $checkboxes;
 
         }
-        //end genreCheckboxFormatter
+        //end checkboxFormatter
 
     }
 

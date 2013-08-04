@@ -1,6 +1,6 @@
 <?php
     set_time_limit(0);
-    $csv = '"ID","Title","Certificate","Rating","HD","Filesize(GB)","Runtime",'.
+    $csv = '"ID","Title","Certificate","Rating","HD","File size(GB)","Runtime",'.
            '"Release Year","Genres"'."\n";
 
     foreach($data as $movie) {

@@ -28,11 +28,12 @@ div#auth span#authenticated {
     display:none;
 }
 div#loading {
-    position:fixed;
+    position:absolute;
+    z-index:1000;
     display:none;
     text-align:center;
     top:50%;
-    margin-top:-20px
+    width:100%;
 }
 div#loading img {
     width:15;

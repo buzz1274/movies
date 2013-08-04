@@ -140,128 +140,126 @@
                         </table>
                     </dd>
                 </dl>
-                <% if(Movie.media_id) { %>
-                    <dl>
-                        <dt>
-                            <strong>Media:</strong>
-                            <span class="edit_media">
-                                <a class="menu_item"><i class="icon-edit" /></a>
-                            </span>
-                        </dt>
-                        <dd>
-                            <table class="table table-bordered table-condensed media">
-                                <tr>
-                                    <td><strong>Archived:</strong></td>
-                                    <td>
-                                        <% if(Movie.media_id) { %>
+                <dl>
+                    <dt>
+                        <strong>Media:</strong>
+                        <span class="edit_media">
+                            <a class="menu_item"><i class="icon-edit" /></a>
+                        </span>
+                    </dt>
+                    <dd>
+                        <table class="table table-bordered table-condensed media">
+                            <tr>
+                                <td><strong>Archived:</strong></td>
+                                <td>
+                                    <% if(Movie.media_id) { %>
+                                        <img class="centre tick_cross"
+                                             src='/assets/img/tick.png' />
+                                    <% } else { %>
+                                        <img class="centre tick_cross"
+                                             src='/assets/img/cross.png' />
+                                    <% } %>
+                                </td>
+                                <td><strong>Storage:</strong></td>
+                                <td>
+                                    <% if(Media.Storage &&
+                                          Media.Storage.media_storage) { %>
+                                        <%= Media.Storage.media_storage %>
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </td>
+                                <td><strong>Format:</strong></td>
+                                <td>
+                                    <% if(Media.MediaFormat &&
+                                          Media.MediaFormat.media_format) { %>
+                                        <%= Media.MediaFormat.media_format %>
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Region:</strong></td>
+                                <td>
+                                    <% if(Media.Region &&
+                                          Media.Region.region) { %>
+                                        <%= Media.Region.region %>
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </td>
+                                <td><strong>Special Edition:</strong></td>
+                                <td>
+                                    <% if(Movie.media_id) { %>
+                                        <% if(Media.special_edition) { %>
                                             <img class="centre tick_cross"
                                                  src='/assets/img/tick.png' />
                                         <% } else { %>
                                             <img class="centre tick_cross"
                                                  src='/assets/img/cross.png' />
                                         <% } %>
-                                    </td>
-                                    <td><strong>Storage:</strong></td>
-                                    <td>
-                                        <% if(Media.Storage &&
-                                              Media.Storage.media_storage) { %>
-                                            <%= Media.Storage.media_storage %>
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </td>
+                                <td><strong>Boxed Set:</strong></td>
+                                <td>
+                                    <% if(Movie.media_id) { %>
+                                        <% if(Media.boxset) { %>
+                                            <img class="centre tick_cross"
+                                                 src='/assets/img/tick.png' />
                                         <% } else { %>
-                                            -
+                                            <img class="centre tick_cross"
+                                                 src='/assets/img/cross.png' />
                                         <% } %>
-                                    </td>
-                                    <td><strong>Format:</strong></td>
-                                    <td>
-                                        <% if(Media.MediaFormat &&
-                                              Media.MediaFormat.media_format) { %>
-                                            <%= Media.MediaFormat.media_format %>
-                                        <% } else { %>
-                                            -
-                                        <% } %>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Region:</strong></td>
-                                    <td>
-                                        <% if(Media.Region &&
-                                              Media.Region.region) { %>
-                                            <%= Media.Region.region %>
-                                        <% } else { %>
-                                            -
-                                        <% } %>
-                                    </td>
-                                    <td><strong>Special Edition:</strong></td>
-                                    <td>
-                                        <% if(Movie.media_id) { %>
-                                            <% if(Media.special_edition) { %>
-                                                <img class="centre tick_cross"
-                                                     src='/assets/img/tick.png' />
-                                            <% } else { %>
-                                                <img class="centre tick_cross"
-                                                     src='/assets/img/cross.png' />
-                                            <% } %>
-                                        <% } else { %>
-                                            -
-                                        <% } %>
-                                    </td>
-                                    <td><strong>Boxed Set:</strong></td>
-                                    <td>
-                                        <% if(Movie.media_id) { %>
-                                            <% if(Media.boxset) { %>
-                                                <img class="centre tick_cross"
-                                                     src='/assets/img/tick.png' />
-                                            <% } else { %>
-                                                <img class="centre tick_cross"
-                                                     src='/assets/img/cross.png' />
-                                            <% } %>
-                                        <% } else { %>
-                                            -
-                                        <% } %>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Purchase Price:</strong></td>
-                                    <td>
-                                        <% if(Media.purchase_price) { %>
-                                            &pound;<%= Media.purchase_price %>
-                                        <% } else { %>
-                                            -
-                                        <% } %>
-                                    </td>
-                                    <td><strong>Current Price:</strong></td>
-                                    <td>
-                                        <% if(Media.current_price) { %>
-                                            &pound;<%= Media.current_price %>
-                                        <% } else { %>
-                                            -
-                                        <% } %>
-                                    </td>
-                                    <td><strong>Amazon:</strong></td>
-                                    <td>
-                                        <% if(Media.amazon_asin) { %>
-                                            <a href="http://www.amazon.co.uk/gp/offer-listing/<%= Media.amazon_asin %>/"
-                                               class="black" target="_blank">
-                                                <%= Media.amazon_asin %>
-                                            </a>
-                                        <% } else { %>
-                                            -
-                                        <% } %>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Notes:</strong></td>
-                                    <td colspan="5">
-                                        <% if(Media.notes) { %>
-                                            <%= Media.notes %>
-                                        <% } else { %>
-                                            -
-                                        <% } %>
-                                    </td>
-                                </tr>
-                            </table>
-                        </dd>
-                    </dl>
-                <% } %>
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Purchase Price:</strong></td>
+                                <td>
+                                    <% if(Media.purchase_price) { %>
+                                        &pound;<%= Media.purchase_price %>
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </td>
+                                <td><strong>Current Price:</strong></td>
+                                <td>
+                                    <% if(Media.current_price) { %>
+                                        &pound;<%= Media.current_price %>
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </td>
+                                <td><strong>Amazon:</strong></td>
+                                <td>
+                                    <% if(Media.amazon_asin) { %>
+                                        <a href="http://www.amazon.co.uk/gp/offer-listing/<%= Media.amazon_asin %>/"
+                                           class="black" target="_blank">
+                                            <%= Media.amazon_asin %>
+                                        </a>
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Notes:</strong></td>
+                                <td colspan="5">
+                                    <% if(Media.notes) { %>
+                                        <%= Media.notes %>
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </td>
+                            </tr>
+                        </table>
+                    </dd>
+                </dl>
             </div>
         </td>
     </tr>

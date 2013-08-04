@@ -14,29 +14,45 @@ media_table = Table('media', MetaData(), autoload=True,
 
 with open('movie_media_information.csv', 'rb') as csvfile:
     media = csv.reader(csvfile, delimiter=',', quotechar='"')
+    count = 0
     for row in media:
-        query = select([movie_table.c.movie_id,
-                        movie_table.c.title]).\
-                where(movie_table.c.title == row[0])
+        if count > 0:
+            query = select([movie_table.c.movie_id,
+                            movie_table.c.media_id,
+                            movie_table.c.title]).\
+                    where(movie_table.c.movie_id == row[0])
 
-        movie = db.execute(query).fetchone()
+            movie = db.execute(query).fetchone()
 
-        if not movie:
-            print "NOT FOUND:", row[0]
-        else:
-            query = media_table.insert().\
-                         values(media_format_id=row[1],
-                                media_region_id=row[2],
-                                media_storage_id=row[3],
-                                amazon_asin=row[4],
-                                purchase_price=1.12,
-                                current_price=row[5],
-                                special_edition=row[6],
-                                boxset=False,
-                                notes=row[7]).returning(media_table.c.media_id)
-            media = db.execute(query)
-            if media:
-                query = movie_table.update().\
-                                    where(movie_table.c.movie_id==movie[0]).\
-                                    values(media_id=media.fetchone()[0])
-                db.execute(query)
+            if not movie:
+                print "NOT FOUND:", row[2]
+            elif movie[1]:
+                print "MEDIA ASSIGNED:", movie[2]
+            else:
+                query = select([media_table.c.media_id]).\
+                        where(media_table.c.amazon_asin == row[2])
+                media_id = db.execute(query).fetchone()
+
+                if media_id:
+                    media_id = media_id[0]
+
+                if not media_id:
+                    query = media_table.insert().\
+                                 values(media_format_id=1,
+                                        media_region_id=2,
+                                        media_storage_id=row[1],
+                                        amazon_asin=row[2],
+                                        purchase_price=1.12,
+                                        current_price=0.01,
+                                        special_edition=row[3],
+                                        boxset=row[4],
+                                        notes=row[5]).returning(media_table.c.media_id)
+                    media_id = db.execute(query).fetchone()[0]
+
+                if media_id:
+                    query = movie_table.update().\
+                                        where(movie_table.c.movie_id==movie[0]).\
+                                        values(media_id=media_id)
+                    db.execute(query)
+
+        count += 1

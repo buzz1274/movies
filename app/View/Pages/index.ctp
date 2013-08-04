@@ -47,9 +47,6 @@
         </div>
         <div id="opaque">
         </div>
-        <div id="loading" class="offset7 span4">
-            <img height="30" width="30" src="/assets/img/spinner.gif">
-        </div>
         <div class="container">
             <div id="login_popup" class="offset4 span4 popup_info well"></div>
         </div>
@@ -57,7 +54,10 @@
             <div id="content" class="row-fluid">
                 <div id="movies_search" class="span4">
                 </div>
-                <div class="span8">
+                <div class="span8" style="position:relative;min-height:960px;">
+                    <div id="loading">
+                        <img src="/assets/img/spinner.gif">
+                    </div>
                     <table class="table table-bordered table-condensed"
                            style="display:none;" id="movies_table">
                     </table>

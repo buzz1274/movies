@@ -70,6 +70,9 @@ window.MovieSearchView = Backbone.View.extend({
     },
     render:function () {
         summary = this.model.toJSON();
+
+        console.log(summary);
+
         if(summary.totalMovies != 0 && summary.totalMovies != null) {
             UrlParams.SliderValues['imdb_rating'].current_min =
                 Math.floor(summary.min_imdb_rating);
@@ -105,7 +108,7 @@ window.MovieSearchView = Backbone.View.extend({
         }
     },
     search:function(e, lucky) {
-        if (lucky) {
+        if(lucky) {
             lucky = UrlParams.Params.lucky == 1 ? 2 : 1;
         }
         UrlParams.reset(false);
@@ -146,6 +149,7 @@ window.MovieSearchView = Backbone.View.extend({
                     $("#"+id+"_label").html(start+" - "+end);
                 },
             });
+
             if(id == 'runtime') {
                 start = UrlParams.SliderValues.convert_to_time(
                                 $("#"+id+"_slider_range").slider("values",0));
@@ -353,53 +357,60 @@ var AppRouter = Backbone.Router.extend({
         "/movies/:imdb_id/":"movieDetails",
     },
     list:function (query_string) {
-        this.loadingImage(true);
+        loadingImage(true);
+        $(document).scrollTop(0);
+
         var movieSummary = new MovieSummary();
         var movieSearchView = new MovieSearchView({model:movieSummary});
         var movieHeaderView = new MovieHeaderView();
         var moviePagingView = new MoviePagingView({model:movieSummary});
+
         UrlParams.parse(query_string);
         movieSummary.fetch({
-            async:false,
+            async:true,
             data:UrlParams.Params,
             success: function() {
-                $('#movies_table').empty().append(movieHeaderView.render().el);
-                $('#movies_search').empty().prepend(movieSearchView.render().el);
-                $('#pagination').empty().append(moviePagingView.render().el);
+                var movieList = new MovieCollection();
+                var movieListView = new MovieListView({model:movieList});
 
-                movieSearchView.render_slider('imdb_rating');
-                movieSearchView.render_slider('runtime');
-                movieSearchView.render_slider('release_year');
+                movieList.fetch({
+                    async:true,
+                    data:UrlParams.Params,
+                    success: function() {
+                        $('#movies_search').empty().prepend(movieSearchView.render().el);
+                        $('#movies_table').empty().append(movieHeaderView.render().el);
+                        $('#movies_table').append(movieListView.render().el);
+                        $('#pagination').empty().append(moviePagingView.render().el);
 
-            }
-        });
-        var movieList = new MovieCollection();
-        var movieListView = new MovieListView({model:movieList});
-        movieList.fetch({
-            async:false,
-            data:UrlParams.Params,
-            success: function() {
-                $('#movies_table').append(movieListView.render().el);
-                $('#movies_table').css('display', 'block');
+                        UrlParams.SliderValues.init();
+
+                        movieSearchView.render_slider('imdb_rating');
+                        movieSearchView.render_slider('runtime');
+                        movieSearchView.render_slider('release_year');
+
+                        $('#movies_table').css('display', 'block');
+                        UrlParams.fill_form();
+                        movieHeaderView.display_sort_icons();
+                        loadingImage(false);
+                    },
+                    error: function() {
+                        $('#movies_table').append(movieListView.render().el);
+                        $('#movies_table').css('display', 'block');
+                        loadingImage(false);
+                    },
+                });
             },
-            error: function() {
-                //fixme:why is error called when no results returned
-                $('#movies_table').append(movieListView.render().el);
-                $('#movies_table').css('display', 'block');
-            },
         });
-        UrlParams.fill_form();
-        movieHeaderView.display_sort_icons();
-        this.loadingImage(false);
-        $(document).scrollTop(0);
     },
     movieDetails:function (movie_id, element) {
+        loadingImage(true);
         var movie = new Movie();
         movie.url = '../../movies/'+movie_id+'/';
         var movieView = new MovieView({model:movie});
         movie.fetch({
             success: function() {
                 movieView.render(element);
+                loadingImage(false);
             }
         });
     },
@@ -411,17 +422,16 @@ var AppRouter = Backbone.Router.extend({
             login.logout();
         }
     },
-    loadingImage:function(on) {
-        if(on) {
-            $('#opaque').css('display', 'block');
-            $('#loading').css('display', 'block');
-        } else {
-            $('#opaque').css('display', 'none');
-            $('#loading').css('display', 'none');
-        }
-
-    }
 });
+var loadingImage = function(on) {
+    if(on) {
+        $('#opaque').css('display', 'block');
+        $('#loading').css('display', 'block');
+    } else {
+        $('#opaque').css('display', 'none');
+        $('#loading').css('display', 'none');
+    }
+}
 var UrlParams = {
     authenticated:false,
     qs:'',
@@ -493,6 +503,7 @@ var UrlParams = {
             current_max:false,
         },
         init:function() {
+            var data = $('#slider_init_values').html();
             this.imdb_rating.min = Math.floor($('section').data('min-imdb-rating'));
             this.imdb_rating.max = Math.ceil($('section').data('max-imdb-rating'));
             this.runtime.min = $('section').data('min-runtime');
@@ -669,4 +680,3 @@ var UrlParams = {
 UrlParams.reset(true);
 var app = new AppRouter();
 Backbone.history.start();
-UrlParams.SliderValues.init();
