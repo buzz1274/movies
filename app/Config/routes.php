@@ -5,9 +5,15 @@
     Router::connect('/',
                     array('controller' => 'pages',
                           'action' => 'index'));
-    Router::connect('/login',
-                    array('controller' => 'pages',
+    Router::connect('/user/',
+                    array('controller' => 'user',
+                          'action' => 'index'));
+    Router::connect('/user/login/',
+                    array('controller' => 'user',
                           'action' => 'login'));
+    Router::connect('/user/logout/',
+                    array('controller' => 'user',
+                          'action' => 'logout'));
     Router::connect('/movies/summary',
                     array('controller' => 'movies',
                           'action' => 'summary'));

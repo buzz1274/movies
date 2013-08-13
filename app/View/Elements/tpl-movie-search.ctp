@@ -17,7 +17,7 @@
                 <li class="nav-header">
                     Keywords
                 </li>
-                <li class="span12" style="border-bottom:1px solid #e5e5e5;padding-bottom:5px;margin-bottom:10px;">
+                <li class="span12 seperator">
                     <input type="text" class="span12" autocomplete="off"
                            id="search_input">
                     <span class="offset0 span3">
@@ -86,76 +86,78 @@
                         </label>
                     </span>
                 </li>
-                <li class="nav-header">
-                    Seen
-                </li>
-                <li class="span12">
-                    <span class=" offset0 span4">
-                        <label class="radiobutton inline">
-                            <input type="radio" value="1"
-                                   id="watched_1" name="watched">
-                            Yes
-                            <span id="watched_yes">
-                                (<%= watched != 0 && watched != null ? watched : '-' %>)
-                            </span>
-                        </label>
-                    </span>
-                    <span class="offset4 span4">
-                        <label class="radiobutton inline">
-                            <input type="radio" value="0"
-                                   id="watched_0" name="watched">
-                            No
-                            <span id="watched_no">
-                                (<%= not_watched != 0 && not_watched != null ? not_watched : '-' %>)
-                            </span>
-                        </label>
-                    </span>
-                    <span class="offset8 span4">
-                        <label class="radiobutton inline">
-                            <input type="radio"checked="checked"
-                                   name="watched" value="all">
-                            All
-                            <span>
-                                (<%= totalMovies != 0 && totalMovies != null ? totalMovies : '-' %>)
-                            </span>
-                        </label>
-                    </span>
-                </li>
-                <li class="nav-header">
-                    Favourties
-                </li>
-                <li class="span12">
-                    <span class=" offset0 span4">
-                        <label class="radiobutton inline">
-                            <input type="radio" value="1"
-                                   id="favourites_1" name="favourites">
-                            Yes
-                            <span id="favourites_yes">
-                                (<%= favourites != 0 && favourites != null ? favourites : '-' %>)
-                            </span>
-                        </label>
-                    </span>
-                    <span class="offset4 span4">
-                        <label class="radiobutton inline">
-                            <input type="radio" value="0"
-                                   id="favourites_0" name="favourites">
-                            No
-                            <span id="favourites_no">
-                                (<%= not_favourites != 0 && not_favourites != null ? not_favourites : '-' %>)
-                            </span>
-                        </label>
-                    </span>
-                    <span class="offset8 span4">
-                        <label class="radiobutton inline">
-                            <input type="radio"checked="checked"
-                                   name="favourites" value="all">
-                            All
-                            <span>
-                                (<%= totalMovies != 0 && totalMovies != null ? totalMovies : '-' %>)
-                            </span>
-                        </label>
-                    </span>
-                </li>
+                <% if (user.authenticated) {%>
+                    <li class="nav-header">
+                        Seen
+                    </li>
+                    <li class="span12">
+                        <span class=" offset0 span4">
+                            <label class="radiobutton inline">
+                                <input type="radio" value="1"
+                                       id="watched_1" name="watched">
+                                Yes
+                                <span id="watched_yes">
+                                    (<%= watched != 0 && watched != null ? watched : '-' %>)
+                                </span>
+                            </label>
+                        </span>
+                        <span class="offset4 span4">
+                            <label class="radiobutton inline">
+                                <input type="radio" value="0"
+                                       id="watched_0" name="watched">
+                                No
+                                <span id="watched_no">
+                                    (<%= not_watched != 0 && not_watched != null ? not_watched : '-' %>)
+                                </span>
+                            </label>
+                        </span>
+                        <span class="offset8 span4">
+                            <label class="radiobutton inline">
+                                <input type="radio"checked="checked"
+                                       name="watched" value="all">
+                                All
+                                <span>
+                                    (<%= totalMovies != 0 && totalMovies != null ? totalMovies : '-' %>)
+                                </span>
+                            </label>
+                        </span>
+                    </li>
+                    <li class="nav-header">
+                        Favourties
+                    </li>
+                    <li class="span12">
+                        <span class=" offset0 span4">
+                            <label class="radiobutton inline">
+                                <input type="radio" value="1"
+                                       id="favourites_1" name="favourites">
+                                Yes
+                                <span id="favourites_yes">
+                                    (<%= favourites != 0 && favourites != null ? favourites : '-' %>)
+                                </span>
+                            </label>
+                        </span>
+                        <span class="offset4 span4">
+                            <label class="radiobutton inline">
+                                <input type="radio" value="0"
+                                       id="favourites_0" name="favourites">
+                                No
+                                <span id="favourites_no">
+                                    (<%= not_favourites != 0 && not_favourites != null ? not_favourites : '-' %>)
+                                </span>
+                            </label>
+                        </span>
+                        <span class="offset8 span4">
+                            <label class="radiobutton inline">
+                                <input type="radio"checked="checked"
+                                       name="favourites" value="all">
+                                All
+                                <span>
+                                    (<%= totalMovies != 0 && totalMovies != null ? totalMovies : '-' %>)
+                                </span>
+                            </label>
+                        </span>
+                    </li>
+                <% } %>
                 <li class="nav-header">
                     Certificate
                 </li>

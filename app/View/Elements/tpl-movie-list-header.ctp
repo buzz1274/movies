@@ -42,12 +42,14 @@
                 HD
             </span>
         </th>
-        <th style="width:7%">
-            <span id="watched_sort" class="sort_link link"
-                  title="Click to sort watched" data-sort_order="watched">
-                Seen
-            </span>
-        </th>
+        <% if (user.authenticated) {%>
+            <th style="width:7%">
+                <span id="watched_sort" class="sort_link link"
+                      title="Click to sort watched" data-sort_order="watched">
+                    Seen
+                </span>
+            </th>
+        <% } %>
         <th style="width:4%;text-align:center;">-</th>
     </tr>
 </script>

@@ -20,14 +20,6 @@
             <div class="navbar-inner">
                 <div class="container-fluid">
                     <div id="auth" class="container-fluid pull-right">
-                        <div class="btn-group" style="padding-right:80px;padding-bottom:5px;">
-                            <a class="btn btn-mini dropdown-toggle">
-                                Manage&nbsp;&nbsp;<span class="caret"></span>
-                            </a>
-                            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
-                              <li><a tabindex="-1" href="#">Display Prices</a></li>
-                            </ul>
-                        </div>
                         <span id="login_link" class="auth_link"
                               onclick="app.authenticate('login');">
                             Login
@@ -88,7 +80,13 @@
             src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js">
         </script>
         <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/assets/js/helper.js"></script>
+        <script type="text/javascript" src="/assets/js/state.js"></script>
+        <script type="text/javascript" src="/assets/js/models.js"></script>
+        <script type="text/javascript" src="/assets/js/user.js"></script>
+        <script type="text/javascript" src="/assets/js/router.js"></script>
         <script type="text/javascript" src="/assets/js/movies.js"></script>
+        <script type="text/javascript" src="/assets/js/main.js"></script>
         <script type="text/javascript" src="/assets/js/autocomplete.js"></script>
     </body>
 </html>

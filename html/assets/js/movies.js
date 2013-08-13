@@ -1,61 +1,3 @@
-window.Login = Backbone.Model.extend({
-    url:'/login/',
-});
-window.Movie = Backbone.Model.extend({
-    url:'/movies/',
-    idAttribute: "movie_id"
-});
-window.MovieSummary = Backbone.Model.extend({
-   url:'/movies/summary/',
-});
-window.MovieCollection = Backbone.Collection.extend({
-    model:Movie,
-    url:'/movies/',
-});
-window.LoginView = Backbone.View.extend({
-    tagName:"div",
-    template:_.template($('#tpl-login').html()),
-    events: {
-        'click #cancelButton': 'hide_login_popup',
-        'click #loginButton': 'login',
-    },
-    render:function() {
-        $(this.el).html(this.template());
-        $('#login_popup').css('display', 'block');
-        $('#opaque').css('display', 'block');
-        return this;
-    },
-    hide_login_popup:function() {
-        $('#login_popup').html('');
-        $('#opaque').css('display', 'none');
-        $('#login_popup').css('display', 'none');
-    },
-    logout:function() {
-        UrlParams.authenticated = false;
-    },
-    login:function() {
-        $.ajax({
-            url:'/login',
-            type:'POST',
-            dataType:"json",
-            data: 'formValues',
-            success:function (data) {
-                if(data.error) {
-                    $('.alert-error').text(data.error.text).show();
-                }
-                else {
-                    UrlParams.authenticated = true;
-                    $('#login_link').css('display', 'none');
-                    $('#authenticated_name').html(data.name);
-                    $('#authenticated').css('display', 'block');
-                    window.LoginView.hide_login_popup();
-
-                    app.navigate(UrlParams.query_string(), {'trigger':true});
-                }
-            }
-        });
-    }
-});
 window.MovieSearchView = Backbone.View.extend({
     tagName:"div",
     template:_.template($('#tpl-movie-search').html()),
@@ -66,14 +8,23 @@ window.MovieSearchView = Backbone.View.extend({
         'click #luckyButton': 'lucky',
         'click #resetButton': 'reset',
         'keypress #search_input': 'search_on_enter',
-        'click #download': 'download',
+        'click #download': 'download'
+    },
+    initialize: function() {
+        _.bindAll(this, 'render');
+        this.options.user.bind("change:authenticated", this.render);
+        if(typeof this.model != 'undefined') {
+            this.model.bind("change:watched", this.render);
+        }
     },
     render:function () {
         summary = this.model.toJSON();
+        user = this.options.user.toJSON();
 
-        console.log(summary);
+        if(typeof summary.totalMovies == "number" &&
+           summary.totalMovies != 0 &&
+           summary.totalMovies != null) {
 
-        if(summary.totalMovies != 0 && summary.totalMovies != null) {
             UrlParams.SliderValues['imdb_rating'].current_min =
                 Math.floor(summary.min_imdb_rating);
             UrlParams.SliderValues['imdb_rating'].current_max =
@@ -86,8 +37,16 @@ window.MovieSearchView = Backbone.View.extend({
                 summary.min_runtime;
             UrlParams.SliderValues['runtime'].current_max =
                 summary.max_runtime;
+
         }
-        $(this.$el).empty().append(this.template(summary));
+
+        $(this.$el).empty().append(this.template(summary, user));
+
+        this.render_slider('imdb_rating');
+        this.render_slider('runtime');
+        this.render_slider('release_year');
+
+        UrlParams.fill_form();
 
         return this;
     },
@@ -147,7 +106,7 @@ window.MovieSearchView = Backbone.View.extend({
                         end = ui.values[1];
                     }
                     $("#"+id+"_label").html(start+" - "+end);
-                },
+                }
             });
 
             if(id == 'runtime') {
@@ -167,10 +126,15 @@ window.MovieHeaderView = Backbone.View.extend({
     tagName:"thead",
     template:_.template($('#tpl-movie-list-header').html()),
     events: {
-        'click span.sort_link': 'sort',
+        'click span.sort_link': 'sort'
+    },
+    initialize: function() {
+        _.bindAll(this, 'render');
+        this.options.user.bind("change:authenticated", this.render);
     },
     render:function () {
-        $(this.el).append(this.template());
+        var user = this.options.user.toJSON();
+        $(this.el).html(this.template(user));
         return this;
     },
     sort:function(ev) {
@@ -220,7 +184,7 @@ window.MoviePagingView = Backbone.View.extend({
             UrlParams.Params.p = parseInt(UrlParams.Params.p) + 1;
         }
         app.navigate(UrlParams.query_string(), {'trigger':true});
-    },
+    }
 });
 window.MovieListView = Backbone.View.extend({
     tagName:"tbody",
@@ -230,7 +194,7 @@ window.MovieListView = Backbone.View.extend({
         'click span.director_link': 'personSearch',
         'click span.actor_link': 'personSearch',
         'click span.edit_media': 'editMedia',
-        'click span.show-all-link': 'showAll',
+        'click span.show-all-link': 'showAll'
     },
     editMedia:function(ev) {
         alert("EDIT MEDIA ---- COMING SOON");
@@ -271,14 +235,15 @@ window.MovieListView = Backbone.View.extend({
         if(this.model.models.length) {
             $('#movies_table').addClass('table-condensed');
             _.each(this.model.models, function (movie) {
-                $(this.el).append(new MovieListItemView({model:movie}).render().el);
+                $(this.el).append(new MovieListItemView({model:movie, user: this.options.user,
+                                                         summary: this.options.summary}).render().el);
             }, this);
         } else {
             $('#movies_table').removeClass('table-condensed');
             $(this.el).append(_.template($('#tpl-movie-list-no-results').html()));
         }
         return this;
-    },
+    }
 });
 window.MovieListItemView = Backbone.View.extend({
     tagName:"tr",
@@ -286,20 +251,33 @@ window.MovieListItemView = Backbone.View.extend({
         'mouseover': 'mouseoverrow',
         'mouseout': 'mouseoutrow',
         'click li.watched_link': 'watched',
-        'click li.detail_link': 'details',
-    },
-    initialize: function() {
-        _.bindAll(this, "render");
-        this.model.bind('change', this.render);
+        'click li.favourite_link': 'favourite',
+        'click li.detail_link': 'details'
     },
     template:_.template($('#tpl-movie-list-item').html()),
-    details:function() {
+    initialize: function() {
+        this.Movie = this.model.get('Movie');
+        this.summary = this.options.summary;
+        _.bindAll(this, "render");
+        this.options.user.bind("change:authenticated", this.render);
+        this.model.bind('change', this.render);
+    },
+    attributes: function() {
         var Movie = this.model.get('Movie');
-        if($('tr#movie_'+Movie.movie_id).html()) {
-            $('tr#movie_'+Movie.movie_id).remove();
+        return {
+            id: Movie.imdb_id
+        };
+    },
+    details:function() {
+        if($('tr#movie_'+this.Movie.movie_id).html()) {
+            $('tr#movie_'+this.Movie.movie_id).html('');
         } else {
-            app.movieDetails(Movie.movie_id, this.el);
+            app.movieDetails(this.Movie.movie_id, this.el);
         }
+    },
+    favourite: function() {
+        var Movie = this.model.get('Movie');
+        this.update_summary(Movie);
     },
     watched:function() {
         var Movie = this.model.get('Movie');
@@ -307,19 +285,6 @@ window.MovieListItemView = Backbone.View.extend({
         this.model.save({action: "watched"},
             {url:'/movies/watched/:id/',
              success: function(model, response) {
-                watched = parseInt($('#watched_yes').html().replace(/[^0-9]/gm, ''));
-                not_watched = parseInt($('#watched_no').html().replace(/[^0-9]/gm, ''));
-                watched = !watched ? 0 : watched;
-                not_watched = !not_watched ? 0 : not_watched;
-                if(Movie.watched) {
-                    watched += 1;
-                    not_watched -= 1;
-                } else {
-                    not_watched += 1;
-                    watched -= 1;
-                }
-                $('#watched_yes').html('('+(watched == 0 ? '-' : watched)+')');
-                $('#watched_no').html('('+(not_watched == 0 ? '-' : not_watched)+')')
                 model.set(Movie);
             },
             error: function(model, response) {
@@ -327,356 +292,51 @@ window.MovieListItemView = Backbone.View.extend({
                 model.set(Movie);
             }
         });
+
+        this.update_summary(Movie);
+
         $('#movies_table > tbody').children('tr').css("background-color","");
     },
     render:function (eventName) {
-        $(this.el).html(this.template(this.model.toJSON()));
+        this.$el.html(this.template(this.model.toJSON()));
+
         return this;
     },
+    update_summary: function(Movie) {
+        var not_watched = this.summary.get('not_watched');
+        var watched = this.summary.get('watched');
+
+        if(this.Movie.watched) {
+            this.summary.set({not_watched: not_watched - 1,
+                              watched: watched + 1});
+        } else {
+            this.summary.set({not_watched: not_watched + 1,
+                              watched: watched - 1});
+        }
+    },
     mouseoverrow: function() {
-        $(this.el).css("background-color","#BADA55");
+        this.$el.css("background-color","#BADA55");
     },
     mouseoutrow: function() {
-        $(this.el).css("background-color","");
-    },
+        this.$el.css("background-color","");
+    }
 });
 window.MovieView = Backbone.View.extend({
     tagname:"tr",
+    element:null,
     template:_.template($('#tpl-movie-details').html()),
-    render:function (element) {
-        $(element).after(this.template(this.model.toJSON()));
+    initialize: function() {
+        this.options.user.bind("change:authenticated", _.bind(this.rerender, this));
+    },
+    rerender:function() {
+        var Movie = this.model.get('Movie');
+        if($('tr#movie_'+Movie.movie_id).html()) {
+            app.movieDetails(Movie.movie_id, this.element);
+        }
+    },
+    render:function(element) {
+        this.element = element;
+        $(element).after(this.template(this.model.toJSON(), this.options.user));
         return this;
-    },
-});
-var AppRouter = Backbone.Router.extend({
-    routes:{
-        "/login":"login",
-        "":"list",
-        "#":"list",
-        "*query_string": "list",
-        "/movies/:imdb_id/":"movieDetails",
-    },
-    list:function (query_string) {
-        loadingImage(true);
-        $(document).scrollTop(0);
-
-        var movieSummary = new MovieSummary();
-        var movieSearchView = new MovieSearchView({model:movieSummary});
-        var movieHeaderView = new MovieHeaderView();
-        var moviePagingView = new MoviePagingView({model:movieSummary});
-
-        UrlParams.parse(query_string);
-        movieSummary.fetch({
-            async:true,
-            data:UrlParams.Params,
-            success: function() {
-                var movieList = new MovieCollection();
-                var movieListView = new MovieListView({model:movieList});
-
-                movieList.fetch({
-                    async:true,
-                    data:UrlParams.Params,
-                    success: function() {
-                        $('#movies_search').empty().prepend(movieSearchView.render().el);
-                        $('#movies_table').empty().append(movieHeaderView.render().el);
-                        $('#movies_table').append(movieListView.render().el);
-                        $('#pagination').empty().append(moviePagingView.render().el);
-
-                        UrlParams.SliderValues.init();
-
-                        movieSearchView.render_slider('imdb_rating');
-                        movieSearchView.render_slider('runtime');
-                        movieSearchView.render_slider('release_year');
-
-                        $('#movies_table').css('display', 'block');
-                        UrlParams.fill_form();
-                        movieHeaderView.display_sort_icons();
-                        loadingImage(false);
-                    },
-                    error: function() {
-                        $('#movies_table').append(movieListView.render().el);
-                        $('#movies_table').css('display', 'block');
-                        loadingImage(false);
-                    },
-                });
-            },
-        });
-    },
-    movieDetails:function (movie_id, element) {
-        loadingImage(true);
-        var movie = new Movie();
-        movie.url = '../../movies/'+movie_id+'/';
-        var movieView = new MovieView({model:movie});
-        movie.fetch({
-            success: function() {
-                movieView.render(element);
-                loadingImage(false);
-            }
-        });
-    },
-    authenticate:function(action) {
-        var login = new LoginView()
-        if(action == 'login') {
-            $('#login_popup').append(login.render().el);
-        } else if(action == 'logout') {
-            login.logout();
-        }
-    },
-});
-var loadingImage = function(on) {
-    if(on) {
-        $('#opaque').css('display', 'block');
-        $('#loading').css('display', 'block');
-    } else {
-        $('#opaque').css('display', 'none');
-        $('#loading').css('display', 'none');
     }
-}
-var UrlParams = {
-    authenticated:false,
-    qs:'',
-    Params: {
-        'p':null,
-        's':null,
-        'asc':null,
-        'pid':null,
-        'gid':null,
-        'kid':null,
-        'hd':null,
-        'cid':null,
-        'search':null,
-        'search_type':null,
-        'imdb_rating':null,
-        'watched':null,
-        'runtime':'',
-        'release_year':'',
-        'lucky':null
-    },
-    DefaultParams: {
-        'p':1,
-        's':'title',
-        'asc':1,
-        'gid':0,
-        'pid':0,
-        'kid':0,
-        'cid':0,
-        'hd':'all',
-        'watched':'all',
-        'search_type':'all',
-        'search':'',
-        'imdb_rating':'',
-        'runtime':'',
-        'release_year':'',
-        'lucky':0,
-    },
-    SortDefaults: {
-        'title': 1,
-        'release_year': 0,
-        'imdb_rating': 0,
-        'runtime': 0,
-        'filesize': 0,
-        'date_added': 0,
-        'hd': 1,
-        'watched': 1,
-        'cert':1
-    },
-    SliderValues: {
-        imdb_rating: {
-            active:false,
-            min:false,
-            max:false,
-            current_min:false,
-            current_max:false,
-        },
-        runtime: {
-            active:false,
-            min:false,
-            max:false,
-            current_min:false,
-            current_max:false,
-        },
-        release_year: {
-            active:false,
-            min:false,
-            max:false,
-            current_min:false,
-            current_max:false,
-        },
-        init:function() {
-            var data = $('#slider_init_values').html();
-            this.imdb_rating.min = Math.floor($('section').data('min-imdb-rating'));
-            this.imdb_rating.max = Math.ceil($('section').data('max-imdb-rating'));
-            this.runtime.min = $('section').data('min-runtime');
-            this.runtime.max = $('section').data('max-runtime');
-            this.release_year.min = $('section').data('min-release-year');
-            this.release_year.max = $('section').data('max-release-year');
-        },
-        convert_to_time:function(minutes) {
-            if(minutes < 60) {
-                return minutes + "mins";
-            } else {
-                time = parseInt(minutes / 60);
-                if(time == 1) {
-                    time += "hr"
-                } else {
-                    time += "hrs"
-                }
-                if(minutes % 60) {
-                    time += " " + (minutes % 60) + "mins";
-                }
-                return time;
-            }
-        },
-    },
-    parse:function(query_string) {
-        if(query_string == undefined || !query_string) {
-            UrlParams.reset(true);
-        } else {
-            this.qs = query_string;
-            var page_in_params = false;
-            query_string.split('&').forEach(function(argument) {
-                if(argument) {
-                    fragment = argument.split('=');
-                    if(fragment[0] == 'gid' || fragment[0] == 'cid') {
-                        UrlParams.Params[fragment[0]] = "";
-                        fragment[1].split(',').forEach(function(id) {
-                            if(UrlParams.Params[fragment[0]] == "") {
-                                UrlParams.Params[fragment[0]] += id;
-                            } else {
-                                UrlParams.Params[fragment[0]] += "," + id;
-                            }
-                        });
-                    } else if(fragment[0] == 'id') {
-                        //console.log("OPEN MOVIE PANE");
-                    } else if (fragment[0] == 'search') {
-                        UrlParams.Params['search'] = decodeURIComponent(fragment[1]);
-                    } else {
-                        UrlParams.Params[fragment[0]] = fragment[1];
-                    }
-                    if(fragment[0] == 'p') {
-                        page_in_params = true;
-                    }
-                }
-            });
-            if(!page_in_params) {
-                UrlParams.Params.p = 1;
-            }
-        }
-    },
-    fill_form:function() {
-        if(UrlParams.Params.search) {
-            $('#search_input').val(decodeURIComponent(UrlParams.Params.search));
-        }
-        if(UrlParams.Params.watched == 1 || UrlParams.Params.watched == 0) {
-            $('#watched_'+UrlParams.Params.watched).attr('checked', 'checked');
-        }
-        if(UrlParams.Params.search_type == 'keyword' ||
-           UrlParams.Params.search_type == 'cast' ||
-           UrlParams.Params.search_type == 'title') {
-            $('#search_type_'+UrlParams.Params.search_type).attr('checked', 'checked');
-        }
-        if(UrlParams.Params.hd == 1 || UrlParams.Params.hd == 0) {
-            $('#hd_'+UrlParams.Params.hd).attr('checked', 'checked');
-        }
-        if(UrlParams.Params.gid) {
-            UrlParams.Params.gid.split(',').forEach(function(gid) {
-                $('input[name="genre[]"][value='+gid+']').attr("checked",true);
-            });
-        }
-        if(UrlParams.Params.cid) {
-            UrlParams.Params.cid.split(',').forEach(function(cid) {
-                $('input[name="certificate[]"][value='+cid+']').attr("checked",true);
-            });
-        }
-        _.each(UrlParams.SliderValues, function(value, key) {
-            if(UrlParams.SliderValues[key].active && UrlParams.Params[key]) {
-                values = UrlParams.Params[key].split(',');
-                if(values[0] && values[1]) {
-                    var movieSearchView = new MovieSearchView();
-                    UrlParams.SliderValues[key].current_min = values[0];
-                    UrlParams.SliderValues[key].current_max = values[1];
-                    movieSearchView.render_slider(key);
-                }
-            }
-        });
-    },
-    query_string:function() {
-        var qs = '';
-        _.each(UrlParams.DefaultParams, function(value, key) {
-            if((UrlParams.Params[key] != UrlParams.DefaultParams[key]) &&
-                (key != 'asc' && key != 's' && key != 'imdb_rating' &&
-                 key != 'runtime' && key != 'release_year')) {
-                if(key == 'search') {
-                    param = encodeURIComponent(UrlParams.Params[key].toString());
-                } else {
-                    param = UrlParams.Params[key].toString();
-                }
-                qs += key+'='+param+"&";
-            }
-            if(key == 'imdb_rating' || key == 'release_year' ||
-               key == 'runtime') {
-                values = UrlParams.Params[key].split(',');
-                if(values[0] && values[1] &&
-                   (UrlParams.SliderValues[key].active)) {
-                    qs += key+'='+UrlParams.Params[key]+"&";
-                }
-            }
-        });
-        if(!(UrlParams.Params['s'] == 'title' && UrlParams.Params['asc'])) {
-            qs += 's='+UrlParams.Params['s']+'&asc='+
-                            UrlParams.Params['asc']+'&';
-        }
-        this.qs = qs.slice(0, -1);
-
-        return this.qs;
-    },
-    remove_page_from_query_string:function() {
-        qs = this.qs.replace(/&?p=[0-9]{1,}&?/gm, '');
-        return qs.length ? '&'+qs : '';
-    },
-    parse_search_form:function() {
-        UrlParams.Params.gid = "";
-        UrlParams.Params.cid = "";
-        UrlParams.Params.search = $('#search_input').val();
-        UrlParams.Params.watched = $('input:radio[name=watched]:checked').val();
-        UrlParams.Params.search_type = $('input:radio[name=search_type]:checked').val();
-        UrlParams.Params.hd = $('input:radio[name=hd]:checked').val();
-        $('input:checkbox[name="genre[]"]:checked').each(function() {
-            if(UrlParams.Params.gid == "") {
-                UrlParams.Params.gid += $(this).val();
-            } else {
-                UrlParams.Params.gid += "," + $(this).val();
-            }
-        });
-        $('input:checkbox[name="certificate[]"]:checked').each(function() {
-            if(UrlParams.Params.cid == "") {
-                UrlParams.Params.cid += $(this).val();
-            } else {
-                UrlParams.Params.cid += "," + $(this).val();
-            }
-        });
-        _.each(UrlParams.SliderValues, function(value, key) {
-            if(typeof UrlParams.SliderValues[key] == 'object' &&
-               UrlParams.SliderValues[key].active) {
-                UrlParams.Params[key] =
-                    UrlParams.SliderValues[key].current_min+","+
-                    UrlParams.SliderValues[key].current_max;
-            }
-        });
-    },
-    reset:function(reset_sliders) {
-        _.each(UrlParams.DefaultParams, function(value, key) {
-            UrlParams.Params[key] = value;
-        });
-        if(reset_sliders) {
-            _.each(UrlParams.SliderValues, function(value, key) {
-                if(typeof UrlParams.SliderValues[key] == 'object') {
-                    UrlParams.SliderValues[key].active = false;
-                }
-            });
-        }
-    }
-};
-UrlParams.reset(true);
-var app = new AppRouter();
-Backbone.history.start();
+});

@@ -24,13 +24,15 @@
             <img class="centre tick_cross" src="/assets/img/cross.png">
         <% } %>
     </td>
-    <td class='centre'>
-        <% if(Movie.watched) { %>
-            <img class="centre tick_cross" src="/assets/img/tick.png">
-        <% } else { %>
-            <img class="centre tick_cross" src="/assets/img/cross.png">
-        <% } %>
-    </td>
+    <% if (user.authenticated) {%>
+        <td class='centre'>
+            <% if(Movie.watched) { %>
+                <img class="centre tick_cross" src="/assets/img/tick.png">
+            <% } else { %>
+                <img class="centre tick_cross" src="/assets/img/cross.png">
+            <% } %>
+        </td>
+    <% } %>
     <td>
         <div class="btn-group">
             <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown"
@@ -44,32 +46,34 @@
                         &nbsp;Details
                     </a>
                 </li>
-                <li class="favourites_link">
-                    <% if(Movie.watched) { %>
-                        <a class="menu_item">
-                            <i class="icon-star"></i>
-                            &nbsp;Mark as Favourite
-                        </a>
-                    <% } else { %>
-                        <a class="menu_item">
-                            <i class="icon-star"></i>
-                            &nbsp;Remove from Favourites
-                        </a>
-                    <% } %>
-                </li>
-                <li class="watched_link">
-                    <% if(Movie.watched) { %>
-                        <a class="menu_item">
-                            <i class="icon-eye-open"></i>
-                            &nbsp;Mark as Not Watched
-                        </a>
-                    <% } else { %>
-                        <a class="menu_item">
-                            <i class="icon-eye-open"></i>
-                            &nbsp;Mark as Watched
-                        </a>
-                    <% } %>
-                </li>
+                <% if (user.authenticated) {%>
+                    <li class="favourites_link">
+                        <% if(Movie.watched) { %>
+                            <a class="menu_item">
+                                <i class="icon-star"></i>
+                                &nbsp;Mark as Favourite
+                            </a>
+                        <% } else { %>
+                            <a class="menu_item">
+                                <i class="icon-star"></i>
+                                &nbsp;Remove from Favourites
+                            </a>
+                        <% } %>
+                    </li>
+                    <li class="watched_link">
+                        <% if(Movie.watched) { %>
+                            <a class="menu_item">
+                                <i class="icon-eye-open"></i>
+                                &nbsp;Mark as Not Watched
+                            </a>
+                        <% } else { %>
+                            <a class="menu_item">
+                                <i class="icon-eye-open"></i>
+                                &nbsp;Mark as Watched
+                            </a>
+                        <% } %>
+                    </li>
+                <% } %>
             </ul>
         </div>
     </td>

@@ -143,9 +143,11 @@
                 <dl>
                     <dt>
                         <strong>Media:</strong>
-                        <span class="edit_media">
-                            <a class="menu_item"><i class="icon-edit" /></a>
-                        </span>
+                        <% if (user.authenticated) {%>
+                            <span class="edit_media">
+                                <a class="menu_item"><i class="icon-edit" /></a>
+                            </span>
+                        <% } %>
                     </dt>
                     <dd>
                         <table class="table table-bordered table-condensed media">

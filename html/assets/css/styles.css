@@ -43,6 +43,11 @@ div#loading img {
     width:15;
     height:15;
 }
+li.seperator {
+    border-bottom:1px solid #e5e5e5;
+    padding-bottom:5px;
+    margin-bottom:10px;
+}
 .icon-download-alt {
     vertical-align:text-bottom;
     cursor:pointer;

@@ -92,5 +92,3 @@
         }
         //end summary
     }
-
-?>
