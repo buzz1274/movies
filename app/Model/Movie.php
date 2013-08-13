@@ -240,8 +240,6 @@
          */
         private function _search($resultType) {
 
-            //error_log(json_encode($this->_search));
-
             if($resultType == 'summary') {
                 $limitQuery = false;
                 $orderQuery = false;
@@ -464,8 +462,6 @@
          */
         private function _parseSearchParameters($searchParams) {
 
-            //error_log(json_encode($searchParams));
-
             if(isset($searchParams['limit']) &&
                ($searchParams['limit'] === false ||
                 (int)$searchParams['limit'] > 0)) {
@@ -605,5 +601,3 @@
 
     }
     //end Movie
-
-?>
