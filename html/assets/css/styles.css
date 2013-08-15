@@ -20,6 +20,10 @@ div#auth {
     line-height:38px;
     color:#FFFFFF;
 }
+p#login_error_message {
+    font-weight:bold;
+    display:none;
+}
 div#auth span.auth_link {
     text-decoration:underline;
     cursor:pointer;

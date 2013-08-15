@@ -5,6 +5,7 @@
         <input type="text" class="span4" autocomplete="off" id="username"><br />
         Password<br />
         <input type="password" class="span4" autocomplete="off" id="password"><br />
+        <p id="login_error_message" class="text-error"></p>
         <button type="submit" class="btn" id="loginButton">Submit</button>
         <button type="cancel" class="btn" id="cancelButton">Cancel</button>
     </div>

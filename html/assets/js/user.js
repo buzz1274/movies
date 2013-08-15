@@ -12,9 +12,12 @@ window.LoginView = Backbone.View.extend({
         'keypress #password': 'login_on_enter'
     },
     render:function() {
+        this.hide_login_popup();
         $(this.el).html(this.template());
+        $('#login_error_message').css('display', 'none');
         $('#login_popup').css('display', 'block');
         $('#opaque').css('display', 'block');
+        $('#username').focus();
         return this;
     },
     hide_login_popup:function() {
@@ -58,7 +61,13 @@ window.LoginView = Backbone.View.extend({
                 parent.hide_login_popup();
             },
             error: function(model, response) {
-                console.log("error");
+                body = JSON.parse(response.responseText);
+                if(body.error_type == 'invalid_credentials') {
+                    $('#login_error_message').css('display', 'block').html(body.error_message);
+                } else {
+                    //display error message
+                    parent.hide_login_popup();
+                }
             }
         });
     }

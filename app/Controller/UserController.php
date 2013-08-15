@@ -28,7 +28,8 @@
                               'authenticated' => true);
             } else {
                 $status = 403;
-                $body = array('error_type' => 'invalid_credentials');
+                $body = array('error_type' => 'invalid_credentials',
+                              'error_message' => 'Invalid username/password');
             }
 
             return new CakeResponse(array('status' => $status,

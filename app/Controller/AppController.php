@@ -11,7 +11,7 @@
         );
 
         public function beforeFilter() {
-            $this->Auth->allow('index', 'movies', 'summary', 'login', 'logout');
+            $this->Auth->allow('index', 'movies', 'summary', 'login', 'logout', 'movie');
         }
 
     }
