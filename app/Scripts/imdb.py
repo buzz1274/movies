@@ -206,7 +206,7 @@ class IMDB(object):
                     try:
                         keyword = tag.find('a')
                         if keyword:
-                            keyword = keyword.contents[0].strip()
+                            keyword = keyword.contents[0].lower().strip()
                             if len(keyword) > 0:
                                 self.plot_keywords.append(keyword)
                     except KeyError:
