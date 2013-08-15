@@ -7,7 +7,7 @@
 
         public $components = array(
             'Session',
-            'Auth' => array()
+            'Auth',
         );
 
         public function beforeFilter() {

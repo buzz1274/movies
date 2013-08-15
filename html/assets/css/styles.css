@@ -43,6 +43,19 @@ div#loading {
     top:50%;
     width:100%;
 }
+div.message_popup_container {
+    position:absolute;
+    z-index:2500;
+    display:block;
+    text-align:left;
+    margin:0 auto;
+    width:100%;
+    top:8%
+}
+div.message_popup {
+    margin:0 auto;
+    width:80%;
+}
 div#loading img {
     width:15;
     height:15;
@@ -164,7 +177,7 @@ div.ajax_content {
 .popup_info {
     position:absolute;
     display:none;
-    z-index:1000 !important;
+    z-index:2500 !important;
     opacity:1.0 !important;
 }
 #opaque {
@@ -173,7 +186,7 @@ div.ajax_content {
     left: 0px;
     height: 100%;
     width:100%;
-    z-index: 1000;
+    z-index: 2000;
     display: none;
     background-color: black;
     filter: alpha(opacity=20);

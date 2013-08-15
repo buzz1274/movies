@@ -39,7 +39,7 @@
         //end login
 
         /**
-         * unauthenticates user
+         * un-authenticates user
          * @author David
          * @return mixed
          */
@@ -54,6 +54,6 @@
                                                                       'authenticated' => false))));
 
         }
-        //end login
+        //end logout
 
     }

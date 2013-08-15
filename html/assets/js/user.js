@@ -16,13 +16,12 @@ window.LoginView = Backbone.View.extend({
         $(this.el).html(this.template());
         $('#login_error_message').css('display', 'none');
         $('#login_popup').css('display', 'block');
-        $('#opaque').css('display', 'block');
-        $('#username').focus();
+        interface_helper.opaque(true);
         return this;
     },
     hide_login_popup:function() {
         $('#login_popup').html('');
-        $('#opaque').css('display', 'none');
+        interface_helper.opaque(false);
         $('#login_popup').css('display', 'none');
     },
     login_on_enter:function(e) {
@@ -46,27 +45,27 @@ window.LoginView = Backbone.View.extend({
         this.model.save(data,
             {url:'/user/'+action+'/',
              success: function(model, response) {
+                parent.hide_login_popup();
                 if(action == 'login') {
                     $('#authenticated_name').html(model.get('name'));
                     $('#authenticated').css('display', 'block');
                     $('#login_link').css('display', 'none');
                 } else if(action == 'logout') {
-                    //display logged out message
                     $('#authenticated').css('display', 'none');
                     $('#login_link').css('display', 'block');
+                    interface_helper.message_popup('success', 'You have logged out');
                 }
                 model.set({username: null, password: null,
                            name: response.name,
                            authenticated: response.authenticated});
-                parent.hide_login_popup();
             },
             error: function(model, response) {
                 body = JSON.parse(response.responseText);
                 if(body.error_type == 'invalid_credentials') {
                     $('#login_error_message').css('display', 'block').html(body.error_message);
                 } else {
-                    //display error message
                     parent.hide_login_popup();
+                    interface_helper.message_popup();
                 }
             }
         });

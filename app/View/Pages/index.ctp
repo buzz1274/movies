@@ -16,6 +16,8 @@
         <link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">
     </head>
     <body>
+        <div id="opaque">
+        </div>
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container-fluid">
@@ -37,8 +39,6 @@
                 </div>
             </div>
         </div>
-        <div id="opaque">
-        </div>
         <div class="container">
             <div id="login_popup" class="offset4 span4 popup_info well"></div>
         </div>
@@ -47,9 +47,8 @@
                 <div id="movies_search" class="span4">
                 </div>
                 <div id="movies_list" class="span8">
-                    <div id="loading">
-                        <img src="/assets/img/spinner.gif">
-                    </div>
+                    <div class="message_popup_container"></div>
+                    <div id="loading"><img src="/assets/img/spinner.gif"></div>
                     <table class="table table-bordered table-condensed"
                            style="display:none;" id="movies_table">
                     </table>
@@ -59,6 +58,7 @@
         </div>
 
         <?php echo $this->element('tpl-login'); ?>
+        <?php echo $this->element('tpl-message-popup'); ?>
         <?php echo $this->element('tpl-movie-search'); ?>
         <?php echo $this->element('tpl-movie-paging'); ?>
         <?php echo $this->element('tpl-movie-list-header'); ?>
@@ -80,7 +80,7 @@
             src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js">
         </script>
         <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="/assets/js/helper.js"></script>
+        <script type="text/javascript" src="/assets/js/interface_helper.js"></script>
         <script type="text/javascript" src="/assets/js/state.js"></script>
         <script type="text/javascript" src="/assets/js/models.js"></script>
         <script type="text/javascript" src="/assets/js/user.js"></script>

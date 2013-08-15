@@ -6,7 +6,7 @@ var AppRouter = Backbone.Router.extend({
         "/movies/:imdb_id/":"movieDetails"
     },
     list:function (query_string) {
-        loadingImage(true);
+        interface_helper.loadingImage(true);
         $(document).scrollTop(0);
 
         var movieSummary = new MovieSummary();
@@ -36,7 +36,7 @@ var AppRouter = Backbone.Router.extend({
                     $('#movies_table').empty().append(movieHeaderView.render().el);
                     $('#movies_table').append(movieListView.render().el);
                     $('#movies_table').css('display', 'block');
-                    loadingImage(false);
+                    interface_helper.loadingImage(false);
                 } else {
                     movieList.fetch({
                         async:true,
@@ -49,13 +49,13 @@ var AppRouter = Backbone.Router.extend({
 
                             $('#pagination').css('display', 'block');
                             $('#movies_table').css('display', 'block');
-                            loadingImage(false);
+                            interface_helper.loadingImage(false);
                         },
                         error: function() {
                             $('#pagination').css('display', 'none');
                             $('#movies_table').append(movieListView.render().el);
                             $('#movies_table').css('display', 'block');
-                            loadingImage(false);
+                            interface_helper.loadingImage(false);
                         }
                     });
                 }
@@ -63,7 +63,7 @@ var AppRouter = Backbone.Router.extend({
         });
     },
     movieDetails:function (movie_id, element) {
-        loadingImage(true);
+        interface_helper.loadingImage(true);
         var movie = new Movie();
         movie.url = '../../movies/'+movie_id+'/';
         var movieView = new MovieView({model:movie, user:User});
