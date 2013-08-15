@@ -72,7 +72,7 @@ var AppRouter = Backbone.Router.extend({
             success: function() {
                 $('tr#movie_'+movie_id).remove();
                 movieView.render(element);
-                loadingImage(false);
+                interface_helper.loadingImage(false);
             }
         });
     },
