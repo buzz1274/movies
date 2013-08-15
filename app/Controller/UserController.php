@@ -24,7 +24,8 @@
                                             AuthComponent::password($User->password))) &&
                $User && $this->Auth->login($User)) {
                 $status = 200;
-                $body = array('name' => 'David',
+                $body = array('name' => $User['User']['name'],
+                              'admin' => $User['User']['admin'],
                               'authenticated' => true);
             } else {
                 $status = 403;
