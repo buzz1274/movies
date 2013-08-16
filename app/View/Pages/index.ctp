@@ -4,16 +4,13 @@
         <title>Movies</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <link rel="shortcut icon" href="/assets/img/favicon.ico"
-              type="image/x-icon">
-        <link rel="icon" href="/assets/img/favicon.ico"
-              type="image/x-icon">
+        <link rel="shortcut icon" href="/assets/img/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="/assets/img/favicon.ico" type="image/x-icon">
         <link rel="stylesheet" type="text/css"
               href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css" />
-        <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" type="text/css"
-              href="/assets/css/styles.css" />
-        <link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css"
+              rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/assets/css/styles.css" />
     </head>
     <body>
         <div id="opaque">
@@ -79,7 +76,9 @@
         <script type="text/javascript"
             src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js">
         </script>
-        <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
+        <script type="text/javascript"
+            src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js">
+        </script>
         <script type="text/javascript" src="/assets/js/interface_helper.js"></script>
         <script type="text/javascript" src="/assets/js/state.js"></script>
         <script type="text/javascript" src="/assets/js/models.js"></script>
