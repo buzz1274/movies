@@ -15,14 +15,4 @@
         }
         //end index
 
-        public function login() {
-
-            return new CakeResponse(array('body' =>
-                            json_encode(array('name' => 'David'))));
-
-        }
-        //end login
-
     }
-
-?>
