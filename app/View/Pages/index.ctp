@@ -13,36 +13,12 @@
         <link rel="stylesheet" type="text/css" href="/assets/css/styles.css" />
     </head>
     <body>
-        <div id="opaque">
-        </div>
-        <div class="navbar navbar-fixed-top">
-            <div class="navbar-inner">
-                <div class="container-fluid">
-                    <div id="auth" class="container-fluid pull-right">
-                        <span id="login_link" class="auth_link"
-                              onclick="app.authenticate('login');">
-                            Login
-                        </span>
-                        <span id="authenticated">
-                            Welcome Back&nbsp;<span id="authenticated_name"></span>,
-                            <span id="logout_link" class="auth_link"
-                                  onclick="app.authenticate('logout');">
-                                Logout
-                            </span>
-                        </span>
-                    </div>
-                    <a class="brand" href="/#">movieDB</a>
-                    <span class="version">v0.6</span>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div id="login_popup" class="offset4 span4 popup_info well"></div>
-        </div>
+        <div id="opaque"></div>
+        <div id="navbar" class="navbar navbar-fixed-top"></div>
+        <div class="container"></div>
         <div class="container-fluid">
             <div id="content" class="row-fluid">
-                <div id="movies_search" class="span4">
-                </div>
+                <div id="movies_search" class="span4"></div>
                 <div id="movies_list" class="span8">
                     <div class="message_popup_container"></div>
                     <div id="loading"><img src="/assets/img/spinner.gif"></div>
@@ -54,6 +30,7 @@
             </div>
         </div>
 
+        <?php echo $this->element('tpl-navbar'); ?>
         <?php echo $this->element('tpl-login'); ?>
         <?php echo $this->element('tpl-message-popup'); ?>
         <?php echo $this->element('tpl-movie-search'); ?>

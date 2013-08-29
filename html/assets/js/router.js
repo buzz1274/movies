@@ -1,5 +1,7 @@
 var AppRouter = Backbone.Router.extend({
     routes:{
+        "/user/login": "login",
+        "/user/logout": "logout",
         "":"list",
         "#":"list",
         "*query_string": "list",
@@ -75,13 +77,5 @@ var AppRouter = Backbone.Router.extend({
                 interface_helper.loadingImage(false);
             }
         });
-    },
-    authenticate:function(action) {
-        var login = new LoginView({model: User})
-        if(action == 'login') {
-            $('#login_popup').append(login.render().el);
-        } else if(action == 'logout') {
-            login.authenticate('logout');
-        }
     }
 });

@@ -2,40 +2,42 @@ window.MovieUser = Backbone.Model.extend({
     url:'/user/',
     idAttribute: "user_id"
 });
-window.LoginView = Backbone.View.extend({
-    tagName:"div",
-    template:_.template($('#tpl-login').html()),
+window.HeaderView = Backbone.View.extend({
+    el:$("#navbar"),
+    template:_.template($('#tpl-navbar').html()),
     events: {
-        'click #cancelButton': 'hide_login_popup',
-        'click #loginButton': 'login',
-        'keypress #username': 'login_on_enter',
-        'keypress #password': 'login_on_enter'
+        'click span#logout_link': 'authenticate',
+        'click #loginButton': 'authenticate',
+        'keypress #username': 'authenticate',
+        'keypress #password': 'authenticate',
+        'click span#login_popup_link': 'login_popup',
+        'click #cancelButton': 'login_popup'
     },
-    render:function() {
-        this.hide_login_popup();
-        $(this.el).html(this.template());
-        $('#login_error_message').css('display', 'none');
-        $('#login_popup').css('display', 'block');
-        interface_helper.opaque(true);
+    initialize: function() {
+        this.model.bind("change:authenticated", this.render, this);
+        this.render();
         return this;
     },
-    hide_login_popup:function() {
-        $('#login_popup').html('');
-        interface_helper.opaque(false);
-        $('#login_popup').css('display', 'none');
+    render:function() {
+        $(this.el).html('').append(this.template(this.model.toJSON()));
     },
-    login_on_enter:function(e) {
-        if(e.keyCode == 13) {
-            this.login();
+    login_popup:function(e) {
+        if(e.target.id == 'login_popup_link') {
+            interface_helper.opaque(true);
+            $('#login_popup').append(_.template($('#tpl-login').html()));
+        } else {
+            $('#login_popup').html('');
+            interface_helper.opaque(false);
         }
     },
-    logout:function() {
-        this.authenticate('logout');
-    },
-    login:function() {
-        this.authenticate('login');
-    },
-    authenticate:function(action) {
+    authenticate:function(e) {
+        if(typeof(e.keyCode) != 'undefined' && e.keyCode != 13) {
+            return;
+        } else if(e.target.id == 'loginButton' || e.keyCode == 13) {
+            var action = 'login'
+        } else {
+            var action = 'logout';
+        }
         var parent = this;
         var data = null;
         if(action == 'login') {
@@ -44,30 +46,25 @@ window.LoginView = Backbone.View.extend({
         }
         this.model.save(data,
             {url:'/user/'+action+'/',
-             success: function(model, response) {
-                parent.hide_login_popup();
-                if(action == 'login') {
-                    $('#authenticated_name').html(model.get('name'));
-                    $('#authenticated').css('display', 'block');
-                    $('#login_link').css('display', 'none');
-                } else if(action == 'logout') {
-                    $('#authenticated').css('display', 'none');
-                    $('#login_link').css('display', 'block');
-                    interface_helper.message_popup('success', 'You have logged out');
-                }
-                model.set({username: null, password: null,
-                           name: response.name,
-                           authenticated: response.authenticated});
-            },
-            error: function(model, response) {
-                body = JSON.parse(response.responseText);
-                if(body.error_type == 'invalid_credentials') {
-                    $('#login_error_message').css('display', 'block').html(body.error_message);
-                } else {
-                    parent.hide_login_popup();
-                    interface_helper.message_popup();
+                success: function(model, response) {
+                    parent.login_popup(e);
+                    if(action == 'logout') {
+                        interface_helper.message_popup('success', 'You have logged out');
+                    }
+                    model.set({username: null, password: null,
+                        name: response.name,
+                        authenticated: response.authenticated});
+                },
+                error: function(model, response) {
+                    body = JSON.parse(response.responseText);
+                    if(body.error_type == 'invalid_credentials') {
+                        $('#login_error_message').css('display', 'block').html(body.error_message);
+                    } else {
+                        parent.login_popup(e);
+                        interface_helper.message_popup();
+                    }
                 }
             }
-        });
+        );
     }
 });

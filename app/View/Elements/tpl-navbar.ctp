@@ -1,0 +1,19 @@
+<script type="text/template" id="tpl-navbar">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <div id="auth" class="container-fluid pull-right">
+                <% if (!authenticated) {%>
+                    <span id="login_popup_link" class="auth_link">Login</span>
+                <% } else { %>
+                    <span id="authenticated">
+                        Welcome Back&nbsp;<%= name %>,
+                        <span id="logout_link" class="auth_link">Logout</span>
+                    </span>
+                <% } %>
+            </div>
+            <a class="brand" href="/#">movieDB</a>
+            <span class="version">v0.6</span>
+        </div>
+    </div>
+    <div id="login_popup"></div>
+</script>

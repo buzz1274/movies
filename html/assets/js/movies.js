@@ -37,7 +37,6 @@ window.MovieSearchView = Backbone.View.extend({
                 summary.min_runtime;
             UrlParams.SliderValues['runtime'].current_max =
                 summary.max_runtime;
-
         }
 
         $(this.$el).empty().append(this.template(summary, user));
@@ -279,7 +278,7 @@ window.MovieListItemView = Backbone.View.extend({
         var Movie = this.model.get('Movie');
         this.update_summary(Movie);
     },
-    watched:function() {
+    watched:function(e) {
         var Movie = this.model.get('Movie');
         Movie.watched = !Movie.watched;
         this.model.save({action: "watched"},

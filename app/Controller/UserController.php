@@ -3,9 +3,24 @@
     class UserController extends AppController {
 
         public function index() {
-            return new CakeResponse(
-                        array('body' => json_encode(array('name' => 'David',
-                                                          'authenticated' => false))));
+
+            error_log("HERE");
+
+            $User = $this->Auth->user();
+
+            error_log(json_encode($User));
+
+            if($User) {
+                $body = array('name' => $User['name'],
+                              'admin' => $User['admin'],
+                              'authenticated' => true);
+            } else {
+                $body = array('name' => false,
+                              'admin' => false,
+                              'authenticated' => false);
+            }
+
+            return new CakeResponse(array('body' => json_encode($body)));
         }
         //end index
 
@@ -22,7 +37,7 @@
                isset($User->password) &&
                 ($User = $this->User->login($User->username,
                                             AuthComponent::password($User->password))) &&
-               $User && $this->Auth->login($User)) {
+               $User && isset($User['User']) && $this->Auth->login($User['User'])) {
                 $status = 200;
                 $body = array('name' => $User['User']['name'],
                               'admin' => $User['User']['admin'],

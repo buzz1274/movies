@@ -28,9 +28,6 @@ div#auth span.auth_link {
     text-decoration:underline;
     cursor:pointer;
 }
-div#auth span#authenticated {
-    display:none;
-}
 div #movies_list {
     position:relative;
     min-height:960px;
@@ -175,9 +172,8 @@ div.ajax_content {
     margin:0px;
 }
 .popup_info {
-    position:absolute;
-    display:none;
-    z-index:2500 !important;
+    position:fixed;
+    z-index:10000;
     opacity:1.0 !important;
 }
 #opaque {
@@ -186,7 +182,7 @@ div.ajax_content {
     left: 0px;
     height: 100%;
     width:100%;
-    z-index: 2000;
+    z-index: 200;
     display: none;
     background-color: black;
     filter: alpha(opacity=20);

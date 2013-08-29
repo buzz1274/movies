@@ -240,6 +240,8 @@
          */
         private function _search($resultType) {
 
+            error_log(json_encode($this->_search));
+
             if($resultType == 'summary') {
                 $limitQuery = false;
                 $orderQuery = false;
@@ -397,6 +399,8 @@
                 $randQuery = false;
             }
 
+            error_log($this->_search['userID']);
+
             $query = $selectQuery.' '.
                      'FROM   (SELECT    DISTINCT Movie.movie_id, Movie.watched, '.
                      '                  Movie.imdb_id, Movie.title, '.$randQuery.' '.
@@ -405,10 +409,14 @@
                      '                  genre.movie_genre_ids, Movie.date_added, '.
                      '                  Movie.imdb_rating, Movie.runtime, '.
                      '                  Movie.release_year, Movie.certificate_id, '.
-                     '                  certificate.order, Movie.filesize '.
+                     '                  certificate.order, Movie.filesize, '.
+                     '                  COALESCE(user_movie_favourite.user_id, 0) AS favourite '.
                      '        FROM      public.movie AS Movie '.
                      '        LEFT JOIN certificate ON '.
                      '                  (Movie.certificate_id = certificate.certificate_id) '.
+                     '        LEFT JOIN user_movie_favourite ON '.
+                     '                  (    Movie.movie_id = user_movie_favourite.movie_id '.
+                     '                   AND user_movie_favourite.user_id = '.$this->_search['userID'].') '.
                      ($personQuery || $searchQuery ?
                      '        LEFT JOIN (SELECT person.person_id, person.person_name, '.
                      '                          movie_role.movie_id '.
@@ -461,6 +469,12 @@
          *                                key/values.
          */
         private function _parseSearchParameters($searchParams) {
+
+            $this->_search['userID'] = $searchParams['userID'];
+
+            if(!$this->_search['userID']) {
+                $this->_search['userID'] = 0;
+            }
 
             if(isset($searchParams['limit']) &&
                ($searchParams['limit'] === false ||

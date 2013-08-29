@@ -1,5 +1,9 @@
 UrlParams.reset(true);
-var User = new MovieUser();
-User.fetch({});
 var app = new AppRouter();
-Backbone.history.start();
+var User = new MovieUser();
+t = User.fetch({});
+t.done(function() {
+    new HeaderView({model: User});
+    Backbone.history.start();
+});
+

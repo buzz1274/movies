@@ -56,8 +56,9 @@
         public function csv() {
 
             $data = $this->Movie->search('search',
-                                         array_merge(array('limit' => false),
-                                                           $this->request->query));
+                                         array_merge(array('limit' => false,
+                                                           'userID' => $this->Auth->user('user_id')),
+                                                     $this->request->query));
 
             header("Content-type:application/vnd.ms-excel");
             header("Content-disposition:attachment;filename=movies.csv");
@@ -72,9 +73,11 @@
          */
         public function movies() {
 
-            return new CakeResponse(
-                array('body' => json_encode($this->Movie->search('search',
-                                                                 $this->request->query))));
+            $data = $this->Movie->search('search',
+                                         array_merge(array('userID' => $this->Auth->user('user_id')),
+                                                     $this->request->query));
+
+            return new CakeResponse(array('body' => json_encode($data)));
 
         }
         //end movies
@@ -85,9 +88,11 @@
          */
         public function summary() {
 
-            return new CakeResponse(
-                array('body' => json_encode($this->Movie->search('summary',
-                                                                 $this->request->query))));
+            $data = $this->Movie->search('summary',
+                array_merge(array('userID' => $this->Auth->user('user_id')),
+                                  $this->request->query));
+
+            return new CakeResponse(array('body' => json_encode($data)));
 
         }
         //end summary

@@ -3,6 +3,9 @@
         <a href='http://www.imdb.com/title/<%= Movie.imdb_id %>/'
            target='_blank'>
             <%= Movie.title %>
+            <% if(Movie.favourite) { %>
+                <i class="icon-star" />
+            <% } %>
         </a>
     </td>
     <td class='centre'><%= Movie.release_year %></td>
@@ -51,7 +54,7 @@
                         <% if(Movie.watched) { %>
                             <a class="menu_item">
                                 <i class="icon-star"></i>
-                                &nbsp;Mark as Favourite
+                                &nbsp;Add to Favourites
                             </a>
                         <% } else { %>
                             <a class="menu_item">
