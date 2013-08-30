@@ -240,8 +240,6 @@
          */
         private function _search($resultType) {
 
-            error_log(json_encode($this->_search));
-
             if($resultType == 'summary') {
                 $limitQuery = false;
                 $orderQuery = false;
@@ -398,8 +396,6 @@
             } else {
                 $randQuery = false;
             }
-
-            error_log($this->_search['userID']);
 
             $query = $selectQuery.' '.
                      'FROM   (SELECT    DISTINCT Movie.movie_id, Movie.watched, '.

@@ -4,13 +4,7 @@
 
         public function index() {
 
-            error_log("HERE");
-
-            $User = $this->Auth->user();
-
-            error_log(json_encode($User));
-
-            if($User) {
+            if(($User = $this->Auth->user())) {
                 $body = array('name' => $User['name'],
                               'admin' => $User['admin'],
                               'authenticated' => true);
