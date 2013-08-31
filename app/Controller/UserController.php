@@ -2,7 +2,7 @@
 
     class UserController extends AppController {
 
-        public $uses = array('UserMovieFavourite');
+        public $uses = array('User', 'UserMovieFavourite');
 
         public function index() {
 
