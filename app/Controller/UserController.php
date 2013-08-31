@@ -83,7 +83,7 @@
                 isset($Movie->Movie->favourite)) {
 
                 $data = array('movie_id' => $Movie->Movie->movie_id,
-                              'user_id' => 1);
+                              'user_id' => $this->Auth->user('user_id'));
 
                 if($Movie->Movie->favourite &&
                    $this->UserMovieFavourite->save($data)) {
