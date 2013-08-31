@@ -108,7 +108,6 @@ window.MovieSearchView = Backbone.View.extend({
                     $("#"+id+"_label").html(start+" - "+end);
                 }
             });
-
             if(id == 'runtime') {
                 start = UrlParams.SliderValues.convert_to_time(
                                 $("#"+id+"_slider_range").slider("values",0));

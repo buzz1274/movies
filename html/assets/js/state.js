@@ -14,6 +14,7 @@ var UrlParams = {
         'imdb_rating':null,
         'watched':null,
         'runtime':'',
+        'favourites':null,
         'release_year':'',
         'lucky':null
     },
@@ -26,6 +27,7 @@ var UrlParams = {
         'kid':0,
         'cid':0,
         'hd':'all',
+        'favourites':'all',
         'watched':'all',
         'search_type':'all',
         'search':'',
@@ -135,6 +137,9 @@ var UrlParams = {
         if(UrlParams.Params.watched == 1 || UrlParams.Params.watched == 0) {
             $('#watched_'+UrlParams.Params.watched).attr('checked', 'checked');
         }
+        if(UrlParams.Params.favourites == 1 || UrlParams.Params.favourites == 0) {
+            $('#favourites_'+UrlParams.Params.favourites).attr('checked', 'checked');
+        }
         if(UrlParams.Params.search_type == 'keyword' ||
             UrlParams.Params.search_type == 'cast' ||
             UrlParams.Params.search_type == 'title') {
@@ -209,6 +214,7 @@ var UrlParams = {
         UrlParams.Params.watched = $('input:radio[name=watched]:checked').val();
         UrlParams.Params.search_type = $('input:radio[name=search_type]:checked').val();
         UrlParams.Params.hd = $('input:radio[name=hd]:checked').val();
+        UrlParams.Params.favourites = $('input:radio[name=favourites]:checked').val();
         $('input:checkbox[name="genre[]"]:checked').each(function() {
             if(UrlParams.Params.gid == "") {
                 UrlParams.Params.gid += $(this).val();

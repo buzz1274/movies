@@ -377,6 +377,17 @@
                 $watchedQuery = false;
             }
 
+            if(isset($this->_search['favourites']) &&
+                $this->_search['favourites'] !== false) {
+                if($this->_search['favourites'] == 1) {
+                    $favouritesQuery = "AND user_movie_favourite.user_id IS NOT NULL";
+                } else {
+                    $favouritesQuery = "AND user_movie_favourite.user_id IS NULL";
+                }
+            } else {
+                $favouritesQuery = false;
+            }
+
             foreach(array('imdb_rating', 'release_year', 'runtime') as $field) {
                 ${$field.'Query'} = false;
                 if(isset($this->_search[$field]) &&
@@ -442,6 +453,7 @@
                      $searchQuery.' '.
                      $watchedQuery.' '.
                      $HDQuery.' '.
+                     $favouritesQuery.' '.
                      $imdb_ratingQuery.' '.
                      $release_yearQuery.' '.
                      $runtimeQuery.' '.
@@ -572,7 +584,7 @@
                 }
             }
 
-            foreach(array('hd', 'watched') as $key) {
+            foreach(array('hd', 'watched', 'favourites') as $key) {
                 if(isset($searchParams[$key]) &&
                    $searchParams[$key] != 'all' &&
                    ((int)$searchParams[$key] === 0 ||
