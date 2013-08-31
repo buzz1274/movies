@@ -52,29 +52,22 @@
                 <% if (user.authenticated) {%>
                     <li class="favourite_link">
                         <% if(!Movie.favourite) { %>
-                            <a class="menu_item">
+                            <a id="favourites_link" class="menu_item">
                                 <i class="icon-star"></i>
                                 &nbsp;Add to Favourites
                             </a>
                         <% } else { %>
-                            <a class="menu_item">
+                            <a id="favourites_link" class="menu_item">
                                 <i class="icon-star"></i>
                                 &nbsp;Remove from Favourites
                             </a>
                         <% } %>
                     </li>
                     <li class="watched_link">
-                        <% if(Movie.watched) { %>
-                            <a class="menu_item">
-                                <i class="icon-eye-open"></i>
-                                &nbsp;Mark as Not Watched
-                            </a>
-                        <% } else { %>
-                            <a class="menu_item">
-                                <i class="icon-eye-open"></i>
-                                &nbsp;Mark as Watched
-                            </a>
-                        <% } %>
+                        <a class="menu_item">
+                            <i class="icon-eye-open"></i>
+                            &nbsp;Mark as Watched
+                        </a>
                     </li>
                 <% } %>
             </ul>

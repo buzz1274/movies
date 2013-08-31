@@ -2,6 +2,8 @@
 
     class UserController extends AppController {
 
+        public $uses = array('UserMovieFavourite');
+
         public function index() {
 
             if(($User = $this->Auth->user())) {
@@ -65,5 +67,49 @@
 
         }
         //end logout
+
+        /**
+         * add/removes a movie from users favourite list
+         * @author David
+         * @return mixed
+         */
+        public function favourite() {
+
+            $status = 400;
+            $Movie = $this->request->input('json_decode');
+
+            if(isset($Movie->Movie->movie_id) &&
+                (int)$Movie->Movie->movie_id &&
+                isset($Movie->Movie->favourite)) {
+
+                $data = array('movie_id' => $Movie->Movie->movie_id,
+                              'user_id' => 1);
+
+                if($Movie->Movie->favourite &&
+                   $this->UserMovieFavourite->save($data)) {
+                    $status = 200;
+
+                } elseif(!$Movie->Movie->favourite &&
+                          $this->UserMovieFavourite->deleteAll($data)) {
+                    $status = 200;
+                }
+
+            }
+
+            return new CakeResponse(array('status' => 200,
+                                          'body' => json_encode(array('ok'))));
+
+        }
+        //end favourite
+
+        /**
+         * add/removes a movie from users favourite list
+         * @author David
+         * @return mixed
+         */
+        public function watched() {
+
+        }
+        //end watched
 
     }

@@ -274,33 +274,50 @@ window.MovieListItemView = Backbone.View.extend({
             app.movieDetails(this.Movie.movie_id, this.el);
         }
     },
-    favourite: function() {
-        console.log("favourite");
+    favourite:function() {
         var Movie = this.model.get('Movie');
+        var parent = this;
         Movie.favourite = !Movie.favourite;
 
-        this.model.set(Movie);
+        this.model.save({},
+            {url:'/user/favourite/:id/',
+                success: function(model, response) {
+                    if(Movie.favourite) {
+                        var message = 'Movie added to favourites';
+                    } else {
+                        var message = 'Movie removed from favourites';
+                    }
+                    interface_helper.message_popup('success', message);
+                    model.set(Movie);
 
+                    var not_favourites = parent.summary.get('not_favourites');
+                    var favourites = parent.summary.get('favourites');
 
-        var not_favourites = this.summary.get('not_favourites');
-        var favourites = this.summary.get('favourites');
-
-        if(this.Movie.favourite) {
-            this.summary.set({not_favourites: not_favourites - 1,
-                              favourites: favourites + 1});
-        } else {
-            this.summary.set({not_favourites: not_favourites + 1,
-                              favourites: favourites - 1});
-        }
-
-
-        //this.update_summary(Movie);
-
-
+                    if(Movie.favourite) {
+                        parent.summary.set({not_favourites: not_favourites - 1,
+                                            favourites: favourites + 1});
+                    } else {
+                        parent.summary.set({not_favourites: not_favourites + 1,
+                                            favourites: favourites - 1});
+                    }
+                },
+                error: function(model, response) {
+                    if(Movie.favourite) {
+                        var message = 'Error adding movie to favourites';
+                    } else {
+                        var message = 'Error removing movie from favourites';
+                    }
+                    interface_helper.message_popup('error', message);
+                    Movie.favourite = !Movie.favourite;
+                    model.set(Movie);
+                }
+            }
+        );
 
         $('#movies_table > tbody').children('tr').css("background-color","");
     },
-    watched:function(e) {
+    watched:function() {
+        //fix to use user controller and update summary correctly//
         var Movie = this.model.get('Movie');
         Movie.watched = !Movie.watched;
         this.model.save({action: "watched"},
@@ -314,7 +331,16 @@ window.MovieListItemView = Backbone.View.extend({
             }
         });
 
-        this.update_summary(Movie);
+        var not_watched = this.summary.get('not_watched');
+        var watched = this.summary.get('watched');
+
+        if(this.Movie.watched) {
+            this.summary.set({not_watched: not_watched - 1,
+                watched: watched + 1});
+        } else {
+            this.summary.set({not_watched: not_watched + 1,
+                watched: watched - 1});
+        }
 
         $('#movies_table > tbody').children('tr').css("background-color","");
     },
@@ -322,18 +348,6 @@ window.MovieListItemView = Backbone.View.extend({
         this.$el.html(this.template(this.model.toJSON()));
 
         return this;
-    },
-    update_summary: function(Movie) {
-        var not_watched = this.summary.get('not_watched');
-        var watched = this.summary.get('watched');
-
-        if(this.Movie.watched) {
-            this.summary.set({not_watched: not_watched - 1,
-                              watched: watched + 1});
-        } else {
-            this.summary.set({not_watched: not_watched + 1,
-                              watched: watched - 1});
-        }
     },
     mouseoverrow: function() {
         this.$el.css("background-color","#BADA55");

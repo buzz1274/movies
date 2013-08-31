@@ -14,6 +14,10 @@
     Router::connect('/user/logout/',
                     array('controller' => 'user',
                           'action' => 'logout'));
+    Router::connect('/user/favourite/:movieID',
+                    array('controller' => 'user',
+                          'action' => 'favourite',
+                          'movieID', '[0-9]{1,}'));
     Router::connect('/movies/summary',
                     array('controller' => 'movies',
                           'action' => 'summary'));

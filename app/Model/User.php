@@ -6,17 +6,16 @@
 
         public $useTable = 'user';
 
-        public function login($username, $password) {
+        public $primaryKey = null;
 
+        public function login($username, $password) {
             $user = $this->find('first', array(
                         'conditions' => array('username' => $username,
                                               'password' => $password),
                         'recursive' => -1));
 
             return $user;
-
         }
         //end login
-
 
     }
