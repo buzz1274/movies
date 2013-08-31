@@ -254,7 +254,7 @@
                     '             WHEN results.hd = True THEN 1 '.
                     '             ELSE 0 '.
                     '           END) AS hd, '.
-                    '       0 AS favourites, '.
+                    '       SUM(results.favourite) AS favourites, '.
                     '       MIN(results.imdb_rating) AS min_imdb_rating, '.
                     '       MAX(results.imdb_rating) AS max_imdb_rating, '.
                     '       MIN(results.runtime) AS min_runtime, '.
@@ -384,7 +384,6 @@
                     ${$field.'Query'} = 'AND Movie.'.$field.' BETWEEN
                                         '.$this->_search[$field]['min'].' AND '.
                                         $this->_search[$field]['max'];
-
                 }
             }
 
@@ -406,7 +405,10 @@
                      '                  Movie.imdb_rating, Movie.runtime, '.
                      '                  Movie.release_year, Movie.certificate_id, '.
                      '                  certificate.order, Movie.filesize, '.
-                     '                  COALESCE(user_movie_favourite.user_id, 0) AS favourite '.
+                     '                  CASE '.
+                     '                    WHEN user_movie_favourite.user_id IS NULL THEN 0 '.
+                     '                    ELSE 1 '.
+                     '                  END AS favourite '.
                      '        FROM      public.movie AS Movie '.
                      '        LEFT JOIN certificate ON '.
                      '                  (Movie.certificate_id = certificate.certificate_id) '.

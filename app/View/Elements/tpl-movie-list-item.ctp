@@ -50,8 +50,8 @@
                     </a>
                 </li>
                 <% if (user.authenticated) {%>
-                    <li class="favourites_link">
-                        <% if(Movie.watched) { %>
+                    <li class="favourite_link">
+                        <% if(!Movie.favourite) { %>
                             <a class="menu_item">
                                 <i class="icon-star"></i>
                                 &nbsp;Add to Favourites

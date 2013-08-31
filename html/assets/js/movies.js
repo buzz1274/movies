@@ -15,6 +15,7 @@ window.MovieSearchView = Backbone.View.extend({
         this.options.user.bind("change:authenticated", this.render);
         if(typeof this.model != 'undefined') {
             this.model.bind("change:watched", this.render);
+            this.model.bind("change:favourites", this.render);
         }
     },
     render:function () {
@@ -275,8 +276,30 @@ window.MovieListItemView = Backbone.View.extend({
         }
     },
     favourite: function() {
+        console.log("favourite");
         var Movie = this.model.get('Movie');
-        this.update_summary(Movie);
+        Movie.favourite = !Movie.favourite;
+
+        this.model.set(Movie);
+
+
+        var not_favourites = this.summary.get('not_favourites');
+        var favourites = this.summary.get('favourites');
+
+        if(this.Movie.favourite) {
+            this.summary.set({not_favourites: not_favourites - 1,
+                              favourites: favourites + 1});
+        } else {
+            this.summary.set({not_favourites: not_favourites + 1,
+                              favourites: favourites - 1});
+        }
+
+
+        //this.update_summary(Movie);
+
+
+
+        $('#movies_table > tbody').children('tr').css("background-color","");
     },
     watched:function(e) {
         var Movie = this.model.get('Movie');
