@@ -2,7 +2,7 @@
     <div class="alert alert-<%= type %> message_popup">
         <button id="close_message_popup" type="button"
                 class="close" data-dismiss="alert"
-                onclick='interface_helper.opaque(false);'>
+                onclick='interface_helper.opaque(false, true);'>
             &times;
         </button>
         <strong><% if(type == 'error') { %>Warning!<% } else { %>Success!<% } %></strong>

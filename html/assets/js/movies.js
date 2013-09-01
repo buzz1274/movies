@@ -195,6 +195,9 @@ window.MovieListView = Backbone.View.extend({
         'click span.edit_media': 'editMedia',
         'click span.show-all-link': 'showAll'
     },
+    initialize:function() {
+        this.options.user.bind("change:authenticated", this.render, this);
+    },
     editMedia:function(ev) {
         alert("EDIT MEDIA ---- COMING SOON");
     },

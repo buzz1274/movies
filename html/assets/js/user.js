@@ -52,8 +52,9 @@ window.HeaderView = Backbone.View.extend({
                         interface_helper.message_popup('success', 'You have logged out');
                     }
                     model.set({username: null, password: null,
-                        name: response.name,
-                        authenticated: response.authenticated});
+                               name: response.name,
+                               authenticated: response.authenticated});
+                    Backbone.history.loadUrl();
                 },
                 error: function(model, response) {
                     body = JSON.parse(response.responseText);

@@ -8,11 +8,13 @@ var interface_helper = {
             $('#loading').css('display', 'none');
         }
     },
-    opaque: function(on) {
+    opaque: function(on, bypass_popup_check) {
         if(on) {
             $('#opaque').css('display', 'block');
         } else {
-            $('#opaque').css('display', 'none');
+            if($('div.alert').css('display') != 'block' || bypass_popup_check) {
+                $('#opaque').css('display', 'none');
+            }
         }
     },
     message_popup: function(type, message) {
