@@ -6,12 +6,12 @@
                 <li class="disabled"><a>Prev</a></li>
             <% } else { %>
                 <li>
-                    <a href="#p=1&<%= UrlParams.remove_page_from_query_string() %>">
+                    <a href="#p=1&<%= State.remove_page_from_query_string() %>">
                         First
                     </a>
                 </li>
                 <li>
-                    <a href="#p=<%= (parseInt(page) - 1) %><%= UrlParams.remove_page_from_query_string() %>">
+                    <a href="#p=<%= (parseInt(page) - 1) %><%= State.remove_page_from_query_string() %>">
                         Prev
                     </a>
                 </li>
@@ -32,7 +32,7 @@
                     <% if(page == i) { %>
                         <a><%= i %></a>
                     <% } else if(i <= totalPages) { %>
-                        <a href="#p=<%= i %>&<%= UrlParams.remove_page_from_query_string() %>">
+                        <a href="#p=<%= i %>&<%= State.remove_page_from_query_string() %>">
                             <%= i %>
                         </a>
                     <% } %>
@@ -43,12 +43,12 @@
                 <li class="disabled"><a>Last</a></li>
             <% } else { %>
                 <li>
-                    <a href="#p=<%= (parseInt(page) + 1) %><%= UrlParams.remove_page_from_query_string() %>">
+                    <a href="#p=<%= (parseInt(page) + 1) %><%= State.remove_page_from_query_string() %>">
                         Next
                     </a>
                 </li>
                 <li>
-                    <a href="#p=<%= totalPages %><%= UrlParams.remove_page_from_query_string() %>">
+                    <a href="#p=<%= totalPages %><%= State.remove_page_from_query_string() %>">
                         Last
                     </a>
                 </li>

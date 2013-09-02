@@ -16,22 +16,22 @@ var AppRouter = Backbone.Router.extend({
         var movieHeaderView = new MovieHeaderView({model:null, user:User});
         var moviePagingView = new MoviePagingView({model:movieSummary});
 
-        UrlParams.parse(query_string);
+        State.parse(query_string);
         movieSummary.fetch({
             async:true,
-            data:UrlParams.Params,
+            data:State.Params,
             success: function() {
                 var movieList = new MovieCollection();
                 var movieListView = new MovieListView({model:movieList, user:User, summary:movieSummary});
 
                 $('#movies_search').empty().prepend(movieSearchView.render().el);
-                UrlParams.SliderValues.init();
+                State.SliderValues.init();
 
                 movieSearchView.render_slider('imdb_rating');
                 movieSearchView.render_slider('runtime');
                 movieSearchView.render_slider('release_year');
 
-                UrlParams.fill_form();
+                State.fill_form();
 
                 if(!movieSummary.get('total_movies')) {
                     $('#pagination').css('display', 'none');
@@ -42,7 +42,7 @@ var AppRouter = Backbone.Router.extend({
                 } else {
                     movieList.fetch({
                         async:true,
-                        data:UrlParams.Params,
+                        data:State.Params,
                         success: function() {
                             $('#movies_table').empty().append(movieHeaderView.render().el);
                             movieHeaderView.display_sort_icons();

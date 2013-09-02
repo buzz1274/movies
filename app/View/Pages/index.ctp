@@ -56,6 +56,7 @@
         <script type="text/javascript"
             src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js">
         </script>
+        <script type="text/javascript" src="/assets/js/helper.js"></script>
         <script type="text/javascript" src="/assets/js/interface_helper.js"></script>
         <script type="text/javascript" src="/assets/js/state.js"></script>
         <script type="text/javascript" src="/assets/js/models.js"></script>

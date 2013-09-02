@@ -1,4 +1,4 @@
-var UrlParams = {
+var State = {
     qs:'',
     Params: {
         'p':null,
@@ -78,26 +78,10 @@ var UrlParams = {
             this.release_year.min = $('section').data('min-release-year');
             this.release_year.max = $('section').data('max-release-year');
         },
-        convert_to_time:function(minutes) {
-            if(minutes < 60) {
-                return minutes + "mins";
-            } else {
-                time = parseInt(minutes / 60);
-                if(time == 1) {
-                    time += "hr"
-                } else {
-                    time += "hrs"
-                }
-                if(minutes % 60) {
-                    time += " " + (minutes % 60) + "mins";
-                }
-                return time;
-            }
-        }
     },
     parse:function(query_string) {
         if(query_string == undefined || !query_string) {
-            UrlParams.reset(true);
+            State.reset(true);
         } else {
             this.qs = query_string;
             var page_in_params = false;
@@ -105,20 +89,20 @@ var UrlParams = {
                 if(argument) {
                     fragment = argument.split('=');
                     if(fragment[0] == 'gid' || fragment[0] == 'cid') {
-                        UrlParams.Params[fragment[0]] = "";
+                        State.Params[fragment[0]] = "";
                         fragment[1].split(',').forEach(function(id) {
-                            if(UrlParams.Params[fragment[0]] == "") {
-                                UrlParams.Params[fragment[0]] += id;
+                            if(State.Params[fragment[0]] == "") {
+                                State.Params[fragment[0]] += id;
                             } else {
-                                UrlParams.Params[fragment[0]] += "," + id;
+                                State.Params[fragment[0]] += "," + id;
                             }
                         });
                     } else if(fragment[0] == 'id') {
                         //console.log("OPEN MOVIE PANE");
                     } else if (fragment[0] == 'search') {
-                        UrlParams.Params['search'] = decodeURIComponent(fragment[1]);
+                        State.Params['search'] = decodeURIComponent(fragment[1]);
                     } else {
-                        UrlParams.Params[fragment[0]] = fragment[1];
+                        State.Params[fragment[0]] = fragment[1];
                     }
                     if(fragment[0] == 'p') {
                         page_in_params = true;
@@ -126,45 +110,45 @@ var UrlParams = {
                 }
             });
             if(!page_in_params) {
-                UrlParams.Params.p = 1;
+                State.Params.p = 1;
             }
         }
     },
     fill_form:function() {
-        if(UrlParams.Params.search) {
-            $('#search_input').val(decodeURIComponent(UrlParams.Params.search));
+        if(State.Params.search) {
+            $('#search_input').val(decodeURIComponent(State.Params.search));
         }
-        if(UrlParams.Params.watched == 1 || UrlParams.Params.watched == 0) {
-            $('#watched_'+UrlParams.Params.watched).attr('checked', 'checked');
+        if(State.Params.watched == 1 || State.Params.watched == 0) {
+            $('#watched_'+State.Params.watched).attr('checked', 'checked');
         }
-        if(UrlParams.Params.favourites == 1 || UrlParams.Params.favourites == 0) {
-            $('#favourites_'+UrlParams.Params.favourites).attr('checked', 'checked');
+        if(State.Params.favourites == 1 || State.Params.favourites == 0) {
+            $('#favourites_'+State.Params.favourites).attr('checked', 'checked');
         }
-        if(UrlParams.Params.search_type == 'keyword' ||
-            UrlParams.Params.search_type == 'cast' ||
-            UrlParams.Params.search_type == 'title') {
-            $('#search_type_'+UrlParams.Params.search_type).attr('checked', 'checked');
+        if(State.Params.search_type == 'keyword' ||
+            State.Params.search_type == 'cast' ||
+            State.Params.search_type == 'title') {
+            $('#search_type_'+State.Params.search_type).attr('checked', 'checked');
         }
-        if(UrlParams.Params.hd == 1 || UrlParams.Params.hd == 0) {
-            $('#hd_'+UrlParams.Params.hd).attr('checked', 'checked');
+        if(State.Params.hd == 1 || State.Params.hd == 0) {
+            $('#hd_'+State.Params.hd).attr('checked', 'checked');
         }
-        if(UrlParams.Params.gid) {
-            UrlParams.Params.gid.split(',').forEach(function(gid) {
+        if(State.Params.gid) {
+            State.Params.gid.split(',').forEach(function(gid) {
                 $('input[name="genre[]"][value='+gid+']').attr("checked",true);
             });
         }
-        if(UrlParams.Params.cid) {
-            UrlParams.Params.cid.split(',').forEach(function(cid) {
+        if(State.Params.cid) {
+            State.Params.cid.split(',').forEach(function(cid) {
                 $('input[name="certificate[]"][value='+cid+']').attr("checked",true);
             });
         }
-        _.each(UrlParams.SliderValues, function(value, key) {
-            if(UrlParams.SliderValues[key].active && UrlParams.Params[key]) {
-                values = UrlParams.Params[key].split(',');
+        _.each(State.SliderValues, function(value, key) {
+            if(State.SliderValues[key].active && State.Params[key]) {
+                values = State.Params[key].split(',');
                 if(values[0] && values[1]) {
                     var movieSearchView = new MovieSearchView({model: null, user:User});
-                    UrlParams.SliderValues[key].current_min = values[0];
-                    UrlParams.SliderValues[key].current_max = values[1];
+                    State.SliderValues[key].current_min = values[0];
+                    State.SliderValues[key].current_max = values[1];
                     movieSearchView.render_slider(key);
                 }
             }
@@ -172,15 +156,15 @@ var UrlParams = {
     },
     query_string:function() {
         var qs = '';
-        _.each(UrlParams.DefaultParams, function(value, key) {
-            if((UrlParams.Params[key] != UrlParams.DefaultParams[key]) &&
+        _.each(State.DefaultParams, function(value, key) {
+            if((State.Params[key] != State.DefaultParams[key]) &&
                 (key != 'asc' && key != 's' && key != 'imdb_rating' &&
                     key != 'runtime' && key != 'release_year')) {
                 var param = false;
                 if(key == 'search') {
-                    param = encodeURIComponent(UrlParams.Params[key].toString());
-                } else if(typeof UrlParams.Params[key] != 'undefined') {
-                    param = UrlParams.Params[key].toString();
+                    param = encodeURIComponent(State.Params[key].toString());
+                } else if(typeof State.Params[key] != 'undefined') {
+                    param = State.Params[key].toString();
                 }
                 if(param) {
                     qs += key+'='+param+"&";
@@ -188,16 +172,16 @@ var UrlParams = {
             }
             if(key == 'imdb_rating' || key == 'release_year' ||
                 key == 'runtime') {
-                values = UrlParams.Params[key].split(',');
+                values = State.Params[key].split(',');
                 if(values[0] && values[1] &&
-                    (UrlParams.SliderValues[key].active)) {
-                    qs += key+'='+UrlParams.Params[key]+"&";
+                    (State.SliderValues[key].active)) {
+                    qs += key+'='+State.Params[key]+"&";
                 }
             }
         });
-        if(!(UrlParams.Params['s'] == 'title' && UrlParams.Params['asc'])) {
-            qs += 's='+UrlParams.Params['s']+'&asc='+
-                UrlParams.Params['asc']+'&';
+        if(!(State.Params['s'] == 'title' && State.Params['asc'])) {
+            qs += 's='+State.Params['s']+'&asc='+
+                State.Params['asc']+'&';
         }
         this.qs = qs.slice(0, -1);
 
@@ -208,44 +192,44 @@ var UrlParams = {
         return qs.length ? '&'+qs : '';
     },
     parse_search_form:function() {
-        UrlParams.Params.gid = "";
-        UrlParams.Params.cid = "";
-        UrlParams.Params.search = $('#search_input').val();
-        UrlParams.Params.watched = $('input:radio[name=watched]:checked').val();
-        UrlParams.Params.search_type = $('input:radio[name=search_type]:checked').val();
-        UrlParams.Params.hd = $('input:radio[name=hd]:checked').val();
-        UrlParams.Params.favourites = $('input:radio[name=favourites]:checked').val();
+        State.Params.gid = "";
+        State.Params.cid = "";
+        State.Params.search = $('#search_input').val();
+        State.Params.watched = $('input:radio[name=watched]:checked').val();
+        State.Params.search_type = $('input:radio[name=search_type]:checked').val();
+        State.Params.hd = $('input:radio[name=hd]:checked').val();
+        State.Params.favourites = $('input:radio[name=favourites]:checked').val();
         $('input:checkbox[name="genre[]"]:checked').each(function() {
-            if(UrlParams.Params.gid == "") {
-                UrlParams.Params.gid += $(this).val();
+            if(State.Params.gid == "") {
+                State.Params.gid += $(this).val();
             } else {
-                UrlParams.Params.gid += "," + $(this).val();
+                State.Params.gid += "," + $(this).val();
             }
         });
         $('input:checkbox[name="certificate[]"]:checked').each(function() {
-            if(UrlParams.Params.cid == "") {
-                UrlParams.Params.cid += $(this).val();
+            if(State.Params.cid == "") {
+                State.Params.cid += $(this).val();
             } else {
-                UrlParams.Params.cid += "," + $(this).val();
+                State.Params.cid += "," + $(this).val();
             }
         });
-        _.each(UrlParams.SliderValues, function(value, key) {
-            if(typeof UrlParams.SliderValues[key] == 'object' &&
-                UrlParams.SliderValues[key].active) {
-                UrlParams.Params[key] =
-                    UrlParams.SliderValues[key].current_min+","+
-                        UrlParams.SliderValues[key].current_max;
+        _.each(State.SliderValues, function(value, key) {
+            if(typeof State.SliderValues[key] == 'object' &&
+                State.SliderValues[key].active) {
+                State.Params[key] =
+                    State.SliderValues[key].current_min+","+
+                        State.SliderValues[key].current_max;
             }
         });
     },
     reset:function(reset_sliders) {
-        _.each(UrlParams.DefaultParams, function(value, key) {
-            UrlParams.Params[key] = value;
+        _.each(State.DefaultParams, function(value, key) {
+            State.Params[key] = value;
         });
         if(reset_sliders) {
-            _.each(UrlParams.SliderValues, function(value, key) {
-                if(typeof UrlParams.SliderValues[key] == 'object') {
-                    UrlParams.SliderValues[key].active = false;
+            _.each(State.SliderValues, function(value, key) {
+                if(typeof State.SliderValues[key] == 'object') {
+                    State.SliderValues[key].active = false;
                 }
             });
         }

@@ -1,4 +1,4 @@
-UrlParams.reset(true);
+State.reset(true);
 var app = new AppRouter();
 var User = new MovieUser();
 t = User.fetch({});
