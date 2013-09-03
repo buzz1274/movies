@@ -28,6 +28,10 @@
                     array('controller' => 'movies',
                           'action' => 'watched',
                           'movieID' => '[0-9]{1,}'));
+    Router::connect('/movies/get/:movieID/',
+                    array('controller' => 'movies',
+                          'action' => 'file',
+                          'movieID', '[0-9]{1,}'));
     Router::connect('/movies/:movieID/',
                     array('controller' => 'movies',
                           'action' => 'movie',

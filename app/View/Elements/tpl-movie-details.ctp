@@ -135,7 +135,11 @@
                             </tr>
                             <tr>
                                 <td><strong>Path:</strong></td>
-                                <td colspan="7"><%= Movie.path %></td>
+                                <td colspan="7">
+                                    <a href="/movies/get/<%= Movie.movie_id %>/">
+                                        <%= Movie.path %>
+                                    </a>
+                                </td>
                             </tr>
                         </table>
                     </dd>

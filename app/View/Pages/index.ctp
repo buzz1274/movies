@@ -42,6 +42,9 @@
         <?php echo $this->element('tpl-movie-details'); ?>
 
         <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.8/require.min.js">
+        </script>
+        <script type="text/javascript"
             src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js">
         </script>
         <script type="text/javascript"
@@ -56,6 +59,7 @@
         <script type="text/javascript"
             src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js">
         </script>
+
         <script type="text/javascript" src="/assets/js/helper.js"></script>
         <script type="text/javascript" src="/assets/js/interface_helper.js"></script>
         <script type="text/javascript" src="/assets/js/state.js"></script>

@@ -2,10 +2,11 @@ var AppRouter = Backbone.Router.extend({
     routes:{
         "/user/login": "login",
         "/user/logout": "logout",
+        "file-error": "file_error",
         "":"list",
         "#":"list",
-        "*query_string": "list",
-        "/movies/:imdb_id/":"movieDetails"
+        "/movies/:imdb_id/":"movieDetails",
+        "*query_string": "list"
     },
     list:function (query_string) {
         interface_helper.loadingImage(true);
@@ -77,5 +78,9 @@ var AppRouter = Backbone.Router.extend({
                 interface_helper.loadingImage(false);
             }
         });
+    },
+    file_error:function() {
+        this.list();
+        interface_helper.message_popup('error', 'An error occurred whilst downloading the file.');
     }
 });

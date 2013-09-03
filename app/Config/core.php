@@ -21,6 +21,7 @@
 
  $config = parse_ini_file(dirname(__FILE__).'/config.ini');
  define('IMAGE_SAVE_PATH', $config['image_save_path']);
+ define('MEDIA_SERVER_PATH', $config['path']);
 
 
 

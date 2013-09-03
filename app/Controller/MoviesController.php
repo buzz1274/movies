@@ -35,23 +35,54 @@
                               'watched' => (boolean)$Movie->Movie->watched))) {
 
                 $response = 'success';
+                $statusCode = '200';
 
             } else {
 
+                $statusCode = '400';
                 $response = 'failure';
-                $this->header('HTTP/1.1 400 Bad Request');
 
             }
 
-            return new cakeresponse(array('body' =>
-                            json_encode(array('name' => $response))));
+            return new cakeresponse(array('statusCode' => $statusCode,
+                                          'body' => json_encode(array('name' => $response))));
 
         }
         //end watched
 
         /**
+         * returns the movie file
+         * @author David
+         */
+        public function file() {
+
+            $movie = $this->Movie->find('first',
+                         array('recursive' => -1,
+                               'conditions' => array('movie_id' =>
+                                                        $this->request->params['movieID'])));
+
+            if(!$movie) {
+                header('HTTP/1.1 404 Not Found', true, 401);
+                header('Location: /#file-error');
+                die();
+            } else {
+                $filename = preg_replace('/.*\\\/is', '', $movie['Movie']['path']);
+
+                $this->viewClass = 'Media';
+                $params = array('id'        => $filename,
+                                'name'      => preg_replace('/].*/', ']', $filename),
+                                'download'  => true,
+                                'extension' => preg_replace('/.*]\./', '', $filename),
+                                'path'      => MEDIA_SERVER_PATH.'/');
+                $this->set($params);
+            }
+
+        }
+        //end file
+
+        /**
          * returns a csv formatted list of movies
-         * @author David <david@sulaco.co.uk>
+         * @author David
          */
         public function csv() {
 
@@ -60,16 +91,22 @@
                                                            'userID' => $this->Auth->user('user_id')),
                                                      $this->request->query));
 
-            header("Content-type:application/vnd.ms-excel");
-            header("Content-disposition:attachment;filename=movies.csv");
-            $this->set(compact('data'));
+            if($data) {
+                header('HTTP/1.1 404 Not Found', true, 401);
+                header('Location: /#file-error');
+                die();
+            } else {
+                header("Content-type:application/vnd.ms-excel");
+                header("Content-disposition:attachment;filename=movies.csv");
+                $this->set(compact('data'));
+            }
 
         }
         //end csv
 
         /**
          * returns all movies that match the supplied search critera
-         * @author David <david@sulaco.co.uk>
+         * @author David
          */
         public function movies() {
 
@@ -84,7 +121,7 @@
 
         /**
          * provides summary details for the current resultset
-         * @author David <david@sulaco.co.uk>
+         * @author David
          */
         public function summary() {
 

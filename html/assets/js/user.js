@@ -14,9 +14,21 @@ window.HeaderView = Backbone.View.extend({
         'click #cancelButton': 'login_popup'
     },
     initialize: function() {
+        if(this.model.get('authenticated')) {
+            //this.poll();
+        }
         this.model.bind("change:authenticated", this.render, this);
         this.render();
         return this;
+    },
+    poll: function() {
+        var parent = this;
+        setTimeout(function(){
+            $.ajax({url: "user/", success: function(data){
+                console.log(data);
+                parent.poll();
+            }, dataType: "json"});
+        }, 30000);
     },
     render:function() {
         $(this.el).html('').append(this.template(this.model.toJSON()));
