@@ -71,6 +71,8 @@ window.HeaderView = Backbone.View.extend({
                 error: function(model, response) {
                     body = JSON.parse(response.responseText);
                     if(body.error_type == 'invalid_credentials') {
+                        $('#username').val('');
+                        $('#password').val('');
                         $('#login_error_message').css('display', 'block').html(body.error_message);
                     } else {
                         parent.login_popup(e);
