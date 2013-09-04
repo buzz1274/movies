@@ -2,6 +2,8 @@
 
     class MoviesController extends AppController {
 
+        public $uses = array('Movie', 'UserMovieDownloaded');
+
         /**
          * retrieves movie details for the movie matching imdb_id
          * @author David
@@ -20,37 +22,6 @@
         //end movie
 
         /**
-         * updates the watched status
-         * @author David
-         */
-        public function watched() {
-
-            $Movie = $this->request->input('json_decode');
-
-            if(isset($Movie->Movie->movie_id) &&
-               (int)$Movie->Movie->movie_id &&
-               isset($Movie->Movie->watched) &&
-               $this->Movie->save(
-                        array('movie_id' => $Movie->Movie->movie_id,
-                              'watched' => (boolean)$Movie->Movie->watched))) {
-
-                $response = 'success';
-                $statusCode = '200';
-
-            } else {
-
-                $statusCode = '400';
-                $response = 'failure';
-
-            }
-
-            return new cakeresponse(array('statusCode' => $statusCode,
-                                          'body' => json_encode(array('name' => $response))));
-
-        }
-        //end watched
-
-        /**
          * returns the movie file
          * @author David
          */
@@ -66,6 +37,12 @@
                 header('Location: /#file-error');
                 die();
             } else {
+
+                $this->UserMovieDownloaded->save(
+                        array('movie_id' => $this->request->params['movieID'],
+                              'user_id' => $this->Auth->user('user_id'),
+                              'date_downloaded' => date('Y-m-d H:i:s', strtotime('now'))));
+
                 $filename = preg_replace('/.*\//is', '', $movie['Movie']['path']);
                 $this->viewClass = 'Media';
                 $params = array('id'        => $filename,
@@ -74,6 +51,7 @@
                                 'extension' => preg_replace('/.*]\./', '', $filename),
                                 'path'      => MEDIA_SERVER_PATH.'/');
                 $this->set($params);
+
             }
 
         }
