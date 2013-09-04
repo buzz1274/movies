@@ -41,6 +41,7 @@
                 $this->UserMovieDownloaded->save(
                         array('movie_id' => $this->request->params['movieID'],
                               'user_id' => $this->Auth->user('user_id'),
+                              'filesize' => $movie['Movie']['filesize'],
                               'date_downloaded' => date('Y-m-d H:i:s', strtotime('now'))));
 
                 $filename = preg_replace('/.*\//is', '', $movie['Movie']['path']);
