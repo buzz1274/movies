@@ -1,6 +1,17 @@
 window.MovieUser = Backbone.Model.extend({
     url:'/user/',
-    idAttribute: "user_id"
+    idAttribute: "user_id",
+    watched:function(movie_model) {
+        var movie = movie_model.get('Movie');
+        var watched = movie_model.get('Watched');
+        watched[_.size(watched)] = {'date_watched': '2013-09-03',
+                                    'movie_id': movie.movie_id,
+                                    'user_id': User.user_id};
+
+        console.log(watched);
+
+        movie_model.set(watched);
+    }
 });
 window.HeaderView = Backbone.View.extend({
     el:$("#navbar"),

@@ -193,7 +193,7 @@ window.MovieListView = Backbone.View.extend({
         'click span.director_link': 'personSearch',
         'click span.actor_link': 'personSearch',
         'click span.edit_media': 'editMedia',
-        'click span.show-all-link': 'showAll'
+        'click span.show-all-link': 'showAll',
     },
     initialize:function() {
         this.options.user.bind("change:authenticated", this.render, this);
@@ -252,7 +252,6 @@ window.MovieListItemView = Backbone.View.extend({
     events: {
         'mouseover': 'mouseoverrow',
         'mouseout': 'mouseoutrow',
-        'click li.watched_link': 'watched',
         'click li.favourite_link': 'favourite',
         'click li.detail_link': 'details'
     },
@@ -319,37 +318,8 @@ window.MovieListItemView = Backbone.View.extend({
 
         $('#movies_table > tbody').children('tr').css("background-color","");
     },
-    watched:function() {
-        //fix to use user controller and update summary correctly//
-        var Movie = this.model.get('Movie');
-        Movie.watched = !Movie.watched;
-        this.model.save({action: "watched"},
-            {url:'/movies/watched/:id/',
-             success: function(model, response) {
-                model.set(Movie);
-            },
-            error: function(model, response) {
-                Movie.watched = !Movie.watched;
-                model.set(Movie);
-            }
-        });
-
-        var not_watched = this.summary.get('not_watched');
-        var watched = this.summary.get('watched');
-
-        if(this.Movie.watched) {
-            this.summary.set({not_watched: not_watched - 1,
-                watched: watched + 1});
-        } else {
-            this.summary.set({not_watched: not_watched + 1,
-                watched: watched - 1});
-        }
-
-        $('#movies_table > tbody').children('tr').css("background-color","");
-    },
     render:function (eventName) {
         this.$el.html(this.template(this.model.toJSON()));
-
         return this;
     },
     mouseoverrow: function() {
@@ -360,11 +330,30 @@ window.MovieListItemView = Backbone.View.extend({
     }
 });
 window.MovieView = Backbone.View.extend({
+    el:$("#movies_table"),
     tagname:"tr",
-    element:null,
+    events: {
+        'click a.watched_link': 'watched'
+    },
     template:_.template($('#tpl-movie-details').html()),
     initialize: function() {
         this.options.user.bind("change:authenticated", _.bind(this.rerender, this));
+        this.model.bind("change", _.bind(this.render, this));
+    },
+    watched:function() {
+        /*
+        Watched = this.model.get('Watched');
+        Watched[_.size(Watched)] = {'date_watched': '2013-09-03',
+                                    'movie_id': 25, 'user_id': 1};
+        */
+        User.watched(this.model);
+
+        //this.model.save();
+
+        //Watched.set(Watched);
+        //var Watched = this.model.get('Watched');
+        //console.log(this.model);
+        //Movie.set.Watched[3] = {''}
     },
     rerender:function() {
         var Movie = this.model.get('Movie');
@@ -372,9 +361,12 @@ window.MovieView = Backbone.View.extend({
             app.movieDetails(Movie.movie_id, this.element);
         }
     },
-    render:function(element) {
-        this.element = element;
-        $(element).after(this.template(this.model.toJSON(), this.options.user));
+    render:function() {
+        var Movie = this.model.get('Movie');
+        if($('tr#movie_'+Movie.movie_id).html()) {
+            $('tr#movie_'+Movie.movie_id).html('');
+        }
+        $('#'+Movie.imdb_id).after(this.template(this.model.toJSON(), this.options.user));
         return this;
     }
 });

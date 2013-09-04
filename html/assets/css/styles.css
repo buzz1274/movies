@@ -198,6 +198,9 @@ div.ajax_content {
 .menu_item {
     cursor:pointer;
 }
+a.link {
+    cursor:pointer;
+}
 td#no_results {
     text-align:center;
     color:#FF0000;

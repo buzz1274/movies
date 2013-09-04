@@ -1,12 +1,10 @@
 <script type="text/template" id="tpl-movie-list-item">
     <td>
         <a href='http://www.imdb.com/title/<%= Movie.imdb_id %>/'
-           target='_blank'>
-            <%= Movie.title %>
-            <% if(Movie.favourite) { %>
-                <i class="icon-star" />
-            <% } %>
-        </a>
+           target='_blank'><%= Movie.title %></a>
+        <% if(Movie.favourite) { %>
+            <i class="icon-star" />
+        <% } %>
     </td>
     <td class='centre'><%= Movie.release_year %></td>
     <td class='centre'><%= Movie.imdb_rating %></td>
@@ -62,12 +60,6 @@
                                 &nbsp;Remove from Favourites
                             </a>
                         <% } %>
-                    </li>
-                    <li class="watched_link">
-                        <a class="menu_item">
-                            <i class="icon-eye-open"></i>
-                            &nbsp;Mark as Watched
-                        </a>
                     </li>
                 <% } %>
             </ul>

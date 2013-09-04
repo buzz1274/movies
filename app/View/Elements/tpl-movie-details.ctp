@@ -3,7 +3,7 @@
         <td class="movie_details span12" colspan="10">
             <div class="span4">
                 <% if(Movie.has_image) { %>
-                    <img class="movie_image"
+                    <img class="movie_image" style="width:100%;"
                          src="/assets/img/movies/<%= Movie.imdb_id %>.jpg" />
                 <% } else { %>
                     <div class="no_image_holder">
@@ -11,6 +11,35 @@
                             <p>No Cover Image</p>
                         </div>
                     </div>
+                <% } %>
+                <br />
+                <% if (user.authenticated) {%>
+                    <dl>
+                        <dt>
+                            <strong>Watched:</strong>&nbsp;
+                            <a class="watched_link link">
+                                <i title="Mark as Watched" class="icon-plus" />
+                            </a>
+                        </dt>
+                        <% if(_.size(Watched) > 0) { %>
+                            <table class="table table-bordered table-condensed file">
+                                <% _.each(Watched, function(watched) { %>
+                                    <tr>
+                                        <td>
+                                            <% if (watched.date_watched) { %>
+                                                <%= watched.date_watched %>
+                                            <% } else { %>
+                                                -
+                                            <% } %>
+                                        </td>
+                                        <td style="width:1%;text-align:center;">
+                                            <i title="Remove from Watched" class="icon-trash" />
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </table>
+                        <% } %>
+                    </dl>
                 <% } %>
             </div>
             <div class="span8">
@@ -133,14 +162,16 @@
                                     <%= Movie.path.replace(/.*?\./g, '') %>
                                 </td>
                             </tr>
-                            <tr>
-                                <td><strong>Path:</strong></td>
-                                <td colspan="7">
-                                    <a href="/movies/get/<%= Movie.movie_id %>/">
-                                        <%= Movie.path %>
-                                    </a>
-                                </td>
-                            </tr>
+                            <% if (user.authenticated) {%>
+                                <tr>
+                                    <td><strong>File:</strong></td>
+                                    <td colspan="7">
+                                        <a href="/movies/get/<%= Movie.movie_id %>/">
+                                            <%= Movie.path.replace(/.*\//g, '') %>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% } %>
                         </table>
                     </dd>
                 </dl>

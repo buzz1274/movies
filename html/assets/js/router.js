@@ -5,10 +5,10 @@ var AppRouter = Backbone.Router.extend({
         "file-error": "file_error",
         "":"list",
         "#":"list",
-        "/movies/:imdb_id/":"movieDetails",
         "*query_string": "list"
     },
     list:function (query_string) {
+
         interface_helper.loadingImage(true);
         $(document).scrollTop(0);
 
@@ -69,18 +69,22 @@ var AppRouter = Backbone.Router.extend({
         interface_helper.loadingImage(true);
         var movie = new Movie();
         movie.url = '../../movies/'+movie_id+'/';
+
+        //{ el:$(".content"), collection: data }
+
+        //var movieView = new MovieView({el:$('.movie_details'), model:movie, user:User});
         var movieView = new MovieView({model:movie, user:User});
         movie.fetch({
             async:true,
             success: function() {
                 $('tr#movie_'+movie_id).remove();
-                movieView.render(element);
+                movieView.render();
                 interface_helper.loadingImage(false);
             }
         });
     },
     file_error:function() {
         this.list();
-        interface_helper.message_popup('error', 'An error occurred whilst downloading the file.');
+        interface_helper.message_popup('error', 'An occurred downloading the file');
     }
 });

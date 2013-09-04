@@ -66,8 +66,7 @@
                 header('Location: /#file-error');
                 die();
             } else {
-                $filename = preg_replace('/.*\\\/is', '', $movie['Movie']['path']);
-
+                $filename = preg_replace('/.*\//is', '', $movie['Movie']['path']);
                 $this->viewClass = 'Media';
                 $params = array('id'        => $filename,
                                 'name'      => preg_replace('/].*/', ']', $filename),

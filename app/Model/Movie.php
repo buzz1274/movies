@@ -13,6 +13,18 @@
                                               'foreignKey' => 'certificate_id'),
                                    'Media');
 
+        public $hasMany = array(
+            'Watched' =>
+                array('className'             => 'UserMovieWatched',
+                      'joinTable'             => 'user_movie_watched',
+                      'foreignKey'            => 'movie_id',
+                      'order'                 => 'date_watched'),
+            'Favourite' =>
+                array('className'             => 'UserMovieFavourite',
+                      'joinTable'             => 'user_movie_favourite',
+                      'foreignKey'            => 'movie_id'));
+
+
         public $hasAndBelongsToMany = array(
             'Genre' =>
                 array('className'             => 'Genre',
@@ -86,6 +98,19 @@
                                  'release_year' => false,
                                  'cid' => false);
 
+        public function __construct($id = false, $table = null, $ds = null) {
+
+            if(!($userID = AuthComponent::User('user_id'))) {
+                $userID = 0;
+            }
+
+            $this->hasMany['Watched']['conditions'] = array('user_id='.$userID);
+            $this->hasMany['Favourite']['conditions'] = array('user_id='.$userID);
+
+            parent::__construct($id, $table, $ds);
+
+        }
+
         /**
          * @author David
          * @param array
@@ -145,12 +170,7 @@
          */
         public function afterFind($results, $primary = false) {
 
-             foreach ($results as $key => $val) {
-
-                if(isset($results[$key]['Movie']['path'])) {
-                    $results[$key]['Movie']['path'] =
-                        'V:\\'.str_replace('/', "\\", $results[$key]['Movie']['path']);
-                }
+             foreach($results as $key => $val) {
 
                 if(isset($results[$key]['Movie']['date_added'])) {
                     $results[$key]['Movie']['date_added'] =
@@ -202,6 +222,19 @@
                     }
                 }
 
+                if(isset($results[$key]['Watched']) &&
+                   is_array($results[$key]['Watched'])) {
+
+                    foreach($results[$key]['Watched'] as $k => $Watched) {
+                        if($Watched['date_watched']) {
+                            $results[$key]['Watched'][$k]['date_watched'] =
+                                    date('jS F Y H:i:s', strtotime($Watched['date_watched']));
+                        }
+
+                    }
+
+                }
+
                 if(isset($results[$key]['Movie']['runtime'])) {
                     $hours = floor($results[$key]['Movie']['runtime'] / 60);
                     $minutes = $results[$key]['Movie']['runtime'] % 60;
@@ -247,13 +280,10 @@
                 $selectQuery =
                     'SELECT COUNT(results.movie_id) AS total_movies, '.
                     '       SUM(CASE '.
-                    '             WHEN results.watched = True THEN 1 '.
-                    '             ELSE 0 '.
-                    '           END) AS watched, '.
-                    '       SUM(CASE '.
                     '             WHEN results.hd = True THEN 1 '.
                     '             ELSE 0 '.
                     '           END) AS hd, '.
+                    '       SUM(results.watched) AS watched, '.
                     '       SUM(results.favourite) AS favourites, '.
                     '       MIN(results.imdb_rating) AS min_imdb_rating, '.
                     '       MAX(results.imdb_rating) AS max_imdb_rating, '.
@@ -408,7 +438,7 @@
             }
 
             $query = $selectQuery.' '.
-                     'FROM   (SELECT    DISTINCT Movie.movie_id, Movie.watched, '.
+                     'FROM   (SELECT    DISTINCT Movie.movie_id, '.
                      '                  Movie.imdb_id, Movie.title, '.$randQuery.' '.
                      '                  certificate.Certificate, '.
                      '                  Movie.hd, genre.movie_genres, '.
@@ -419,13 +449,20 @@
                      '                  CASE '.
                      '                    WHEN user_movie_favourite.user_id IS NULL THEN 0 '.
                      '                    ELSE 1 '.
-                     '                  END AS favourite '.
+                     '                  END AS favourite, '.
+                     '                  CASE '.
+                     '                    WHEN user_movie_watched.user_id IS NULL THEN 0 '.
+                     '                    ELSE 1 '.
+                     '                  END AS watched '.
                      '        FROM      public.movie AS Movie '.
                      '        LEFT JOIN certificate ON '.
                      '                  (Movie.certificate_id = certificate.certificate_id) '.
                      '        LEFT JOIN user_movie_favourite ON '.
                      '                  (    Movie.movie_id = user_movie_favourite.movie_id '.
                      '                   AND user_movie_favourite.user_id = '.$this->_search['userID'].') '.
+                     '        LEFT JOIN user_movie_watched ON '.
+                     '                  (    Movie.movie_id = user_movie_watched.movie_id '.
+                     '                   AND user_movie_watched.user_id = '.$this->_search['userID'].') '.
                      ($personQuery || $searchQuery ?
                      '        LEFT JOIN (SELECT person.person_id, person.person_name, '.
                      '                          movie_role.movie_id '.
