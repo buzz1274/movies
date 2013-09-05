@@ -77,7 +77,7 @@ var State = {
             this.runtime.max = $('section').data('max-runtime');
             this.release_year.min = $('section').data('min-release-year');
             this.release_year.max = $('section').data('max-release-year');
-        },
+        }
     },
     parse:function(query_string) {
         if(query_string == undefined || !query_string) {

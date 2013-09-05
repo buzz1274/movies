@@ -83,6 +83,19 @@
         //end csv
 
         /**
+         * returns json tring with movies, actors and cast matching
+         * the supplied search string
+         * @author David
+         */
+        public function autocomplete() {
+
+            return new CakeResponse(array('body' =>
+                        json_encode($this->Movie->autocomplete($this->request->query['search']))));
+
+        }
+        //end autocomplete
+
+        /**
          * returns all movies that match the supplied search critera
          * @author David
          */

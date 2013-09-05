@@ -7,7 +7,7 @@ window.MovieSearchView = Backbone.View.extend({
         'click #submitButton': 'search',
         'click #luckyButton': 'lucky',
         'click #resetButton': 'reset',
-        'keypress #search_input': 'search_on_enter',
+        'keypress #search_input': 'autocomplete',
         'click #download': 'download'
     },
     initialize: function() {
@@ -61,9 +61,38 @@ window.MovieSearchView = Backbone.View.extend({
     lucky:function(e) {
         this.search(e, true);
     },
-    search_on_enter:function(e) {
+    autocomplete:function(e) {
         if(e.keyCode == 13) {
             this.search(e, false);
+        } else {
+            var search = $('#search_input').val() + String.fromCharCode(e.keyCode);
+
+            if(search.length >= 3) {
+                $.ajax({
+                    url:'/movies/autocomplete/',
+                    data:{'search':search},
+                    dataType: "json",
+                    async:true,
+                    success:function(data) {
+                        if(data) {
+                            $("#search_input").autocomplete({
+                                source: data.dropdown,
+                                select: function() {
+                                    State.reset(false);
+                                    _.each(data.results, function(result) {
+                                        if(result.keyword == $('#search_input').val()) {
+                                            app.navigate('#search_type='+result.search_type+
+                                                         '&search='+encodeURIComponent(result.keyword),
+                                                         {'trigger':true});
+
+                                        }
+                                    });
+                                }
+                            })
+                        }
+                    }
+                });
+            }
         }
     },
     search:function(e, lucky) {
@@ -346,6 +375,9 @@ window.MovieView = Backbone.View.extend({
         Watched[_.size(Watched)] = {'date_watched': '2013-09-03',
                                     'movie_id': 25, 'user_id': 1};
         */
+
+        console.log(this.model);
+
         User.watched(this.model);
 
         //this.model.save();

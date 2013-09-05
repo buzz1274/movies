@@ -161,6 +161,50 @@
         //end search
 
         /**
+         * @author David
+         * @param string $search
+         * @return mixed
+         */
+        public function autocomplete($search) {
+            $autocomplete = false;
+            $db = $this->getDataSource();
+            $query = "(SELECT movie_id AS idn, 'title' AS search_type, title AS keyword ".
+                     " FROM   movie ".
+                     " WHERE  title ILIKE :search_movie ".
+                     " LIMIT  :movie_limit) ".
+                     "UNION ALL ".
+                     "(SELECT person_id AS idn, 'cast' AS search_type, person_name AS keyword ".
+                     " FROM   person ".
+                     " WHERE  person_name ILIKE :search_person ".
+                     " LIMIT  :person_limit) ".
+                     "UNION ALL ".
+                     "(SELECT keyword_id AS idn, 'keyword' AS search_type, keyword ".
+                     " FROM   keyword ".
+                     " WHERE  keyword ILIKE :search_keyword ".
+                     " LIMIT  :keyword_limit)";
+
+            if(is_array($results = $db->fetchAll($query, array('search_movie' => '%'.$search.'%',
+                                                               'movie_limit' => 10,
+                                                               'search_person' => '%'.$search.'%',
+                                                               'person_limit' => 10,
+                                                               'search_keyword' => '%'.$search.'%',
+                                                               'keyword_limit' => 5)))) {
+
+                foreach($results as $result) {
+                    $result = array_pop($result);
+                    $autocomplete['dropdown'][] = $result['keyword'];
+                    $autocomplete['results'][] = array('keyword' => $result['keyword'],
+                                                       'search_type' => $result['search_type']);
+                }
+
+            }
+
+            return $autocomplete;
+
+        }
+        //end autocomplete
+
+        /**
          * cleans results after pulling from the database will be
          * called after any of the framework find methods
          * @author David
@@ -643,7 +687,7 @@
         private function _castCount($movieID) {
             $castCount = false;
             $db = $this->getDataSource();
-            $query = 'SELECT   movie_role.person_id, COUNT(r.movie_id) '.
+            $query = 'SELECT   movie_role.person_id, COUNT(DISTINCT r.movie_id) '.
                      'FROM     movie_role '.
                      'JOIN     movie_role AS r ON (r.person_id = movie_role.person_id) '.
                      'WHERE    movie_role.movie_id = :movie_id '.

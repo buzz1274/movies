@@ -68,6 +68,5 @@
         <script type="text/javascript" src="/assets/js/router.js"></script>
         <script type="text/javascript" src="/assets/js/movies.js"></script>
         <script type="text/javascript" src="/assets/js/main.js"></script>
-        <script type="text/javascript" src="/assets/js/autocomplete.js"></script>
     </body>
 </html>
