@@ -177,22 +177,23 @@
                         date('M y', strtotime($results[$key]['Movie']['date_added']));
                 }
 
+                if((isset($results[$key]['Actor']) &&
+                    is_array($results[$key]['Actor'])) ||
+                   (isset($results[$key]['Director']) &&
+                    is_array($results[$key]['Director']))) {
+
+                    $castCount = $this->_castCount($results[$key]['Movie']['movie_id']);
+
+                }
+
                 foreach(array('Director', 'Actor') as $role) {
                     if(isset($results[$key][$role]) &&
                        is_array($results[$key][$role])) {
 
                         foreach($results[$key][$role] as $keyRole => $person) {
-                            if(file_exists(IMAGE_SAVE_PATH.'/cast/'.
-                                           $person['person_imdb_id'].'.jpg')) {
-                                $results[$key][$role][$keyRole]['cast_image'] = true;
-                            } else {
-                                $results[$key][$role][$keyRole]['cast_image'] = false;
-                            }
-
+                            $results[$key][$role][$keyRole]['cast_image'] = true;
                             $results[$key][$role][$keyRole]['movie_count'] =
-                                $this->MovieRole->find('count',
-                                    array('fields' => 'COUNT(DISTINCT movie_id) as count',
-                                          'conditions' => array('person_id' => $person['person_id'])));
+                                                    $castCount[$person['person_id']];
                         }
                     }
                 }
@@ -200,25 +201,22 @@
                 if(isset($results[$key]['Genre']) &&
                    is_array($results[$key]['Genre'])) {
 
-                    foreach($results[$key]['Genre'] as $keyGenre => $genre) {
+                    $genreCount = $this->_genreCount($results[$key]['Movie']['movie_id']);
 
+                    foreach($results[$key]['Genre'] as $keyGenre => $genre) {
                         $results[$key]['Genre'][$keyGenre]['movie_count'] =
-                            $this->MovieGenre->find('count',
-                                array('fields' => 'COUNT(DISTINCT movie_id) as count',
-                                      'conditions' => array('genre_id' => $genre['genre_id'])));
+                                                     $genreCount[$genre['genre_id']];
                     }
                 }
 
                 if(isset($results[$key]['Keyword']) &&
                    is_array($results[$key]['Keyword'])) {
 
+                    $keywordCount = $this->_keywordCount($results[$key]['Movie']['movie_id']);
+
                     foreach($results[$key]['Keyword'] as $k => $keyword) {
-
                         $results[$key]['Keyword'][$k]['movie_count'] =
-                            $this->MovieKeyword->find('count',
-                                array('fields' => 'COUNT(DISTINCT movie_id) as count',
-                                      'conditions' => array('keyword_id' => $keyword['keyword_id'])));
-
+                                               $keywordCount[$keyword['keyword_id']];
                     }
                 }
 
@@ -634,6 +632,93 @@
 
         }
         //end _parseSearchParameters
+
+        /**
+         * retrieves a movie count for all cast attached to
+         * the supplied movieID
+         * @author David
+         * @param $movieID
+         * @return mixed
+         */
+        private function _castCount($movieID) {
+            $castCount = false;
+            $db = $this->getDataSource();
+            $query = 'SELECT   movie_role.person_id, COUNT(r.movie_id) '.
+                     'FROM     movie_role '.
+                     'JOIN     movie_role AS r ON (r.person_id = movie_role.person_id) '.
+                     'WHERE    movie_role.movie_id = :movie_id '.
+                     'GROUP BY movie_role.person_id';
+
+            if(is_array($results = $db->fetchAll($query, array('movie_id' => $movieID)))) {
+                foreach($results as $result) {
+                    $result = array_pop($result);
+                    $castCount[$result['person_id']] = $result['count'];
+                }
+
+            }
+
+            return $castCount;
+
+        }
+        //end _keywordCount
+
+        /**
+         * retrieves a movie count for all genres attached to
+         * the supplied movieID
+         * @author David
+         * @param $movieID
+         * @return mixed
+         */
+        private function _genreCount($movieID) {
+            $genreCount = false;
+            $db = $this->getDataSource();
+            $query = 'SELECT   movie_genre.genre_id, COUNT(mg.movie_id) '.
+                     'FROM     movie_genre '.
+                     'JOIN     movie_genre AS mg ON (mg.genre_id = movie_genre.genre_id) '.
+                     'WHERE    movie_genre.movie_id = :movie_id '.
+                     'GROUP BY movie_genre.genre_id';
+
+            if(is_array($results = $db->fetchAll($query, array('movie_id' => $movieID)))) {
+                foreach($results as $result) {
+                    $result = array_pop($result);
+                    $genreCount[$result['genre_id']] = $result['count'];
+                }
+
+            }
+
+            return $genreCount;
+
+        }
+        //end _keywordCount
+
+        /**
+         * retrieves a movie count for all keywords attached to
+         * the supplied movieID
+         * @author David
+         * @param $movieID
+         * @return mixed
+         */
+        private function _keywordCount($movieID) {
+            $keywordCount = false;
+            $db = $this->getDataSource();
+            $query = 'SELECT   movie_keyword.keyword_id, COUNT(mk.movie_id) '.
+                     'FROM     movie_keyword '.
+                     'JOIN     movie_keyword AS mk ON (mk.keyword_id = movie_keyword.keyword_id) '.
+                     'WHERE    movie_keyword.movie_id = :movie_id '.
+                     'GROUP BY movie_keyword.keyword_id';
+
+            if(is_array($results = $db->fetchAll($query, array('movie_id' => $movieID)))) {
+                foreach($results as $result) {
+                    $result = array_pop($result);
+                    $keywordCount[$result['keyword_id']] = $result['count'];
+                }
+
+            }
+
+            return $keywordCount;
+
+        }
+        //end _keywordCount
 
         /**
          * cleans search parameters prior to use in query
