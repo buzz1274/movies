@@ -221,8 +221,9 @@ window.MovieListView = Backbone.View.extend({
         'click span.keyword_link': 'keywordSearch',
         'click span.director_link': 'personSearch',
         'click span.actor_link': 'personSearch',
+        'click span.media_link': 'mediaSearch',
         'click span.edit_media': 'editMedia',
-        'click span.show-all-link': 'showAll',
+        'click span.show-all-link': 'showAll'
     },
     initialize:function() {
         this.options.user.bind("change:authenticated", this.render, this);
@@ -242,6 +243,11 @@ window.MovieListView = Backbone.View.extend({
         State.Params.pid = $(ev.currentTarget).attr('data-person_id');
         State.Params.search = $(ev.currentTarget).attr('data-person_name');
         State.Params.search_type = 'cast';
+        app.navigate(State.query_string(), {'trigger':true});
+    },
+    mediaSearch: function(ev) {
+        State.reset(true);
+        State.Params.mid = $(ev.currentTarget).attr('data-media_id');
         app.navigate(State.query_string(), {'trigger':true});
     },
     genreSearch:function (ev) {

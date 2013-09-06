@@ -497,6 +497,9 @@
                      '                    ELSE 1 '.
                      '                  END AS watched '.
                      '        FROM      public.movie AS Movie '.
+                     (isset($this->_search['mediaID']) &&  $this->_search['mediaID'] ?
+                     '        JOIN      media ON (    movie.media_id = media.media_id '.
+                     '                            AND media.media_id = '.$this->_search['mediaID'].') ' : false).' '.
                      '        LEFT JOIN certificate ON '.
                      '                  (Movie.certificate_id = certificate.certificate_id) '.
                      '        LEFT JOIN user_movie_favourite ON '.
@@ -601,6 +604,11 @@
             if(isset($searchParams['kid']) &&
                (int)$searchParams['kid'] > 0) {
                 $this->_search['keywordID'] = $searchParams['kid'];
+            }
+
+            if(isset($searchParams['mid']) &&
+                (int)$searchParams['mid'] > 0) {
+                $this->_search['mediaID'] = $searchParams['mid'];
             }
 
             foreach(array('imdb_rating', 'runtime',

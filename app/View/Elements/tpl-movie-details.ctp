@@ -24,7 +24,7 @@
                         <% if(_.size(Watched) > 0) { %>
                             <table class="table table-bordered table-condensed file">
                                 <% _.each(Watched, function(watched) { %>
-                                    <tr>
+                                    <tr id="watched_<%= watched.id %>">
                                         <td>
                                             <% if (watched.date_watched) { %>
                                                 <%= watched.date_watched %>
@@ -244,11 +244,12 @@
                                 <td>
                                     <% if(Movie.media_id) { %>
                                         <% if(Media.boxset) { %>
-                                            <img class="centre tick_cross"
-                                                 src='/assets/img/tick.png' />
+                                            <span class="media_link link"
+                                                  data-media_id="<%= Movie.media_id %>">
+                                                <a><%= Movie.media_id %></a>
+                                            </span>
                                         <% } else { %>
-                                            <img class="centre tick_cross"
-                                                 src='/assets/img/cross.png' />
+                                            -
                                         <% } %>
                                     <% } else { %>
                                         -
