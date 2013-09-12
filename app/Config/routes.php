@@ -18,16 +18,19 @@
                     array('controller' => 'user',
                           'action' => 'favourite',
                           'movieID', '[0-9]{1,}'));
+    Router::connect('/user/watched/:id/',
+                    array('controller' => 'user',
+                          'action' => 'watched',
+                          'movieID' => '[0-9]{1,}'));
     Router::connect('/movies/summary',
                     array('controller' => 'movies',
                           'action' => 'summary'));
     Router::connect('/movies/csv',
                     array('controller' => 'movies',
                           'action' => 'csv'));
-    Router::connect('/movies/watched/:id/',
+    Router::connect('/movies/autocomplete/',
                     array('controller' => 'movies',
-                          'action' => 'watched',
-                          'movieID' => '[0-9]{1,}'));
+                          'action' => 'autocomplete'));
     Router::connect('/movies/get/:movieID/',
                     array('controller' => 'movies',
                           'action' => 'file',
@@ -40,4 +43,4 @@
                     array('controller' => 'movies',
                           'action' => 'movies'));
 
-?>
+

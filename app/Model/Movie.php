@@ -2,6 +2,8 @@
 
     class Movie extends AppModel {
 
+        public $uses = array('AuthComponent');
+
         public $name = 'movie';
 
         public $useTable = 'movie';

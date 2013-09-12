@@ -2,7 +2,7 @@
 
     class UserController extends AppController {
 
-        public $uses = array('User', 'UserMovieFavourite');
+        public $uses = array('User', 'UserMovieFavourite', 'UserMovieWatched');
 
         public function index() {
 
@@ -96,18 +96,49 @@
 
             }
 
-            return new CakeResponse(array('status' => 200,
+            return new CakeResponse(array('status' => $status,
                                           'body' => json_encode(array('ok'))));
 
         }
         //end favourite
 
         /**
-         * add/removes a movie from users favourite list
+         * add/removes a movie from the currently logged in users watched list
          * @author David
          * @return mixed
          */
         public function watched() {
+
+            error_log("watched");
+
+            $status = 400;
+            $body = array();
+            $Movie = $this->request->input('json_decode');
+
+            if(isset($Movie->Movie->movie_id) &&
+                (int)$Movie->Movie->movie_id) {
+
+                $date = date('Y-m-d H:i:s', strtotime('now'));
+                $data = array('movie_id' => $Movie->Movie->movie_id,
+                              'user_id' => $this->Auth->user('user_id'),
+                              'date_watched' => $date);
+
+                if(($watched = $this->UserMovieWatched->save($data))) {
+                    $status = 200;
+                    $body = array('id' => $watched['UserMovieWatched']['id'],
+                                  'watched_count' => 2,
+                                  'date_watched' => date('jS F Y H:i:s', strtotime($date)));
+                }
+
+
+
+
+            }
+
+            //returned correct watched date and
+            //whether this movie has been watched before
+            return new CakeResponse(array('status' => $status,
+                                          'body' => json_encode($body)));
 
         }
         //end watched

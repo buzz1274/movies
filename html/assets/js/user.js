@@ -1,16 +1,64 @@
 window.MovieUser = Backbone.Model.extend({
     url:'/user/',
     idAttribute: "user_id",
-    watched:function(movie_model) {
+    watched:function(movie_model, user) {
         var movie = movie_model.get('Movie');
         var watched = movie_model.get('Watched');
-        watched[_.size(watched)] = {'date_watched': '2013-09-03',
-                                    'movie_id': movie.movie_id,
-                                    'user_id': User.user_id};
+
+        var total_watched = _.size(watched);
+
+        movie_model.save({},
+            {url:'/user/watched/:id/',
+             async:true,
+             success: function(model, response) {
+                watched[total_watched] = {'date_watched': response.date_watched,
+                                          'id': response.id};
+
+                model.set(watched);
+
+
+
+                    /*
+                    if(Movie.favourite) {
+                        var message = 'Movie added to favourites';
+                    } else {
+                        var message = 'Movie removed from favourites';
+                    }
+
+
+                    interface_helper.message_popup('success', message);
+                    */
+
+             },
+             error: function(model, response) {
+                    if(Movie.favourite) {
+                        var message = 'Error adding movie to favourites';
+                    } else {
+                        var message = 'Error removing movie from favourites';
+                    }
+                    interface_helper.message_popup('error', message);
+                    Movie.favourite = !Movie.favourite;
+             }}
+        );
+
+
+       // console.log(response);
+
+
+
+        /*
+        console.log(User.get('user_id'));
+        now = new Date();
+
+        console.log(now);
+
+        watched[_.size(watched)] = {'date_watched': helper.today(),
+                                    'movie_id': movie.movie_id};
 
         console.log(watched);
 
         movie_model.set(watched);
+        */
     }
 });
 window.HeaderView = Backbone.View.extend({
