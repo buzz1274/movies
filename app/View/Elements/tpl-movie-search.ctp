@@ -11,7 +11,9 @@
             <legend>
                 Search Movies
                 (<%= totalMovies != 0 && totalMovies != null ? totalMovies : '-' %>)
-                <i id="download" class="icon-download-alt"></i>
+                <% if (user.authenticated && totalMovies != 0 && totalMovies != null) {%>
+                    <i id="download" class="icon-download-alt"></i>
+                <% } %>
             </legend>
             <ul class="nav nav-list">
                 <li class="nav-header">
