@@ -64,12 +64,13 @@
          */
         public function csv() {
 
+            set_time_limit(0);
             $data = $this->Movie->search('search',
                                          array_merge(array('limit' => false,
                                                            'userID' => $this->Auth->user('user_id')),
                                                      $this->request->query));
 
-            if($data) {
+            if(!$data) {
                 header('HTTP/1.1 404 Not Found', true, 401);
                 header('Location: /#file-error');
                 die();
@@ -83,7 +84,7 @@
         //end csv
 
         /**
-         * returns json tring with movies, actors and cast matching
+         * returns json string with movies, actors and cast matching
          * the supplied search string
          * @author David
          */
