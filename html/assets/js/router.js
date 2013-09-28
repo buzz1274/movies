@@ -54,6 +54,10 @@ var AppRouter = Backbone.Router.extend({
                             $('#pagination').css('display', 'block');
                             $('#movies_table').css('display', 'block');
                             interface_helper.loadingImage(false);
+
+                            if(State.Params.id) {
+                                app.movieDetails(State.Params.id);
+                            }
                         },
                         error: function() {
                             $('#pagination').css('display', 'none');
@@ -65,8 +69,6 @@ var AppRouter = Backbone.Router.extend({
                 }
             },
             error:function(m, response) {
-                console.log("ERROR");
-                console.log(response.responseText);
                 //display error message//
             }
         });

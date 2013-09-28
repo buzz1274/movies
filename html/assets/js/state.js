@@ -101,7 +101,6 @@ var State = {
                         });
                     } else if(fragment[0] == 'id') {
                         State.Params[fragment[0]] = fragment[1];
-                        //console.log("OPEN MOVIE PANE");
                     } else if (fragment[0] == 'search') {
                         State.Params['search'] = decodeURIComponent(fragment[1]);
                     } else {
