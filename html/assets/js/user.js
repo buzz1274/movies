@@ -93,7 +93,7 @@ window.HeaderView = Backbone.View.extend({
         $(this.el).html('').append(this.template(this.model.toJSON()));
     },
     login_popup:function(e) {
-        if(e.target.id == 'login_popup_link') {
+        if(!e || e.target.id == 'login_popup_link') {
             interface_helper.opaque(true);
             $('#login_popup').append(_.template($('#tpl-login').html()));
         } else {
@@ -125,6 +125,7 @@ window.HeaderView = Backbone.View.extend({
                     model.set({username: null, password: null,
                                name: response.name,
                                authenticated: response.authenticated});
+                    $('#login_popup').html('');
                     Backbone.history.loadUrl();
                 },
                 error: function(model, response) {

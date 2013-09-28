@@ -19,7 +19,9 @@ window.MovieSearchView = Backbone.View.extend({
         }
     },
     render:function () {
-        summary = this.model.toJSON();
+        if(this.model) {
+            summary = this.model.toJSON();
+        }
         user = this.options.user.toJSON();
 
         if(typeof summary.totalMovies == "number" &&

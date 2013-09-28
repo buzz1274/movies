@@ -3,6 +3,7 @@ var AppRouter = Backbone.Router.extend({
         "/user/login": "login",
         "/user/logout": "logout",
         "file-error": "file_error",
+        'login': "login",
         "":"list",
         "#":"list",
         "*query_string": "list"
@@ -82,6 +83,15 @@ var AppRouter = Backbone.Router.extend({
                 interface_helper.loadingImage(false);
             }
         });
+    },
+    login:function() {
+        this.list();
+        if(!User.attributes.authenticated) {
+            var header = new HeaderView({model: User});
+            header.login_popup(false);
+        } else {
+            $('#login_popup').html('');
+        }
     },
     file_error:function() {
         this.list();

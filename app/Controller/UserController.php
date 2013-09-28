@@ -29,23 +29,27 @@
 
             $User = $this->request->input('json_decode');
 
-            if($User && isset($User->username) &&
-               isset($User->password) &&
-                ($User = $this->User->login($User->username,
-                                            AuthComponent::password($User->password))) &&
-               $User && isset($User['User']) && $this->Auth->login($User['User'])) {
-                $status = 200;
-                $body = array('name' => $User['User']['name'],
-                              'admin' => $User['User']['admin'],
-                              'authenticated' => true);
+            if(!$User || !isset($User->username) || !isset($User->password)) {
+                header('HTTP/1.1 403 Forbidden', true, 401);
+                header('Location: /#login');
+                die();
             } else {
-                $status = 403;
-                $body = array('error_type' => 'invalid_credentials',
-                              'error_message' => 'Invalid username/password');
-            }
+                if(($User = $this->User->login($User->username,
+                                              AuthComponent::password($User->password))) &&
+                   $User && isset($User['User']) && $this->Auth->login($User['User'])) {
+                    $status = 200;
+                    $body = array('name' => $User['User']['name'],
+                                  'admin' => $User['User']['admin'],
+                                  'authenticated' => true);
+                } else {
+                    $status = 403;
+                    $body = array('error_type' => 'invalid_credentials',
+                                  'error_message' => 'Invalid username/password');
+                }
 
-            return new CakeResponse(array('status' => $status,
-                                          'body' => json_encode($body)));
+                return new CakeResponse(array('status' => $status,
+                                              'body' => json_encode($body)));
+            }
 
         }
         //end login
@@ -63,11 +67,11 @@
 
             return new CakeResponse(array('status' => 200,
                                           'body' => json_encode(array('name' => null,
-                                                                      'authenticated' => false))));
+
+                                              'authenticated' => false))));
 
         }
         //end logout
-
         /**
          * add/removes a movie from users favourite list
          * @author David
@@ -108,8 +112,6 @@
          * @return mixed
          */
         public function watched() {
-
-            error_log("watched");
 
             $status = 400;
             $body = array();

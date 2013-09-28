@@ -11,6 +11,7 @@
         );
 
         public function beforeFilter() {
+            $this->Auth->loginAction = '/user/login/';
             $this->Auth->allow('index', 'movies', 'summary', 'login', 'logout', 'movie',
                                'autocomplete');
         }
