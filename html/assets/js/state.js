@@ -17,7 +17,7 @@ var State = {
         'runtime':'',
         'favourites':null,
         'release_year':'',
-        'lucky':null
+        'id':null
     },
     DefaultParams: {
         'p':1,
@@ -36,7 +36,7 @@ var State = {
         'imdb_rating':'',
         'runtime':'',
         'release_year':'',
-        'lucky':0
+        'id':0
     },
     SortDefaults: {
         'title': 1,
@@ -100,6 +100,7 @@ var State = {
                             }
                         });
                     } else if(fragment[0] == 'id') {
+                        State.Params[fragment[0]] = fragment[1];
                         //console.log("OPEN MOVIE PANE");
                     } else if (fragment[0] == 'search') {
                         State.Params['search'] = decodeURIComponent(fragment[1]);
@@ -190,7 +191,7 @@ var State = {
         return this.qs;
     },
     remove_page_from_query_string:function() {
-        qs = this.qs.replace(/&?p=[0-9]{1,}&?/gm, '');
+        var qs = this.qs.replace(/&?p=[0-9]{1,}&?/gm, '');
         return qs.length ? '&'+qs : '';
     },
     parse_search_form:function() {

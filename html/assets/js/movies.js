@@ -61,7 +61,20 @@ window.MovieSearchView = Backbone.View.extend({
         window.location = "/movies/csv?"+search;
     },
     lucky:function(e) {
-        this.search(e, true);
+        State.reset(false);
+        State.parse_search_form();
+        $.ajax({
+            url:'/movies/lucky/',
+            data:State.Params,
+            dataType: "json",
+            async:true,
+            success:function(data) {
+                app.navigate('/#id='+data['movieID'], {'trigger':true});
+            },
+            error: function(data) {
+                app.navigate(State.query_string(), {'trigger':true});
+            }
+        });
     },
     autocomplete:function(e) {
         if(e.keyCode == 13) {
@@ -98,16 +111,8 @@ window.MovieSearchView = Backbone.View.extend({
         }
     },
     search:function(e, lucky) {
-        if(lucky) {
-            lucky = State.Params.lucky == 1 ? 2 : 1;
-        }
         State.reset(false);
         State.parse_search_form();
-        if(lucky){
-            State.Params.lucky = lucky;
-        } else {
-            State.Params.lucky = 0;
-        }
         app.navigate(State.query_string(), {'trigger':true});
     },
     icon_over:function() {

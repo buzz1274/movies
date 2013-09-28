@@ -31,6 +31,9 @@
     Router::connect('/movies/autocomplete/',
                     array('controller' => 'movies',
                           'action' => 'autocomplete'));
+    Router::connect('/movies/lucky/',
+                    array('controller' => 'movies',
+                          'action' => 'lucky'));
     Router::connect('/movies/get/:movieID/',
                     array('controller' => 'movies',
                           'action' => 'file',

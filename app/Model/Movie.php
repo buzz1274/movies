@@ -317,10 +317,14 @@
          */
         private function _search($resultType) {
 
-            if($resultType == 'summary') {
-                $limitQuery = false;
-                $orderQuery = false;
+            foreach(array('randQuery', 'genreQuery', 'certificateQuery', 'personQuery',
+                          'searchQuery', 'watchedQuery', 'HDQuery', 'favouritesQuery',
+                          'imdb_ratingQuery', 'release_yearQuery', 'runtimeQuery',
+                          'orderQuery', 'limitQuery', 'keywordQuery', 'idQuery') as $queryType) {
+                $$queryType = false;
+            }
 
+            if($resultType == 'summary') {
                 $selectQuery =
                     'SELECT COUNT(results.movie_id) AS total_movies, '.
                     '       SUM(CASE '.
@@ -364,10 +368,8 @@
 
             } else {
                 $selectQuery = 'SELECT * ';
-                if(!$this->_search['limit'] ||
-                   !(int)$this->_search['limit']) {
-                    $limitQuery = false;
-                } else {
+                if($this->_search['limit'] &&
+                   (int)$this->_search['limit'] >= 1) {
                     $limitQuery = 'LIMIT '.$this->_search['limit'].' OFFSET '.
                                   (($this->_search['page'] - 1) *
                                     $this->_search['limit']);
@@ -376,109 +378,95 @@
                                           $this->_search['sortDirection'];
             }
 
-            if(isset($this->_search['personID']) && $this->_search['personID']) {
-                $personQuery =
-                    "AND person.person_id = '".$this->_search['personID']."'";
+            if(isset($this->_search['movieID']) && $this->_search['movieID']) {
+                $idQuery = 'AND Movie.movie_id = '.$this->_search['movieID'];
             } else {
-                $personQuery = false;
-            }
+                if(isset($this->_search['personID']) && $this->_search['personID']) {
+                    $personQuery =
+                        "AND person.person_id = '".$this->_search['personID']."'";
+                }
 
-            if(isset($this->_search['gid']) && $this->_search['gid']) {
-                $genreQuery = '';
-                foreach($this->_search['gid'] as $genreID) {
-                    if((int)$genreID > 0) {
-                        $genreQuery .=
-                            "AND '".$genreID."' = ANY(genre.movie_genre_ids)";
+                if(isset($this->_search['gid']) && $this->_search['gid']) {
+                    $genreQuery = '';
+                    foreach($this->_search['gid'] as $genreID) {
+                        if((int)$genreID > 0) {
+                            $genreQuery .=
+                                "AND '".$genreID."' = ANY(genre.movie_genre_ids)";
+                        }
                     }
                 }
-            } else {
-                $genreQuery = false;
-            }
 
-            if(isset($this->_search['cid']) && $this->_search['cid']) {
-                $certificateQuery =
-                    "AND Movie.certificate_id = ANY(ARRAY[".implode(',', $this->_search['cid'])."])";
-            } else {
-                $certificateQuery = false;
-            }
-
-            if(isset($this->_search['keywordID']) && $this->_search['keywordID']) {
-                $keywordQuery =
-                    "AND keyword.keyword_id = '".$this->_search['keywordID']."'";
-            } else {
-                $keywordQuery = false;
-            }
-
-            if(isset($this->_search['search']) && $this->_search['search']) {
-                if($this->_search['search_type'] == 'all') {
-                    $searchQuery =
-                        "AND ((Movie.title ILIKE '%".$this->_search['search']."%') OR ".
-                        "     (Movie.synopsis ILIKE '%".$this->_search['search']."%') OR ".
-                        "     (person.person_name ILIKE '%".$this->_search['search']."%') OR ".
-                        "     (Movie.imdb_id = '".$this->_search['search']."') OR ".
-                        "     (keyword.keyword ILIKE '%".$this->_search['search']."%'))";
-                } elseif($this->_search['search_type'] == 'keyword' &&
-                         !$this->_search['keywordID']) {
-                    $searchQuery =
-                        "AND keyword.keyword ILIKE '%".$this->_search['search']."%' ";
-                } elseif($this->_search['search_type'] == 'cast' &&
-                         !$this->_search['personID']) {
-                    $searchQuery =
-                        "AND person.person_name ILIKE '%".$this->_search['search']."%' ";
-                } elseif($this->_search['search_type'] == 'title') {
-                    $searchQuery =
-                        "AND Movie.title ILIKE '%".$this->_search['search']."%' ";
-                } else {
-                    $searchQuery = false;
+                if(isset($this->_search['cid']) && $this->_search['cid']) {
+                    $certificateQuery =
+                        "AND Movie.certificate_id = ANY(ARRAY[".implode(',', $this->_search['cid'])."])";
                 }
-            } else {
-                $searchQuery = false;
-            }
 
-            if(isset($this->_search['hd']) &&
-               $this->_search['hd'] !== false) {
-                $HDQuery =
-                    "AND movie.hd = '".(int)$this->_search['hd']."'";
-            } else {
-                $HDQuery = false;
-            }
-
-            if(isset($this->_search['watched']) &&
-               $this->_search['watched'] !== false) {
-                $watchedQuery =
-                    "AND movie.watched = '".(int)$this->_search['watched']."'";
-            } else {
-                $watchedQuery = false;
-            }
-
-            if(isset($this->_search['favourites']) &&
-                $this->_search['favourites'] !== false) {
-                if($this->_search['favourites'] == 1) {
-                    $favouritesQuery = "AND user_movie_favourite.user_id IS NOT NULL";
-                } else {
-                    $favouritesQuery = "AND user_movie_favourite.user_id IS NULL";
+                if(isset($this->_search['keywordID']) && $this->_search['keywordID']) {
+                    $keywordQuery =
+                        "AND keyword.keyword_id = '".$this->_search['keywordID']."'";
                 }
-            } else {
-                $favouritesQuery = false;
-            }
 
-            foreach(array('imdb_rating', 'release_year', 'runtime') as $field) {
-                ${$field.'Query'} = false;
-                if(isset($this->_search[$field]) &&
-                   is_array($this->_search[$field])) {
-                    ${$field.'Query'} = 'AND Movie.'.$field.' BETWEEN
-                                        '.$this->_search[$field]['min'].' AND '.
-                                        $this->_search[$field]['max'];
+                if(isset($this->_search['search']) && $this->_search['search']) {
+                    if($this->_search['search_type'] == 'all') {
+                        $searchQuery =
+                            "AND ((Movie.title ILIKE '%".$this->_search['search']."%') OR ".
+                            "     (Movie.synopsis ILIKE '%".$this->_search['search']."%') OR ".
+                            "     (person.person_name ILIKE '%".$this->_search['search']."%') OR ".
+                            "     (Movie.imdb_id = '".$this->_search['search']."') OR ".
+                            "     (keyword.keyword ILIKE '%".$this->_search['search']."%'))";
+                    } elseif($this->_search['search_type'] == 'keyword' &&
+                             !$this->_search['keywordID']) {
+                        $searchQuery =
+                            "AND keyword.keyword ILIKE '%".$this->_search['search']."%' ";
+                    } elseif($this->_search['search_type'] == 'cast' &&
+                             !$this->_search['personID']) {
+                        $searchQuery =
+                            "AND person.person_name ILIKE '%".$this->_search['search']."%' ";
+                    } elseif($this->_search['search_type'] == 'title') {
+                        $searchQuery =
+                            "AND Movie.title ILIKE '%".$this->_search['search']."%' ";
+                    }
                 }
-            }
 
+                if(isset($this->_search['hd']) &&
+                   $this->_search['hd'] !== false) {
+                    $HDQuery =
+                        "AND Movie.hd = '".(int)$this->_search['hd']."'";
+                }
 
-            if($this->_search['lucky']) {
-                $randQuery = 'random() AS rand,';
-                $orderQuery = 'ORDER BY rand ';
-                $limitQuery = 'LIMIT 1';
-            } else {
-                $randQuery = false;
+                if(isset($this->_search['watched']) &&
+                   $this->_search['watched'] !== false) {
+                    if($this->_search['watched'] == 1) {
+                        $watchedQuery = "AND user_movie_watched.user_id IS NOT NULL";
+                    } else {
+                        $watchedQuery = "AND user_movie_watched.user_id IS NULL";
+                    }
+                }
+
+                if(isset($this->_search['favourites']) &&
+                    $this->_search['favourites'] !== false) {
+                    if($this->_search['favourites'] == 1) {
+                        $favouritesQuery = "AND user_movie_favourite.user_id IS NOT NULL";
+                    } else {
+                        $favouritesQuery = "AND user_movie_favourite.user_id IS NULL";
+                    }
+                }
+
+                foreach(array('imdb_rating', 'release_year', 'runtime') as $field) {
+                    if(isset($this->_search[$field]) &&
+                       is_array($this->_search[$field])) {
+                        ${$field.'Query'} = 'AND Movie.'.$field.' BETWEEN
+                                            '.$this->_search[$field]['min'].' AND '.
+                                            $this->_search[$field]['max'];
+                    }
+                }
+
+                if($this->_search['lucky']) {
+                    $randQuery = 'random() AS rand,';
+                    $orderQuery = 'ORDER BY rand ';
+                    $limitQuery = 'LIMIT 1';
+                }
+
             }
 
             $query = $selectQuery.' '.
@@ -530,20 +518,20 @@
                      '                   GROUP BY movie_genre.movie_id '.
                      '                  ) AS genre ON (genre.movie_id = Movie.movie_id) '.
                      '        WHERE Movie.deleted = False '.
-                     $genreQuery.' '.
-                     $certificateQuery.' '.
-                     $personQuery.' '.
-                     $keywordQuery.' '.
-                     $searchQuery.' '.
-                     $watchedQuery.' '.
-                     $HDQuery.' '.
-                     $favouritesQuery.' '.
-                     $imdb_ratingQuery.' '.
-                     $release_yearQuery.' '.
-                     $runtimeQuery.' '.
-                     $orderQuery.' '.
-                     $limitQuery.' '.
-                     '      ) AS results';
+                     ($idQuery ? $idQuery : $genreQuery.' '.
+                                            $certificateQuery.' '.
+                                            $personQuery.' '.
+                                            $keywordQuery.' '.
+                                            $searchQuery.' '.
+                                            $watchedQuery.' '.
+                                            $HDQuery.' '.
+                                            $favouritesQuery.' '.
+                                            $imdb_ratingQuery.' '.
+                                            $release_yearQuery.' '.
+                                            $runtimeQuery.' '.
+                                            $orderQuery.' '.
+                                            $limitQuery.' ').
+                      '      ) AS results';
 
             if(is_array($results = $this->query($query)) &&
                $resultType == 'summary') {
@@ -564,10 +552,18 @@
          */
         private function _parseSearchParameters($searchParams) {
 
-            $this->_search['userID'] = $searchParams['userID'];
-
-            if(!$this->_search['userID']) {
+            if(!isset($searchParams['userID']) ||
+               (int)$searchParams['userID'] < 1) {
                 $this->_search['userID'] = 0;
+            } else {
+                $this->_search['userID'] = $searchParams['userID'];
+            }
+
+            if(!isset($searchParams['id']) ||
+                (int)$searchParams['id'] < 1) {
+                $this->_search['movieID'] = false;
+            } else {
+                $this->_search['movieID'] = $searchParams['id'];
             }
 
             if(isset($searchParams['limit']) &&

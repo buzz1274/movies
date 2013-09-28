@@ -63,6 +63,11 @@ var AppRouter = Backbone.Router.extend({
                         }
                     });
                 }
+            },
+            error:function(m, response) {
+                console.log("ERROR");
+                console.log(response.responseText);
+                //display error message//
             }
         });
     },
@@ -70,6 +75,8 @@ var AppRouter = Backbone.Router.extend({
         interface_helper.loadingImage(true);
         var movie = new Movie();
         movie.url = '../../movies/'+movie_id+'/';
+
+        console.log(User);
 
         //{ el:$(".content"), collection: data }
 

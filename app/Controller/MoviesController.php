@@ -5,7 +5,7 @@
         public $uses = array('Movie', 'UserMovieDownloaded');
 
         /**
-         * retrieves movie details for the movie matching imdb_id
+         * retrieves movie details for the movie matching movieID
          * @author David
          */
         public function movie() {
@@ -95,6 +95,26 @@
 
         }
         //end autocomplete
+
+        /**
+         * returns a random movieID that matches the supplied search
+         * criteria
+         * @author David
+         */
+        public function lucky() {
+            $data = $this->Movie->search('search',
+                         array_merge($this->request->query,
+                                     array('limit' => 1, 'lucky' => true,
+                                           'userID' => $this->Auth->user('user_id'))));
+
+            if($data) {
+                $data = json_encode(array('movieID' => $data[0]['Movie']['movie_id']));
+            }
+
+            return new CakeResponse(array('body' => $data));
+
+        }
+        //end lucky
 
         /**
          * returns all movies that match the supplied search critera
