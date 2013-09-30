@@ -340,17 +340,26 @@ class Movie():
         """
         gets the id for the supplied name
         """
-        query = select([self.config.person_table.c.person_id]).\
+        query = select([self.config.person_table.c.person_id,
+                        self.config.person_table.c.name]).\
                 where(self.config.person_table.c.person_imdb_id==person['id'])
-        person_id = self.config.db.execute(query).scalar()
+        person_db = self.config.db.execute(query).fetchone()
 
-        if not person_id:
+        if not person_db:
             query = self.config.person_table.insert().values(
                                                 person_name=person['name'],
                                                 person_imdb_id=person['id'])
             self.config.db.execute(query)
             person_id = self.person(person)
-
+        else:
+            person_id = person_db.person_id                         
+            if person_db.person_name != person['name']:
+                query = self.config.self.config.person_table.update().\
+                             where(self.config.person_table.c.person_imdb_id==\
+                                   person_id).\
+                             values(person_name=person['name'])
+                self.config.db.execute(query)
+        
         return person_id
 
     def genre(self, genre):
