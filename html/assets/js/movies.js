@@ -348,48 +348,9 @@ window.MovieListItemView = Backbone.View.extend({
         }
     },
     favourite:function() {
-        var Movie = this.model.get('Movie');
-        var parent = this;
-        Movie.favourite = !Movie.favourite;
-
-        this.model.save({},
-            {url:'/user/favourite/:id/',
-                success: function(model, response) {
-                    if(Movie.favourite) {
-                        var message = 'Movie added to favourites';
-                    } else {
-                        var message = 'Movie removed from favourites';
-                    }
-                    interface_helper.message_popup('success', message);
-                    model.set(Movie);
-
-                    var not_favourites = parent.summary.get('not_favourites');
-                    var favourites = parent.summary.get('favourites');
-
-                    if(Movie.favourite) {
-                        parent.summary.set({not_favourites: not_favourites - 1,
-                                            favourites: favourites + 1});
-                    } else {
-                        parent.summary.set({not_favourites: not_favourites + 1,
-                                            favourites: favourites - 1});
-                    }
-                },
-                error: function(model, response) {
-                    if(Movie.favourite) {
-                        var message = 'Error adding movie to favourites';
-                    } else {
-                        var message = 'Error removing movie from favourites';
-                    }
-                    interface_helper.message_popup('error', message);
-                    Movie.favourite = !Movie.favourite;
-                    model.set(Movie);
-                }
-            }
-        );
-
-        $('#movies_table > tbody').children('tr').css("background-color","");
+        User.favourite(this.model, this.summary);
     },
-    render:function (eventName) {
+    render:function () {
         this.$el.html(this.template(this.model.toJSON()));
         return this;
     },

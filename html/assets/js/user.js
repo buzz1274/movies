@@ -59,7 +59,46 @@ window.MovieUser = Backbone.Model.extend({
              }}
         );
     },
-    favourite:function(movie_model, summary) {
+    favourite:function(model, summary) {
+        var Movie = model.get('Movie');
+        Movie.favourite = !Movie.favourite;
+
+        model.save({},
+            {url:'/user/favourite/:id/',
+                success: function(model, response) {
+                    if(Movie.favourite) {
+                        var message = 'Movie added to favourites';
+                    } else {
+                        var message = 'Movie removed from favourites';
+                    }
+                    interface_helper.message_popup('success', message);
+                    model.set(Movie);
+
+                    var not_favourites = summary.get('not_favourites');
+                    var favourites = summary.get('favourites');
+
+                    if(Movie.favourite) {
+                        summary.set({not_favourites: not_favourites - 1,
+                                     favourites: favourites + 1});
+                    } else {
+                        summary.set({not_favourites: not_favourites + 1,
+                                     favourites: favourites - 1});
+                    }
+                },
+                error: function(model, response) {
+                    if(Movie.favourite) {
+                        var message = 'Error adding movie to favourites';
+                    } else {
+                        var message = 'Error removing movie from favourites';
+                    }
+                    interface_helper.message_popup('error', message);
+                    Movie.favourite = !Movie.favourite;
+                    model.set(Movie);
+                }
+            }
+        );
+
+        $('#movies_table > tbody').children('tr').css("background-color","");
 
     }
 });
