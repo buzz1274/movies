@@ -25,9 +25,21 @@ var interface_helper = {
         if(typeof message == 'undefined' || !message) {
             var message = 'An error has occurred';
         }
-        var template = _.template($('#tpl-message').html());
+        var template = _.template($('#tpl-message').html()),
+            viewportHeight = $(window).height(),
+            viewportWidth = $(window).width();
+
+
         $('.message_popup_container').html(template({type: type,
                                                      message: message}));
+
+
+        $('.message_popup_container').css({'position': 'fixed',
+                                           'left': ((viewportWidth/2) - 100) + 'px',
+                                           'width': '500px',
+                                           'top': ((viewportHeight / 2))  + 'px'});
+
         this.opaque(true);
+        console.log("OK");
     }
 }
