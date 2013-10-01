@@ -18,10 +18,9 @@
                     array('controller' => 'user',
                           'action' => 'favourite',
                           'movieID', '[0-9]{1,}'));
-    Router::connect('/user/watched/:id/',
+    Router::connect('/user/watched/',
                     array('controller' => 'user',
-                          'action' => 'watched',
-                          'movieID' => '[0-9]{1,}'));
+                          'action' => 'watched'));
     Router::connect('/movies/summary',
                     array('controller' => 'movies',
                           'action' => 'summary'));

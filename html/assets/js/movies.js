@@ -20,7 +20,7 @@ window.MovieSearchView = Backbone.View.extend({
     },
     render:function () {
         if(this.model) {
-            summary = this.model.toJSON();
+            var summary = this.model.toJSON();
         }
         user = this.options.user.toJSON();
 
@@ -57,8 +57,8 @@ window.MovieSearchView = Backbone.View.extend({
         app.navigate(State.query_string(), {'trigger':true});
     },
     download:function() {
-        search = window.location.hash.slice(1, window.location.hash.length);
-        window.location = "/movies/csv?"+search;
+        window.location = "/movies/csv?"+
+                            window.location.hash.slice(1, window.location.hash.length);
     },
     lucky:function(e) {
         State.reset(false);
@@ -199,7 +199,7 @@ window.MoviePagingView = Backbone.View.extend({
     tagName:"div",
     template:_.template($('#tpl-movie-paging').html()),
     events: {
-        'click img.paging_link': 'paging',
+        'click img.paging_link': 'paging'
     },
     render: function(query_string) {
         $(this.el).append(this.template(this.model.toJSON()));
@@ -233,6 +233,7 @@ window.MovieListView = Backbone.View.extend({
         'click span.show-all-link': 'showAll'
     },
     initialize:function() {
+        this.summary = this.options.summary;
         this.options.user.bind("change:authenticated", this.render, this);
     },
     editMedia:function(ev) {
@@ -274,13 +275,17 @@ window.MovieListView = Backbone.View.extend({
             $('#show_all_'+type+'_'+id).html('<a class="btn btn-mini">Show All</a>');
         }
     },
-    render:function (eventName) {
+    render:function () {
         $('#movies_table > tbody').html('');
         if(this.model.models.length) {
             $('#movies_table').addClass('table-condensed');
             _.each(this.model.models, function (movie) {
-                $(this.el).append(new MovieListItemView({model:movie, user: this.options.user,
-                                                         summary: this.options.summary}).render().el);
+                var MovieListItemView = new window.MovieListItemView({model:movie, user: this.options.user,
+                                                                      summary: this.summary});
+                $(this.el).append(MovieListItemView.render().el);
+                if(State.Params.id) {
+                    MovieListItemView.details();
+                }
             }, this);
         } else {
             $('#movies_table').removeClass('table-condensed');
@@ -313,9 +318,33 @@ window.MovieListItemView = Backbone.View.extend({
     },
     details:function() {
         if($('tr#movie_'+this.Movie.movie_id).html()) {
-            $('tr#movie_'+this.Movie.movie_id).html('');
+            $('tr#movie_'+this.Movie.movie_id).remove();
         } else {
-            app.movieDetails(this.Movie.movie_id, this.el);
+            interface_helper.loadingImage(true);
+
+            var movie_summary = this.model;
+            var movie = new Movie();
+            var summary = this.summary;
+
+            movie.fetch({
+                url:'../../movies/'+this.Movie.movie_id+'/',
+                async:true,
+                success: function() {
+                    var m = movie.get('Movie');
+                    var element = 'movie_'+m.movie_id;
+
+                    $('tr#'+m.imdb_id).after('<tr id="'+element+'"></tr>');
+                    var movieView = new window.MovieView({model:movie, user:User,
+                                                          summary: summary,
+                                                          movie_summary: movie_summary,
+                                                          el:'#'+element});
+                    movieView.render();
+                    interface_helper.loadingImage(false);
+                },
+                error: function() {
+                    //display error message;
+                }
+            });
         }
     },
     favourite:function() {
@@ -372,46 +401,37 @@ window.MovieListItemView = Backbone.View.extend({
     }
 });
 window.MovieView = Backbone.View.extend({
-    el:$("#movies_table"),
-    tagname:"tr",
     events: {
-        'click a.watched_link': 'watched'
+        'click a.watched_link': 'watched',
+        'click a.unwatched_link': 'watched'
     },
     template:_.template($('#tpl-movie-details').html()),
     initialize: function() {
+        this.movie_summary = this.options.movie_summary;
+        this.user = this.options.user;
+        this.summary = this.options.summary;
+        this.el = this.options.el;
         this.options.user.bind("change:authenticated", _.bind(this.rerender, this));
         this.model.bind("change", _.bind(this.render, this));
     },
-    watched:function() {
-        /*
-        Watched = this.model.get('Watched');
-        Watched[_.size(Watched)] = {'date_watched': '2013-09-03',
-                                    'movie_id': 25, 'user_id': 1};
-        */
-
-        console.log(this.model);
-
-        User.watched(this.model);
-
-        //this.model.save();
-
-        //Watched.set(Watched);
-        //var Watched = this.model.get('Watched');
-        //console.log(this.model);
-        //Movie.set.Watched[3] = {''}
+    watched:function(ev) {
+        var watched_id = $(ev.target).parent().attr('data-watched-id');
+        User.watched(this.model, this.user, this.summary, this.movie_summary, watched_id);
     },
     rerender:function() {
+        console.log("RE-RENDER");
         var Movie = this.model.get('Movie');
         if($('tr#movie_'+Movie.movie_id).html()) {
             app.movieDetails(Movie.movie_id, this.element);
         }
     },
     render:function() {
-        var Movie = this.model.get('Movie');
-        if($('tr#movie_'+Movie.movie_id).html()) {
-            $('tr#movie_'+Movie.movie_id).html('');
-        }
-        $('#'+Movie.imdb_id).after(this.template(this.model.toJSON(), this.options.user));
+        $(this.el).html(this.template(this.model.toJSON(), this.options.user));
         return this;
     }
+});
+window.MovieDownloadView = Backbone.View.extend({
+    tagName:"tbody",
+    events: {},
+    template:_.template($('#tpl-movie-download').html())
 });

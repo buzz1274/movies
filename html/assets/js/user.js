@@ -1,64 +1,66 @@
 window.MovieUser = Backbone.Model.extend({
     url:'/user/',
     idAttribute: "user_id",
-    watched:function(movie_model, user) {
+    watched:function(movie_model, user, summary, movie_summary, watched_id) {
         var movie = movie_model.get('Movie');
         var watched = movie_model.get('Watched');
-
         var total_watched = _.size(watched);
 
-        movie_model.save({},
-            {url:'/user/watched/:id/',
-             async:true,
-             success: function(model, response) {
-                watched[total_watched] = {'date_watched': response.date_watched,
-                                          'id': response.id};
+        var data = {'movie_id': movie.movie_id,
+                    'watched_id': watched_id};
 
-                model.set(watched);
+        user.save(data,
+           {url:'/user/watched/',
+            success: function(model, response) {
+               if(!watched_id) {
+                    watched[total_watched] = {'date_watched': response.date_watched,
+                                              'id': response.id};
+                    movie_model.set(watched);
+                } else {
+                    _.each(watched, function(movie_watched, key) {
+                        if(movie_watched.id == watched_id) {
+                            watched.splice(key, 1);
+                            movie_model.save(watched);
+                        }
+                        if(!_.size(watched)) {
+                            $('#watched_'+movie.movie_id).remove();
+                        }
+                    });
+                }
 
+                var mw = movie_summary.get('Movie');
+                var w = summary.get('watched');
+                var nw = summary.get('not_watched');
 
-
-                    /*
-                    if(Movie.favourite) {
-                        var message = 'Movie added to favourites';
-                    } else {
-                        var message = 'Movie removed from favourites';
-                    }
-
-
-                    interface_helper.message_popup('success', message);
-                    */
-
+                if(!total_watched && _.size(watched)) {
+                    summary.set({watched:++w, not_watched:--nw});
+                    mw.watched = true;
+                    movie_summary.save(mw);
+                } else if(total_watched && !_.size(watched)) {
+                    summary.set({watched:--w, not_watched:++nw});
+                    mw.watched = false;
+                    movie_summary.save(mw);
+                }
+                if(total_watched < _.size(watched)) {
+                    var message = 'Movie added to watched';
+                } else {
+                    var message = 'Movie removed from watched';
+                }
+                interface_helper.message_popup('success', message);
              },
-             error: function(model, response) {
-                    if(Movie.favourite) {
-                        var message = 'Error adding movie to favourites';
-                    } else {
-                        var message = 'Error removing movie from favourites';
-                    }
-                    interface_helper.message_popup('error', message);
-                    Movie.favourite = !Movie.favourite;
+             error: function() {
+                if(!watched_id) {
+                    var message = 'Error adding movie to watched';
+                } else {
+                    var message = 'Error removing movie from watched';
+                }
+                interface_helper.message_popup('error', message);
+                Movie.favourite = !Movie.favourite;
              }}
         );
+    },
+    favourite:function(movie_model, summary) {
 
-
-       // console.log(response);
-
-
-
-        /*
-        console.log(User.get('user_id'));
-        now = new Date();
-
-        console.log(now);
-
-        watched[_.size(watched)] = {'date_watched': helper.today(),
-                                    'movie_id': movie.movie_id};
-
-        console.log(watched);
-
-        movie_model.set(watched);
-        */
     }
 });
 window.HeaderView = Backbone.View.extend({
@@ -84,7 +86,6 @@ window.HeaderView = Backbone.View.extend({
         var parent = this;
         setTimeout(function(){
             $.ajax({url: "user/", success: function(data){
-                console.log(data);
                 parent.poll();
             }, dataType: "json"});
         }, 30000);

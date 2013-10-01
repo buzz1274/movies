@@ -61,6 +61,12 @@
                             </a>
                         <% } %>
                     </li>
+                    <li class="queue_download_link">
+                        <a class="menu_item">
+                            <i class="icon-download"></i>
+                            &nbsp;Queue for Download
+                        </a>
+                    </li>
                 <% } %>
             </ul>
         </div>

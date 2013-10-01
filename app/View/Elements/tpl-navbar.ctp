@@ -15,5 +15,24 @@
             <span class="version">v0.6</span>
         </div>
     </div>
+    <div style="background-color:#000000;line-height:30px;color:#FFFFFF;margin-top:-1px;">
+        <div class="menu-header container-fluid" style="">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" style="color:#FFFFFF;">
+                Tools
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="menu_item" href="#">
+                        &nbsp;Movies
+                    </a>
+                </li>
+                <li>
+                    <a class="menu_item" href="#download-queue">
+                        &nbsp;Download Queue
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
     <div id="login_popup"></div>
 </script>

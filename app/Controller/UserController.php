@@ -29,6 +29,8 @@
 
             $User = $this->request->input('json_decode');
 
+            error_log(json_encode($User));
+
             if(!$User || !isset($User->username) || !isset($User->password)) {
                 header('HTTP/1.1 403 Forbidden', true, 401);
                 header('Location: /#login');
@@ -67,8 +69,7 @@
 
             return new CakeResponse(array('status' => 200,
                                           'body' => json_encode(array('name' => null,
-
-                                              'authenticated' => false))));
+                                                                      'authenticated' => false))));
 
         }
         //end logout
@@ -117,28 +118,28 @@
             $body = array();
             $Movie = $this->request->input('json_decode');
 
-            if(isset($Movie->Movie->movie_id) &&
-                (int)$Movie->Movie->movie_id) {
 
-                $date = date('Y-m-d H:i:s', strtotime('now'));
-                $data = array('movie_id' => $Movie->Movie->movie_id,
-                              'user_id' => $this->Auth->user('user_id'),
-                              'date_watched' => $date);
+            if(isset($Movie->movie_id) && (int)$Movie->movie_id > 1) {
 
-                if(($watched = $this->UserMovieWatched->save($data))) {
+                if(isset($Movie->watched_id) &&
+                   $this->UserMovieWatched->deleteAll(array('id' => $Movie->watched_id,
+                                                            'user_id' => $this->Auth->user('user_id')))) {
                     $status = 200;
-                    $body = array('id' => $watched['UserMovieWatched']['id'],
-                                  'watched_count' => 2,
-                                  'date_watched' => date('jS F Y H:i:s', strtotime($date)));
+                    $body = array('response' => 'success');
+                } else {
+                    $date = date('Y-m-d H:i:s', strtotime('now'));
+                    $data = array('movie_id' => $Movie->movie_id,
+                                  'user_id' => $this->Auth->user('user_id'),
+                                  'date_watched' => $date);
+
+                    if(($watched = $this->UserMovieWatched->save($data))) {
+                        $status = 200;
+                        $body = array('id' => $watched['UserMovieWatched']['id'],
+                                      'date_watched' => date('jS F Y H:i:s', strtotime($date)));
+                    }
                 }
-
-
-
-
             }
 
-            //returned correct watched date and
-            //whether this movie has been watched before
             return new CakeResponse(array('status' => $status,
                                           'body' => json_encode($body)));
 

@@ -13,7 +13,7 @@
         public $belongsTo = array('Certificate' =>
                                         array('className' => 'Certificate',
                                               'foreignKey' => 'certificate_id'),
-                                   'Media');
+                                  'Media');
 
         public $hasMany = array(
             'Watched' =>
@@ -25,7 +25,6 @@
                 array('className'             => 'UserMovieFavourite',
                       'joinTable'             => 'user_movie_favourite',
                       'foreignKey'            => 'movie_id'));
-
 
         public $hasAndBelongsToMany = array(
             'Genre' =>
@@ -317,7 +316,10 @@
          */
         private function _search($resultType) {
 
-            foreach(array('randQuery', 'genreQuery', 'certificateQuery', 'personQuery',
+            $db = $this->getDataSource();
+            $queryParameters = array();
+
+            foreach(array('query', 'randQuery', 'genreQuery', 'certificateQuery', 'personQuery',
                           'searchQuery', 'watchedQuery', 'HDQuery', 'favouritesQuery',
                           'imdb_ratingQuery', 'release_yearQuery', 'runtimeQuery',
                           'orderQuery', 'limitQuery', 'keywordQuery', 'idQuery') as $queryType) {
@@ -346,10 +348,11 @@
                         $label = 'genre_'.$genre['Genre']['genre_id'];
                         $selectQuery .=
                                 ', SUM(CASE '.
-                                "        WHEN '".$genre['Genre']['genre_id']."' = ".
+                                "        WHEN :".$label." = ".
                                 "               ANY(results.movie_genre_ids) THEN 1 ".
                                 '        ELSE 0 '.
                                 '      END) AS "'.$label.'" ';
+                        $queryParameters[$label] = $genre['Genre']['genre_id'];
                     }
                 }
 
@@ -359,39 +362,43 @@
                         $label = 'certificate_'.$certificate['Certificate']['certificate_id'];
                         $selectQuery .=
                                 ', SUM(CASE '.
-                                "        WHEN '".$certificate['Certificate']['certificate_id']."' = ".
-                                "               results.certificate_id THEN 1 ".
+                                "        WHEN :".$label." = results.certificate_id THEN 1 ".
                                 '        ELSE 0 '.
                                 '      END) AS "'.$label.'" ';
+                        $queryParameters[$label] = $certificate['Certificate']['certificate_id'];
                     }
                 }
 
             } else {
                 $selectQuery = 'SELECT * ';
-                if($this->_search['limit'] &&
-                   (int)$this->_search['limit'] >= 1) {
-                    $limitQuery = 'LIMIT '.$this->_search['limit'].' OFFSET '.
-                                  (($this->_search['page'] - 1) *
-                                    $this->_search['limit']);
+                if(!$this->_search['lucky'] && !$this->_search['movieID'] &&
+                   $this->_search['limit'] && (int)$this->_search['limit'] >= 1) {
+                    $limitQuery = 'LIMIT :limit OFFSET :offset ';
+
+                    $queryParameters['limit'] = $this->_search['limit'];
+                    $queryParameters['offset'] = (($this->_search['page'] - 1) *
+                                                   $this->_search['limit']);
                 }
                 $orderQuery = 'ORDER BY '.$this->_search['sort'].' '.
-                                          $this->_search['sortDirection'];
+                                          $this->_search['sortDirection'].' ';
             }
 
             if(isset($this->_search['movieID']) && $this->_search['movieID']) {
-                $idQuery = 'AND Movie.movie_id = '.$this->_search['movieID'];
+                $idQuery = 'AND Movie.movie_id = :movieID ';
+                $queryParameters['movieID'] = $this->_search['movieID'];
             } else {
                 if(isset($this->_search['personID']) && $this->_search['personID']) {
-                    $personQuery =
-                        "AND person.person_id = '".$this->_search['personID']."'";
+                    $personQuery = "AND person.person_id = :personID ";
+                    $queryParameters['personID'] =  $this->_search['personID'];
                 }
 
                 if(isset($this->_search['gid']) && $this->_search['gid']) {
                     $genreQuery = '';
                     foreach($this->_search['gid'] as $genreID) {
                         if((int)$genreID > 0) {
-                            $genreQuery .=
-                                "AND '".$genreID."' = ANY(genre.movie_genre_ids)";
+                            $label = 'searchGenre_'.$genreID;
+                            $genreQuery .= "AND :".$label." = ANY(genre.movie_genre_ids)";
+                            $queryParameters[$label] =  $genreID;
                         }
                     }
                 }
@@ -402,8 +409,8 @@
                 }
 
                 if(isset($this->_search['keywordID']) && $this->_search['keywordID']) {
-                    $keywordQuery =
-                        "AND keyword.keyword_id = '".$this->_search['keywordID']."'";
+                    $keywordQuery = "AND keyword.keyword_id = :keywordID ";
+                    $queryParameters['keywordID'] = $this->_search['keywordID'];
                 }
 
                 if(isset($this->_search['search']) && $this->_search['search']) {
@@ -533,7 +540,7 @@
                                             $limitQuery.' ').
                       '      ) AS results';
 
-            if(is_array($results = $this->query($query)) &&
+            if(is_array($results = $db->fetchAll($query, $queryParameters)) &&
                $resultType == 'summary') {
                 $results = array_pop($results);
             }
@@ -678,8 +685,6 @@
                 }
             }
 
-            $this->_search = $this->_cleanParameters($this->_search);
-
         }
         //end _parseSearchParameters
 
@@ -769,31 +774,6 @@
 
         }
         //end _keywordCount
-
-        /**
-         * cleans search parameters prior to use in query
-         *
-         * @author David
-         * @param mixed $search - data to clean
-         * @return mixed $search
-         */
-        private function _cleanParameters($search) {
-
-            while(list($key, $val) = each($search)) {
-                if($val || $val === 0) {
-                    if(is_array($val)) {
-                        $search[$key] = $this->_cleanParameters($val);
-                    } else {
-                        $search[$key] = Sanitize::escape(urldecode($val),
-                                                         'default');
-                    }
-                }
-            }
-
-            return $search;
-
-        }
-        //end _cleanParameters
 
     }
     //end Movie

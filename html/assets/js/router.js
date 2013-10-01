@@ -2,6 +2,7 @@ var AppRouter = Backbone.Router.extend({
     routes:{
         "/user/login": "login",
         "/user/logout": "logout",
+        "download-queue": "download_queue",
         "file-error": "file_error",
         'login': "login",
         "":"list",
@@ -54,12 +55,9 @@ var AppRouter = Backbone.Router.extend({
                             $('#pagination').css('display', 'block');
                             $('#movies_table').css('display', 'block');
                             interface_helper.loadingImage(false);
-
-                            if(State.Params.id) {
-                                app.movieDetails(State.Params.id);
-                            }
                         },
                         error: function() {
+                            $('#movies_table').empty().append(movieHeaderView.render().el);
                             $('#pagination').css('display', 'none');
                             $('#movies_table').append(movieListView.render().el);
                             $('#movies_table').css('display', 'block');
@@ -73,25 +71,9 @@ var AppRouter = Backbone.Router.extend({
             }
         });
     },
-    movieDetails:function (movie_id, element) {
-        interface_helper.loadingImage(true);
-        var movie = new Movie();
-        movie.url = '../../movies/'+movie_id+'/';
-
-        console.log(User);
-
-        //{ el:$(".content"), collection: data }
-
-        //var movieView = new MovieView({el:$('.movie_details'), model:movie, user:User});
-        var movieView = new MovieView({model:movie, user:User});
-        movie.fetch({
-            async:true,
-            success: function() {
-                $('tr#movie_'+movie_id).remove();
-                movieView.render();
-                interface_helper.loadingImage(false);
-            }
-        });
+    download_queue : function() {
+        $('#movies_table').css('display', 'none');
+        $('#pagination').css('display', 'none');
     },
     login:function() {
         this.list();
