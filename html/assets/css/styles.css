@@ -1,5 +1,5 @@
 body {
-  padding-top: 80px;
+  padding-top: 85px;
   padding-bottom: 40px;
   background: url('../img/bg.png');
 }
@@ -15,6 +15,13 @@ body {
 }
 .navbar-inner {
     z-index:10;
+}
+#navbar-menu {
+    background-color:#000000;
+    line-height:30px;
+    color:#FFFFFF;
+    margin-top:-1px;
+    padding-bottom:5px;
 }
 .sidebar-nav {
     padding: 9px 0;
