@@ -32,7 +32,9 @@
                                'conditions' => array('movie_id' =>
                                                         $this->request->params['movieID'])));
 
-            if(!$movie) {
+            $filename = preg_replace('/.*\//is', '', $movie['Movie']['path']);
+
+            if(!$movie || !file_exists(MEDIA_SERVER_PATH.'/'.$filename)) {
                 header('HTTP/1.1 404 Not Found', true, 401);
                 header('Location: /#file-error');
                 die();
@@ -42,9 +44,9 @@
                         array('movie_id' => $this->request->params['movieID'],
                               'user_id' => $this->Auth->user('user_id'),
                               'filesize' => $movie['Movie']['filesize'],
-                              'date_downloaded' => date('Y-m-d H:i:s', strtotime('now'))));
+                              'date_downloaded' => date('Y-m-d H:i:s', strtotime('now')),
+                              'status' => 'complete'));
 
-                $filename = preg_replace('/.*\//is', '', $movie['Movie']['path']);
                 $this->viewClass = 'Media';
                 $params = array('id'        => $filename,
                                 'name'      => preg_replace('/].*/', ']', $filename),

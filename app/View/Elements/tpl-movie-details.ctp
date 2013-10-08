@@ -180,7 +180,7 @@
             <dl>
                 <dt>
                     <strong>Media:</strong>
-                    <% if (user.authenticated) {%>
+                    <% if (user.authenticated && user.admin) {%>
                         <span class="edit_media">
                             <a class="menu_item"><i class="icon-edit" /></a>
                         </span>

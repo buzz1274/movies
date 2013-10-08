@@ -20,7 +20,7 @@
                 array('className'             => 'UserMovieWatched',
                       'joinTable'             => 'user_movie_watched',
                       'foreignKey'            => 'movie_id',
-                      'order'                 => 'date_watched'),
+                      'order'                 => 'date_watched ASC NULLS FIRST'),
             'Favourite' =>
                 array('className'             => 'UserMovieFavourite',
                       'joinTable'             => 'user_movie_favourite',

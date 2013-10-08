@@ -14,13 +14,15 @@
     Router::connect('/user/logout/',
                     array('controller' => 'user',
                           'action' => 'logout'));
-    Router::connect('/user/favourite/:movieID',
+    Router::connect('/user/favourite/',
                     array('controller' => 'user',
-                          'action' => 'favourite',
-                          'movieID', '[0-9]{1,}'));
+                          'action' => 'favourite'));
     Router::connect('/user/watched/',
                     array('controller' => 'user',
                           'action' => 'watched'));
+    Router::connect('/user/downloaded/',
+                    array('controller' => 'user',
+                          'action' => 'downloaded'));
     Router::connect('/movies/summary',
                     array('controller' => 'movies',
                           'action' => 'summary'));

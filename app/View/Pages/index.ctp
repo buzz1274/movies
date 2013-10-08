@@ -40,10 +40,9 @@
         <?php echo $this->element('tpl-movie-list-item'); ?>
         <?php echo $this->element('tpl-movie-list-footer'); ?>
         <?php echo $this->element('tpl-movie-details'); ?>
+        <?php echo $this->element('tpl-movie-downloaded'); ?>
+        <?php echo $this->element('tpl-movie-downloaded-header'); ?>
 
-        <script type="text/javascript"
-            src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.8/require.min.js">
-        </script>
         <script type="text/javascript"
             src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js">
         </script>
@@ -60,13 +59,15 @@
             src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js">
         </script>
 
-        <script type="text/javascript" src="/assets/js/helper.js"></script>
-        <script type="text/javascript" src="/assets/js/interface_helper.js"></script>
-        <script type="text/javascript" src="/assets/js/state.js"></script>
-        <script type="text/javascript" src="/assets/js/models.js"></script>
-        <script type="text/javascript" src="/assets/js/user.js"></script>
+        <script type="text/javascript" src="/assets/js/helper/state.js"></script>
+        <script type="text/javascript" src="/assets/js/helper/helper.js"></script>
+        <script type="text/javascript" src="/assets/js/helper/interface_helper.js"></script>
+        <script type="text/javascript" src="/assets/js/models/movies.js"></script>
+        <script type="text/javascript" src="/assets/js/models/user.js"></script>
+        <script type="text/javascript" src="/assets/js/collections/movies.js"></script>
+        <script type="text/javascript" src="/assets/js/views/user.js"></script>
         <script type="text/javascript" src="/assets/js/router.js"></script>
-        <script type="text/javascript" src="/assets/js/movies.js"></script>
+        <script type="text/javascript" src="/assets/js/views/movies.js"></script>
         <script type="text/javascript" src="/assets/js/main.js"></script>
     </body>
 </html>

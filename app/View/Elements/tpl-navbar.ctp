@@ -19,21 +19,74 @@
         <div class="menu-header container-fluid" style="">
             <div class="btn-group">
                 <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
-                    Tools
+                    Stats&nbsp;<i class="caret"></i>
                 </a>
                 <ul class="dropdown-menu pull-left">
                     <li>
-                        <a class="menu_item" href="#">
-                            &nbsp;Movies
+                        <a class="menu_item" href="#download-queue">
+                            &nbsp;Top Cast
                         </a>
                     </li>
                     <li>
                         <a class="menu_item" href="#download-queue">
-                            &nbsp;Download Queue
+                            &nbsp;Top Keywords
                         </a>
                     </li>
+                    <li>
+                        <a class="menu_item" href="#download-queue">
+                            &nbsp;Rating by Genre
+                        </a>
+                    </li>
+                    <li>
+                        <a class="menu_item" href="#download-queue">
+                            &nbsp;Rating by Certificate
+                        </a>
+                    </li>
+                    <li>
+                        <a class="menu_item" href="#download-queue">
+                            &nbsp;Rating by Release Decade
+                        </a>
+                    </li>
+                    <% if (authenticated) {%>
+                        <li>
+                            <a class="menu_item" href="#download-queue">
+                                &nbsp;Most Watched
+                            </a>
+                        </li>
+                    <% } %>
                 </ul>
             </div>
+            <% if (authenticated) {%>
+                <div class="btn-group">
+                    <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+                        Tools&nbsp;<i class="caret"></i>
+                    </a>
+                    <ul class="dropdown-menu pull-left">
+                        <li>
+                            <a class="menu_item" href="#download-queue">
+                                &nbsp;Download Queue
+                            </a>
+                        </li>
+                        <% if (admin) {%>
+                            <li>
+                                <a class="menu_item" href="#download-queue">
+                                    &nbsp;Movies with Incomplete Data
+                                </a>
+                            </li>
+                            <li>
+                                <a class="menu_item" href="#download-queue">
+                                    &nbsp;Worth Selling(>£5)
+                                </a>
+                            </li>
+                            <li>
+                                <a class="menu_item" href="#download-queue">
+                                    &nbsp;Trash Folder
+                                </a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </div>
+            <% } %>
         </div>
     </div>
     <div id="login_popup"></div>

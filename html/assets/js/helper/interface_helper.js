@@ -40,6 +40,38 @@ var interface_helper = {
                                            'top': ((viewportHeight / 2))  + 'px'});
 
         this.opaque(true);
-        console.log("OK");
+    },
+    search_form: function(query_string) {
+        $(document).scrollTop(0);
+        interface_helper.loadingImage(true);
+
+        if(query_string) {
+            State.parse(query_string);
+        } else {
+            State.reset();
+        }
+
+        var movieSummary = new MovieSummary();
+        var movieSearchView = new MovieSearchView({model:movieSummary, user:User});
+
+        movieSummary.fetch({
+            data:State.Params,
+            success: function() {
+                $('#movies_search').empty().prepend(movieSearchView.render().el);
+                State.SliderValues.init();
+
+                movieSearchView.render_slider('imdb_rating');
+                movieSearchView.render_slider('runtime');
+                movieSearchView.render_slider('release_year');
+
+                State.fill_form();
+            },
+            error:function() {
+                console.log("ERROR GETTING SUMMARY");
+                //display error message
+            }
+        })
+
+        return movieSummary;
     }
 }

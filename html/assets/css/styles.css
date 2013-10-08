@@ -38,6 +38,9 @@ div#auth span.auth_link {
     text-decoration:underline;
     cursor:pointer;
 }
+table #movies_table {
+    width:100%;
+}
 div #movies_list {
     position:relative;
     min-height:960px;
@@ -153,6 +156,10 @@ img.centre {
 img.tick_cross {
     width:15px;
     height:15px;
+}
+th#table_title {
+    background-color:#f5f5f5;
+    color:#999;
 }
 td.movie_details {
     background-color:#FFFFFF;

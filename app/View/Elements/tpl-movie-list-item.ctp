@@ -2,7 +2,7 @@
     <td>
         <a href='http://www.imdb.com/title/<%= Movie.imdb_id %>/'
            target='_blank'><%= Movie.title %></a>
-        <% if(Movie.favourite) { %>
+        <% if(user.authenticated && Movie.favourite) { %>
             <i class="icon-star" />
         <% } %>
     </td>

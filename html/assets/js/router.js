@@ -2,7 +2,7 @@ var AppRouter = Backbone.Router.extend({
     routes:{
         "/user/login": "login",
         "/user/logout": "logout",
-        "download-queue": "download_queue",
+        "download-queue*query_string": "download_queue",
         "file-error": "file_error",
         'login': "login",
         "":"list",
@@ -10,70 +10,71 @@ var AppRouter = Backbone.Router.extend({
         "*query_string": "list"
     },
     list:function (query_string) {
+        var movieSummary = interface_helper.search_form(query_string, User),
+            movieHeaderView = new MovieHeaderView({model:null, user:User}),
+            movieList = new MovieCollection(),
+            movieListView = new MovieListView({model:movieList, user:User, summary:movieSummary}),
+            moviePagingView = new MoviePagingView({model:movieSummary});
 
-        interface_helper.loadingImage(true);
-        $(document).scrollTop(0);
-
-        var movieSummary = new MovieSummary();
-        var movieSearchView = new MovieSearchView({model:movieSummary, user:User});
-        var movieHeaderView = new MovieHeaderView({model:null, user:User});
-        var moviePagingView = new MoviePagingView({model:movieSummary});
-
-        State.parse(query_string);
-        movieSummary.fetch({
+        movieList.fetch({
             async:true,
             data:State.Params,
             success: function() {
-                var movieList = new MovieCollection();
-                var movieListView = new MovieListView({model:movieList, user:User, summary:movieSummary});
-
-                $('#movies_search').empty().prepend(movieSearchView.render().el);
-                State.SliderValues.init();
-
-                movieSearchView.render_slider('imdb_rating');
-                movieSearchView.render_slider('runtime');
-                movieSearchView.render_slider('release_year');
-
-                State.fill_form();
-
-                if(!movieSummary.get('total_movies')) {
-                    $('#pagination').css('display', 'none');
+                try {
                     $('#movies_table').empty().append(movieHeaderView.render().el);
+                    movieHeaderView.display_sort_icons();
                     $('#movies_table').append(movieListView.render().el);
+                    $('#pagination').empty().append(moviePagingView.render().el);
+
+                    $('#pagination').css('display', 'block');
                     $('#movies_table').css('display', 'block');
                     interface_helper.loadingImage(false);
-                } else {
-                    movieList.fetch({
-                        async:true,
-                        data:State.Params,
-                        success: function() {
-                            $('#movies_table').empty().append(movieHeaderView.render().el);
-                            movieHeaderView.display_sort_icons();
-                            $('#movies_table').append(movieListView.render().el);
-                            $('#pagination').empty().append(moviePagingView.render().el);
-
-                            $('#pagination').css('display', 'block');
-                            $('#movies_table').css('display', 'block');
-                            interface_helper.loadingImage(false);
-                        },
-                        error: function() {
-                            $('#movies_table').empty().append(movieHeaderView.render().el);
-                            $('#pagination').css('display', 'none');
-                            $('#movies_table').append(movieListView.render().el);
-                            $('#movies_table').css('display', 'block');
-                            interface_helper.loadingImage(false);
-                        }
-                    });
+                } catch(e) {
+                    Backbone.history.loadUrl();
                 }
             },
-            error:function(m, response) {
-                //display error message//
+            error: function() {
+                $('#movies_table').empty().append(movieHeaderView.render().el);
+                $('#movies_table').append(movieListView.render().el);
+
+                $('#pagination').css('display', 'none');
+                $('#movies_table').css('display', 'block');
+                interface_helper.loadingImage(false);
             }
         });
     },
-    download_queue : function() {
-        $('#movies_table').css('display', 'none');
-        $('#pagination').css('display', 'none');
+    download_queue : function(query_string) {
+        interface_helper.search_form(query_string);
+
+        var downloadedList = new UserMovieDownloadedCollection(),
+            downloadedHeaderView = new UserDownloadedHeaderView(),
+            moviePagingView = new MoviePagingView(),
+            downloadedView = new UserDownloadedView({model: downloadedList,
+                                                     user: User});
+
+
+
+        downloadedList.fetch({
+            data:{'p': State.Params.p},
+            success: function() {
+                try {
+                    $('#movies_table').empty().append(downloadedHeaderView.render().el);
+                    $('#movies_table').append(downloadedView.render().el);
+                    //$('#pagination').empty().append(moviePagingView.render().el);
+                    $('#movies_table').css('display', 'block');
+                    interface_helper.loadingImage(false);
+                } catch(e) {
+                    console.log(e);
+                    //Backbone.history.loadUrl();
+                }
+            },
+            error: function() {
+                $('#movies_table').empty().append(downloadedHeaderView.render().el);
+                $('#movies_table').append(downloadedView.render().el);
+                $('#movies_table').css('display', 'block');
+                interface_helper.loadingImage(false);
+            }
+        });
     },
     login:function() {
         this.list();

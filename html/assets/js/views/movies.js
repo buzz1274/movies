@@ -201,7 +201,7 @@ window.MoviePagingView = Backbone.View.extend({
     events: {
         'click img.paging_link': 'paging'
     },
-    render: function(query_string) {
+    render: function() {
         $(this.el).append(this.template(this.model.toJSON()));
         return this;
     },
@@ -233,6 +233,7 @@ window.MovieListView = Backbone.View.extend({
         'click span.show-all-link': 'showAll'
     },
     initialize:function() {
+        this.user = this.options.user;
         this.summary = this.options.summary;
         this.options.user.bind("change:authenticated", this.render, this);
     },
@@ -280,7 +281,7 @@ window.MovieListView = Backbone.View.extend({
         if(this.model.models.length) {
             $('#movies_table').addClass('table-condensed');
             _.each(this.model.models, function (movie) {
-                var MovieListItemView = new window.MovieListItemView({model:movie, user: this.options.user,
+                var MovieListItemView = new window.MovieListItemView({model:movie, user: this.user,
                                                                       summary: this.summary});
                 $(this.el).append(MovieListItemView.render().el);
                 if(State.Params.id) {
@@ -300,10 +301,12 @@ window.MovieListItemView = Backbone.View.extend({
         'mouseover': 'mouseoverrow',
         'mouseout': 'mouseoutrow',
         'click li.favourite_link': 'favourite',
+        'click li.queue_download_link': 'download',
         'click li.detail_link': 'details'
     },
     template:_.template($('#tpl-movie-list-item').html()),
     initialize: function() {
+        this.user = this.options.user;
         this.Movie = this.model.get('Movie');
         this.summary = this.options.summary;
         _.bindAll(this, "render");
@@ -312,9 +315,7 @@ window.MovieListItemView = Backbone.View.extend({
     },
     attributes: function() {
         var Movie = this.model.get('Movie');
-        return {
-            id: Movie.imdb_id
-        };
+        return {id: Movie.imdb_id};
     },
     details:function() {
         if($('tr#movie_'+this.Movie.movie_id).html()) {
@@ -322,9 +323,10 @@ window.MovieListItemView = Backbone.View.extend({
         } else {
             interface_helper.loadingImage(true);
 
-            var movie_summary = this.model;
-            var movie = new Movie();
-            var summary = this.summary;
+            var movie_summary = this.model,
+                movie = new Movie(),
+                summary = this.summary,
+                parent = this;
 
             movie.fetch({
                 url:'../../movies/'+this.Movie.movie_id+'/',
@@ -334,21 +336,22 @@ window.MovieListItemView = Backbone.View.extend({
                     var element = 'movie_'+m.movie_id;
 
                     $('tr#'+m.imdb_id).after('<tr id="'+element+'"></tr>');
-                    var movieView = new window.MovieView({model:movie, user:User,
+                    var movieView = new window.MovieView({model:movie, user:parent.user,
                                                           summary: summary,
                                                           movie_summary: movie_summary,
                                                           el:'#'+element});
                     movieView.render();
                     interface_helper.loadingImage(false);
-                },
-                error: function() {
-                    //display error message;
                 }
             });
         }
     },
     favourite:function() {
-        User.favourite(this.model, this.summary);
+        this.user.favourite(this.model, this.summary);
+    },
+    download:function() {
+        var Movie = this.model.get('Movie');
+        this.user.download(Movie.movie_id);
     },
     render:function () {
         this.$el.html(this.template(this.model.toJSON()));
@@ -372,27 +375,14 @@ window.MovieView = Backbone.View.extend({
         this.user = this.options.user;
         this.summary = this.options.summary;
         this.el = this.options.el;
-        this.options.user.bind("change:authenticated", _.bind(this.rerender, this));
         this.model.bind("change", _.bind(this.render, this));
     },
     watched:function(ev) {
-        var watched_id = $(ev.target).parent().attr('data-watched-id');
-        User.watched(this.model, this.user, this.summary, this.movie_summary, watched_id);
-    },
-    rerender:function() {
-        console.log("RE-RENDER");
-        var Movie = this.model.get('Movie');
-        if($('tr#movie_'+Movie.movie_id).html()) {
-            app.movieDetails(Movie.movie_id, this.element);
-        }
+        this.user.watched(this.model, this.summary, this.movie_summary,
+                          $(ev.target).parent().attr('data-watched-id'));
     },
     render:function() {
         $(this.el).html(this.template(this.model.toJSON(), this.options.user));
         return this;
     }
-});
-window.MovieDownloadView = Backbone.View.extend({
-    tagName:"tbody",
-    events: {},
-    template:_.template($('#tpl-movie-download').html())
 });

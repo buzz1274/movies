@@ -191,6 +191,10 @@ var State = {
     },
     remove_page_from_query_string:function() {
         var qs = this.qs.replace(/&?p=[0-9]{1,}&?/gm, '');
+        qs = qs.replace(/&{1,}/gm, '&');
+        if(qs[0] == '&') {
+            qs = qs.slice(0);
+        }
         return qs.length ? '&'+qs : '';
     },
     parse_search_form:function() {
@@ -225,6 +229,7 @@ var State = {
         });
     },
     reset:function(reset_sliders) {
+        State.qs = '';
         _.each(State.DefaultParams, function(value, key) {
             State.Params[key] = value;
         });

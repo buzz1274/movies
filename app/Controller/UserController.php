@@ -2,8 +2,14 @@
 
     class UserController extends AppController {
 
-        public $uses = array('User', 'UserMovieFavourite', 'UserMovieWatched');
+        public $uses = array('User', 'UserMovieFavourite', 'UserMovieWatched',
+                             'UserMovieDownloaded', 'Movie');
 
+        /**
+         * returns authentication details if a user is
+         * currently authenticated
+         * @return CakeResponse
+         */
         public function index() {
 
             if(($User = $this->Auth->user())) {
@@ -17,6 +23,7 @@
             }
 
             return new CakeResponse(array('body' => json_encode($body)));
+
         }
         //end index
 
@@ -29,12 +36,9 @@
 
             $User = $this->request->input('json_decode');
 
-            error_log(json_encode($User));
-
             if(!$User || !isset($User->username) || !isset($User->password)) {
-                header('HTTP/1.1 403 Forbidden', true, 401);
-                header('Location: /#login');
-                die();
+                $status = 400;
+                $body = array();
             } else {
                 if(($User = $this->User->login($User->username,
                                               AuthComponent::password($User->password))) &&
@@ -83,18 +87,18 @@
             $status = 400;
             $Movie = $this->request->input('json_decode');
 
-            if(isset($Movie->Movie->movie_id) &&
-                (int)$Movie->Movie->movie_id &&
-                isset($Movie->Movie->favourite)) {
+            if(isset($Movie->movie_id) &&
+                (int)$Movie->movie_id &&
+                isset($Movie->favourite)) {
 
-                $data = array('movie_id' => $Movie->Movie->movie_id,
+                $data = array('movie_id' => $Movie->movie_id,
                               'user_id' => $this->Auth->user('user_id'));
 
-                if($Movie->Movie->favourite &&
+                if($Movie->favourite &&
                    $this->UserMovieFavourite->save($data)) {
                     $status = 200;
 
-                } elseif(!$Movie->Movie->favourite &&
+                } elseif(!$Movie->favourite &&
                           $this->UserMovieFavourite->deleteAll($data)) {
                     $status = 200;
                 }
@@ -102,7 +106,7 @@
             }
 
             return new CakeResponse(array('status' => $status,
-                                          'body' => json_encode(array('ok'))));
+                                          'body' => json_encode(array('success'))));
 
         }
         //end favourite
@@ -145,5 +149,75 @@
 
         }
         //end watched
+
+        /**
+         * returns a list of movies the user has flagged for download/auto downloaded
+         * @author David
+         * @return mixed
+         */
+        public function downloaded() {
+
+            $status = 400;
+            $Params = $this->request->input('json_decode');
+
+            if(!$Params || (is_array($Params) && !isset($Params->movie_id))) {
+                $data = $this->UserMovieDownloaded->find('all',
+                    array('conditions' => array('user_id' => $this->Auth->user('user_id')),
+                          'recursive' => 1,
+                          'order' => 'date_downloaded DESC',
+                          'limit' => '20',
+                          'page' => $this->request->query('p')));
+
+                if(!$data) {
+                    $status = 204;
+                } else {
+                    $status = 200;
+                }
+            } elseif(isset($Params->movie_id) &&
+                     ($this->request->is('post') || $this->request->is('put'))) {
+
+                $movieDetails = $this->Movie->find('all',
+                                  array('conditions' => array('movie_id' => $Params->movie_id),
+                                        'recursive' => -1));
+
+                if(is_array($movieDetails)) {
+                    $movieDetails = array_pop($movieDetails);
+
+                    if(isset($Params->movie_id) && isset($Params->download_id)) {
+
+                        $downloadDetails =
+                            $this->UserMovieDownloaded->find('all',
+                                array('conditions' => array('id' => $Params->download_id,
+                                                            'user_id' => $this->Auth->user('user_id')),
+                                      'recursive' => 1));
+
+                        if(!is_array($downloadDetails)) {
+                            $status = 400;
+                        } elseif(($data = $this->UserMovieDownloaded->save(array('id' => $Params->download_id,
+                                                                                 'status' => 'cancelled')))) {
+                            $status = 200;
+                        } else {
+                            $status = 500;
+                        }
+                    } else {
+                        $data = array('user_id' => $this->Auth->user('user_id'),
+                                      'movie_id' => $movieDetails['Movie']['movie_id'],
+                                      'date_downloaded' => date('Y-m-d H:i:s', strtotime('now')),
+                                      'status' => 'queued',
+                                      'filesize' => $movieDetails['Movie']['filesize']);
+                        if(($data = $this->UserMovieDownloaded->save($data))) {
+                            $status = 201;
+                        } else {
+                            $status = 500;
+                        }
+                    }
+                }
+            }
+
+            return new CakeResponse(array('status' => $status,
+                                          'body' => json_encode($data)));
+
+        }
+        //end downloaded
 
     }
