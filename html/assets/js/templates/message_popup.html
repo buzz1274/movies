@@ -1,0 +1,9 @@
+<div class="alert alert-<%= type %> message_popup">
+    <button id="close_message_popup" type="button"
+            class="close" data-dismiss="alert"
+            onclick="$('#opaque').css('display', 'none');">
+        &times;
+    </button>
+    <strong><% if(type == 'error') { %>Warning!<% } else { %>Success!<% } %></strong>
+    &nbsp;&nbsp;<%= message %>
+</div>

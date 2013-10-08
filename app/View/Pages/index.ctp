@@ -23,51 +23,24 @@
                     <div class="message_popup_container"></div>
                     <div id="loading"><img src="/assets/img/spinner.gif"></div>
                     <table class="table table-bordered table-condensed"
-                           style="display:none;" id="movies_table">
+                           id="movies_table">
                     </table>
                     <div id="pagination" class="pagination"></div>
                 </div>
             </div>
         </div>
 
-        <?php echo $this->element('tpl-navbar'); ?>
-        <?php echo $this->element('tpl-login'); ?>
-        <?php echo $this->element('tpl-message-popup'); ?>
-        <?php echo $this->element('tpl-movie-search'); ?>
-        <?php echo $this->element('tpl-movie-paging'); ?>
-        <?php echo $this->element('tpl-movie-list-header'); ?>
-        <?php echo $this->element('tpl-movie-list-no-results'); ?>
-        <?php echo $this->element('tpl-movie-list-item'); ?>
-        <?php echo $this->element('tpl-movie-list-footer'); ?>
-        <?php echo $this->element('tpl-movie-details'); ?>
-        <?php echo $this->element('tpl-movie-downloaded'); ?>
-        <?php echo $this->element('tpl-movie-downloaded-header'); ?>
+        <section id="slider_init_values"
+                 data-min-imdb-rating="<?php echo $summary['min_imdb_rating']; ?>"
+                 data-max-imdb-rating="<?php echo $summary['max_imdb_rating']; ?>"
+                 data-min-runtime="<?php echo $summary['min_runtime']; ?>"
+                 data-max-runtime="<?php echo $summary['max_runtime']; ?>"
+                 data-min-release-year="<?php echo $summary['min_release_year']; ?>"
+                 data-max-release-year="<?php echo $summary['max_release_year']; ?>" />
 
-        <script type="text/javascript"
-            src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js">
-        </script>
-        <script type="text/javascript"
-            src="http://code.jquery.com/ui/1.9.1/jquery-ui.min.js">
-        </script>
-        <script type="text/javascript"
-            src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min.js">
-        </script>
-        <script type="text/javascript"
-            src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js">
-        </script>
-        <script type="text/javascript"
-            src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js">
+        <script data-main="assets/js/main"
+                src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.8/require.min.js">
         </script>
 
-        <script type="text/javascript" src="/assets/js/helper/state.js"></script>
-        <script type="text/javascript" src="/assets/js/helper/helper.js"></script>
-        <script type="text/javascript" src="/assets/js/helper/interface_helper.js"></script>
-        <script type="text/javascript" src="/assets/js/models/movies.js"></script>
-        <script type="text/javascript" src="/assets/js/models/user.js"></script>
-        <script type="text/javascript" src="/assets/js/collections/movies.js"></script>
-        <script type="text/javascript" src="/assets/js/views/user.js"></script>
-        <script type="text/javascript" src="/assets/js/router.js"></script>
-        <script type="text/javascript" src="/assets/js/views/movies.js"></script>
-        <script type="text/javascript" src="/assets/js/main.js"></script>
     </body>
 </html>

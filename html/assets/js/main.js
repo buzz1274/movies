@@ -1,11 +1,29 @@
-State.reset(true);
-var app = new AppRouter();
-var User = new MovieUser();
-User.fetch({}).done(function() {
-    new HeaderView({model: User});
-    Backbone.history.start();
-    window.setInterval(function(){
-        User.poll();
-    }, 10000);
-});
+require(["config"], function() {
+    require(["app", "router", "helper/state",
+             "views/header", "views/movie/search",
+             "models/movie/summary",
+             "models/user/user"], function(app, Router, State,
+                                           HeaderView, MovieSearchView,
+                                           movieSummary, user) {
 
+        "use strict"
+
+        //FX ME::Need to get genre types and initial counts
+
+        user.fetch({}).done(function() {
+
+            State.reset(true);
+            app.router = new Router();
+
+            new HeaderView({model: user});
+            new MovieSearchView({model:movieSummary});
+
+            Backbone.history.start({pushState: false, root:app.root});
+
+            window.setInterval(function(){
+                user.poll();
+            }, 10000);
+
+        });
+    });
+});

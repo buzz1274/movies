@@ -36,7 +36,7 @@
 
             if(!$movie || !file_exists(MEDIA_SERVER_PATH.'/'.$filename)) {
                 header('HTTP/1.1 404 Not Found', true, 401);
-                header('Location: /#file-error');
+                header('Location: /#file_error');
                 die();
             } else {
 
@@ -74,7 +74,7 @@
 
             if(!$data) {
                 header('HTTP/1.1 404 Not Found', true, 401);
-                header('Location: /#file-error');
+                header('Location: /#file_error');
                 die();
             } else {
                 header("Content-type:application/vnd.ms-excel");

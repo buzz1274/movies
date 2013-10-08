@@ -1,0 +1,519 @@
+<form id="search" class="well" onsubmit="return false;">
+    <fieldset>
+        <legend>
+            Search Movies
+            (<%= summary.totalMovies != 0 && summary.totalMovies != null ? summary.totalMovies : '-' %>)
+            <% if (user.authenticated && summary.totalMovies != 0 && summary.totalMovies != null) {%>
+                <i id="download" class="icon-download-alt"></i>
+            <% } %>
+        </legend>
+        <ul class="nav nav-list">
+            <li class="nav-header"
+                Keywords
+            </li>
+            <li class="span12 seperator">
+                <input type="text" class="span12" autocomplete="off"
+                       id="search_input">
+                <span class="offset0 span3">
+                    <label class="radiobutton inline">
+                        <input type="radio" value="cast" id="search_type_cast"
+                               name="search_type">
+                        Cast
+                    </label>
+                </span>
+                <span class="offset3 span4">
+                    <label class="radiobutton inline">
+                        <input type="radio" value="keyword" id="search_type_keyword"
+                               name="search_type">
+                        Keyword
+                    </label>
+                </span>
+                <span class="offset7 span3">
+                    <label class="radiobutton inline">
+                        <input type="radio" value="title" id="search_type_title"
+                               name="search_type">
+                        Title
+                    </label>
+                </span>
+                <span class="offset10 span2">
+                    <label class="radiobutton inline">
+                        <input type="radio" value="all" id="search_type_all"
+                               name="search_type" checked="checked">
+                        All
+                    </label>
+                </span>
+            </li>
+            <li class="nav-header">
+                Genre
+            </li>
+            <li class="span12">
+                <span class="span6">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="genre[]" value="11">
+                        Action
+                        <span>
+                            (<%= summary.genre_11 != 0 &&
+                                 summary.genre_11 != null ? summary.genre_11 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+                <span class="span6 offset6">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="genre[]" value="6">
+                        Adventure
+                        <span>
+                            (<%= summary.genre_6 != 0 &&
+                                 summary.genre_6 != null ? summary.genre_6 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+            </li>
+            <li class="span12">
+                <span class="span6">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="genre[]" value="20">
+                        Animation
+                        <span>
+                            (<%= summary.genre_20 != 0 &&
+                                 summary.genre_20 != null ? summary.genre_20 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+                <span class="span6 offset6">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="genre[]" value="13">
+                        Biography
+                        <span>
+                            (<%= summary.genre_13 != 0 &&
+                                 summary.genre_13 != null ? summary.genre_13 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+            </li>
+            <li class="span12">
+                <span class="span6 ">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="genre[]" value="12">
+                        Comedy
+                        <span>
+                            (<%= summary.genre_12 != 0 &&
+                                 summary.genre_12 != null ? summary.genre_12 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+                <span class="span6 offset6">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="genre[]" value="14">
+                        Crime
+                        <span>
+                            (<%= summary.genre_14 != 0 &&
+                                 summary.genre_14 != null ? summary.genre_14 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+            </li>
+            <li class="span12">
+                <span class="span6">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="genre[]" value="26">
+                        Documentary
+                        <span>
+                            (<%= summary.genre_26 != 0 &&
+                                 summary.genre_26 != null ? summary.genre_26 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+                <span class="span6 offset6 ">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="genre[]" value="7">
+                        Drama
+                        <span>
+                            (<%= summary.genre_7 != 0 &&
+                                 summary.genre_7 != null ? summary.genre_7 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+            </li>
+            <li class="span12">
+                <span class="span6">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="genre[]" value="23">
+                        Family
+                        <span>
+                            (<%= summary.genre_23 != 0 &&
+                                 summary.genre_23 != null ? summary.genre_23 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+                <span class="span6 offset6">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="genre[]" value="21">
+                        Fantasy
+                        <span>
+                            (<%= summary.genre_21 != 0 &&
+                                 summary.genre_21 != null ? summary.genre_21 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+            </li>
+            <li class="span12"><span class="span6">
+                <label class="checkbox inline nav_text">
+                    <input type="checkbox" name="genre[]" value="40">
+                    Film-Noir
+                    <span>(<%= summary.genre_40 != 0 &&
+                               summary.genre_40 != null ? summary.genre_40 : '&#8209;' %>)
+                    </span>
+                </label>
+            </span>
+                <span class="span6 offset6">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="genre[]" value="22">
+                        History
+                        <span>
+                            (<%= summary.genre_22 != 0 &&
+                                 summary.genre_22 != null ? summary.genre_22 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+            </li>
+            <li class="span12">
+                <span class="span6">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="genre[]" value="15">
+                        Horror
+                        <span>
+                            (<%= summary.genre_15 != 0 &&
+                                 summary.genre_15 != null ? summary.genre_15 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+                <span class="span6 offset6">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="genre[]" value="24">
+                        Music
+                        <span>
+                            (<%= summary.genre_24 != 0 &&
+                                 summary.genre_24 != null ? summary.genre_24 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+            </li>
+            <li class="span12"><span class="span6">
+                <label class="checkbox inline nav_text">
+                    <input type="checkbox" name="genre[]" value="25">
+                    Musical
+                    <span>
+                        (<%= summary.genre_25 != 0 &&
+                             summary.genre_25 != null ? summary.genre_25 : '&#8209;' %>)
+                    </span>
+                </label>
+            </span>
+                <span class="span6 offset6">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="genre[]" value="10">
+                        Mystery
+                        <span>
+                            (<%= summary.genre_10 != 0 &&
+                                 summary.genre_10 != null ? summary.genre_10 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+            </li>
+            <li class="span12"><span class="span6">
+                <label class="checkbox inline nav_text">
+                    <input type="checkbox" name="genre[]" value="8">
+                    Romance
+                    <span>
+                        (<%= summary.genre_8 != 0 &&
+                             summary.genre_8 != null ? summary.genre_8 : '&#8209;' %>)
+                    </span>
+                </label>
+            </span>
+                <span class="span6 offset6">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="genre[]" value="16">
+                        Sci&#8209;Fi
+                        <span>
+                            (<%= summary.genre_16 != 0 &&
+                                 summary.genre_16 != null ? summary.genre_16 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+            </li>
+            <li class="span12"><span class="span6">
+                <label class="checkbox inline nav_text">
+                    <input type="checkbox" name="genre[]" value="17">
+                    Sport
+                    <span>
+                        (<%= summary.genre_17 != 0 &&
+                             summary.genre_17 != null ? summary.genre_17 : '&#8209;' %>)
+                    </span>
+                </label>
+            </span>
+                <span class="span6 offset6">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="genre[]" value="9">
+                        Thriller
+                        <span>
+                            (<%= summary.genre_9 != 0 &&
+                                 summary.genre_9 != null ? summary.genre_9 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+            </li>
+            <li class="span12">
+                <span class="span6">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="genre[]" value="19">
+                        War
+                        <span>
+                            (<%= summary.genre_19 != 0 &&
+                                 summary.genre_19 != null ? summary.genre_19 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+                <span class="span6 offset6">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="genre[]" value="18">
+                        Western
+                        <span>
+                            (<%= summary.genre_18 != 0 &&
+                                 summary.genre_18 != null ? summary.genre_18 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+            </li>
+            <li class="nav-header">
+                Picture Quality
+            </li>
+            <li class="span12">
+                <span class="offset0 span4">
+                    <label class="radiobutton inline">
+                        <input type="radio" value="1" id="hd_1" name="hd">
+                        HD
+                        <span>
+                            (<%= summary.hd != 0 && summary.hd != null ? summary.hd : '-' %>)
+                        </span>
+                    </label>
+                </span>
+                <span class="offset4 span4">
+                    <label class="radiobutton inline">
+                        <input type="radio" value="0" id="hd_0" name="hd">
+                        SD
+                        <span>
+                            (<%= summary.sd != 0 && summary.sd != null ? summary.sd : '-' %>)
+                        </span>
+                    </label>
+                </span>
+                <span class="offset8 span4">
+                    <label class="radiobutton inline">
+                        <input type="radio"checked="checked"
+                               name="hd" value="all">
+                        All
+                        <span>
+                            (<%= summary.totalMovies != 0 &&
+                                 summary.totalMovies != null ? summary.totalMovies : '-' %>)
+                        </span>
+                    </label>
+                </span>
+            </li>
+            <% if (user.authenticated) {%>
+                <li class="nav-header">
+                    Seen
+                </li>
+                <li class="span12">
+                    <span class=" offset0 span4">
+                        <label class="radiobutton inline">
+                            <input type="radio" value="1"
+                                   id="watched_1" name="watched">
+                            Yes
+                            <span id="watched_yes">
+                                (<%= summary.watched != 0 &&
+                                     summary.watched != null ? summary.watched : '-' %>)
+                            </span>
+                        </label>
+                    </span>
+                    <span class="offset4 span4">
+                        <label class="radiobutton inline">
+                            <input type="radio" value="0"
+                                   id="watched_0" name="watched">
+                            No
+                            <span id="watched_no">
+                                (<%= summary.not_watched != 0 &&
+                                     summary.not_watched != null ? summary.not_watched : '-' %>)
+                            </span>
+                        </label>
+                    </span>
+                    <span class="offset8 span4">
+                        <label class="radiobutton inline">
+                            <input type="radio"checked="checked"
+                                   name="watched" value="all">
+                            All
+                            <span>
+                                (<%= summary.totalMovies != 0 &&
+                                     summary.totalMovies != null ? summary.totalMovies : '-' %>)
+                            </span>
+                        </label>
+                    </span>
+                </li>
+                <li class="nav-header">
+                    Favourties
+                </li>
+                <li class="span12">
+                    <span class=" offset0 span4">
+                        <label class="radiobutton inline">
+                            <input type="radio" value="1"
+                                   id="favourites_1" name="favourites">
+                            Yes
+                            <span id="favourites_yes">
+                                (<%= summary.favourites != 0 &&
+                                     summary.favourites != null ? summary.favourites : '-' %>)
+                            </span>
+                        </label>
+                    </span>
+                    <span class="offset4 span4">
+                        <label class="radiobutton inline">
+                            <input type="radio" value="0"
+                                   id="favourites_0" name="favourites">
+                            No
+                            <span id="favourites_no">
+                                (<%= summary.not_favourites != 0 &&
+                                     summary.not_favourites != null ? summary.not_favourites : '-' %>)
+                            </span>
+                        </label>
+                    </span>
+                    <span class="offset8 span4">
+                        <label class="radiobutton inline">
+                            <input type="radio"checked="checked"
+                                   name="favourites" value="all">
+                            All
+                            <span>
+                                (<%= summary.totalMovies != 0 &&
+                                     summary.totalMovies != null ? summary.totalMovies : '-' %>)
+                            </span>
+                        </label>
+                    </span>
+                </li>
+            <% } %>
+            <li class="nav-header">
+                Certificate
+            </li>
+            <li class="span12">
+                <span class="span6 " >
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="certificate[]" value="1">
+                        18
+                        <span>
+                            (<%= summary.certificate_1 != 0 &&
+                                 summary.certificate_1 != null ? summary.certificate_1 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+                <span class="span6 offset6">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="certificate[]" value="2">
+                        15
+                        <span>
+                            (<%= summary.certificate_2 != 0 &&
+                                 summary.certificate_2 != null ? summary.certificate_2 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+            </li>
+            <li class="span12">
+                <span class="span6">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="certificate[]" value="3">
+                        12A
+                        <span>
+                            (<%= summary.certificate_3 != 0 &&
+                                   summary.certificate_3 != null ? summary.certificate_3 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+                <span class="span6 offset6">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="certificate[]" value="4">
+                        12
+                        <span>
+                            (<%= summary.certificate_4 != 0 &&
+                                 summary.certificate_4 != null ? summary.certificate_4 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+            </li>
+            <li class="span12">
+                <span class="span6">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="certificate[]" value="5">
+                        PG
+                        <span>
+                            (<%= summary.certificate_5 != 0 &&
+                                 summary.certificate_5 != null ? summary.certificate_5 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+                <span class="span6 offset6">
+                    <label class="checkbox inline nav_text">
+                        <input type="checkbox" name="certificate[]" value="6">
+                        U
+                        <span>
+                            (<%= summary.certificate_6 != 0 &&
+                                 summary.certificate_6 != null ? summary.certificate_6 : '&#8209;' %>)
+                        </span>
+                    </label>
+                </span>
+            </li>
+            <li class="nav-header">
+                IMDB Rating
+                <p class="slider_label">
+                    &nbsp;<em id="imdb_rating_label"></em>
+                    (<%= summary.totalMovies != 0 &&
+                         summary.totalMovies != null ? summary.totalMovies : '-' %>)
+                </p>
+            <li class="span12">
+                <span class="span12" id="imdb_rating">
+                    <div id="imdb_rating_slider_range"></div>
+                </span>
+            </li>
+            <li class="nav-header">
+                Runtime
+                <p class="slider_label">
+                    &nbsp;<em id="runtime_label"></em>
+                    (<%= summary.totalMovies != 0 &&
+                         summary.totalMovies != null ? summary.totalMovies : '-' %>)
+                </p>
+            </li>
+            <li class="span12">
+                <span class="span12" id="runtime">
+                    <div id="runtime_slider_range"></div>
+                </span>
+            </li>
+            <li class="nav-header">
+                Year of Release
+                <p class="slider_label">
+                    <em id="release_year_label"></em>
+                    (<%= summary.totalMovies != 0 &&
+                         summary.totalMovies != null ? summary.totalMovies : '-' %>)
+                </p>
+            </li>
+            <li class="span12">
+                <span class="span12" id="release_year">
+                    <div id="release_year_slider_range"></div>
+                </span>
+            </li>
+            <li>
+                <button type="submit" class="btn" id="submitButton">
+                    Submit
+                </button>
+                <button type="reset" class="btn" id="luckyButton"
+                        title="Return a random movie that matches the search criteria.">
+                    I'm Feeling Lucky
+                </button>
+                <button type="reset" class="btn" id="resetButton">
+                    Reset
+                </button>
+            </li>
+        </ul>
+    </fieldset>
+</form>

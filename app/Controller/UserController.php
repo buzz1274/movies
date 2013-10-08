@@ -161,12 +161,13 @@
             $Params = $this->request->input('json_decode');
 
             if(!$Params || (is_array($Params) && !isset($Params->movie_id))) {
-                $data = $this->UserMovieDownloaded->find('all',
-                    array('conditions' => array('user_id' => $this->Auth->user('user_id')),
-                          'recursive' => 1,
-                          'order' => 'date_downloaded DESC',
-                          'limit' => '20',
-                          'page' => $this->request->query('p')));
+                $conditions = array('conditions' => array('user_id' => $this->Auth->user('user_id')),
+                                    'recursive' => 1,
+                                    'order' => 'date_downloaded DESC',
+                                    'limit' => '20',
+                                    'page' => $this->request->query('p'));
+
+                $data = $this->UserMovieDownloaded->find('all', $conditions);
 
                 if(!$data) {
                     $status = 204;
@@ -205,6 +206,7 @@
                                       'date_downloaded' => date('Y-m-d H:i:s', strtotime('now')),
                                       'status' => 'queued',
                                       'filesize' => $movieDetails['Movie']['filesize']);
+
                         if(($data = $this->UserMovieDownloaded->save($data))) {
                             $status = 201;
                         } else {

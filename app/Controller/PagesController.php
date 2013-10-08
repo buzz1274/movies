@@ -6,7 +6,6 @@
 
         public function index() {
 
-            $this->helpers[] = 'App';
             $this->set(
                 array('summary' => $this->Movie->search('summary', false),
                       'genres' => $this->Genre->find('all'),

@@ -1,0 +1,16 @@
+<div class="container">
+    <div class="offset5 span4 popup_info well" style="top:150px;">
+        <h4>Login</h4>
+        Username<br />
+        <input type="text" class="span4" autocomplete="off" id="username"><br />
+        Password<br />
+        <input type="password" class="span4" autocomplete="off" id="password"><br />
+        <p id="login_error_message"
+           style="<% if(message) { %>display:block;<% } %>"
+           class="text-error">
+            <%= message %>
+        </p>
+        <button type="submit" class="btn" id="login_button">Submit</button>
+        <button type="cancel" class="btn" id="cancel_button">Cancel</button>
+    </div>
+</div>

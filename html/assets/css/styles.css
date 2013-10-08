@@ -38,10 +38,14 @@ div#auth span.auth_link {
     text-decoration:underline;
     cursor:pointer;
 }
-table #movies_table {
+table#movies_table {
     width:100%;
+    display:none;
 }
-div #movies_list {
+table#movies_table tr.movie_summary:hover td {
+    background-color:#BADA55;
+}
+div#movies_list {
     position:relative;
     min-height:960px;
 }
