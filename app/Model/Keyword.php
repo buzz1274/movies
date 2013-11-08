@@ -9,5 +9,3 @@
         public $order = "Keyword.keyword ASC";
 
     }
-
-?>

@@ -4,5 +4,3 @@
     class AppModel extends Model {
 
     }
-
-?>

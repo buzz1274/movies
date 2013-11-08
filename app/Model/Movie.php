@@ -709,7 +709,6 @@
                     $result = array_pop($result);
                     $castCount[$result['person_id']] = $result['count'];
                 }
-
             }
 
             return $castCount;

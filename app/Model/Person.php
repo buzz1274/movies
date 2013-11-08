@@ -7,5 +7,3 @@
         public $primaryKey = 'person_id';
 
     }
-
-?>

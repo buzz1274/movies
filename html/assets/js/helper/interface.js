@@ -21,9 +21,11 @@ define(function(require, exports, module) {
         },
         opaque: function(on, bypassPopupCheck) {
             if(on) {
+                $('#navbar').css('z-index', 125);
                 $('#opaque').css('display', 'block');
             } else {
                 if($('div.alert').css('display') != 'block' || bypassPopupCheck) {
+                    $('#navbar').css('z-index', 1050);
                     $('#opaque').css('display', 'none');
                 }
             }
@@ -46,7 +48,7 @@ define(function(require, exports, module) {
                 type = 'error'
             }
             if(typeof message == 'undefined' || !message) {
-                var message = 'An error has occurred';
+                message = 'An error has occurred';
             }
             var template = _.template(MessagePopupTemplate),
                 viewportHeight = $(window).height(),

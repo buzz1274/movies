@@ -1,8 +1,8 @@
 <td class="movie_details span12" colspan="10">
     <div class="span4">
-        <% if(Movie.has_image) { %>
+        <% if(movie.Movie.has_image) { %>
             <img class="movie_image" style="width:100%;"
-                 src="/assets/img/movies/<%= Movie.imdb_id %>.jpg" />
+                 src="/assets/img/movies/<%= movie.Movie.imdb_id %>.jpg" />
         <% } else { %>
             <div class="no_image_holder">
                 <div>
@@ -11,7 +11,7 @@
             </div>
         <% } %>
         <br />
-        <% if (authenticated) {%>
+        <% if (user.authenticated) {%>
             <dl>
                 <dt>
                     <strong>Watched:</strong>&nbsp;
@@ -19,10 +19,10 @@
                         <i title="Mark as Watched" class="icon-plus" />
                     </a>
                 </dt>
-                <% if(_.size(Watched)) { %>
-                    <table id="watched_<%= Movie.movie_id %>"
+                <% if(_.size(movie.Watched)) { %>
+                    <table id="watched_<%= movie.Movie.movie_id %>"
                            class="table table-bordered table-condensed file">
-                        <% _.each(Watched, function(watched) { %>
+                        <% _.each(movie.Watched, function(watched) { %>
                             <tr>
                                 <td>
                                     <% if (watched.date_watched) { %>
@@ -44,10 +44,10 @@
         <% } %>
     </div>
     <div class="span8">
-        <%= Movie.synopsis %>
+        <%= movie.Movie.synopsis %>
         <dl class="directors clearfix">
             <dt><strong>Director(s):</strong></dt>
-            <% _.each(Director, function(director) { %>
+            <% _.each(movie.Director, function(director) { %>
                 <dd class="pull-left">
                     <% if (director.cast_image) { %>
                         <img class="cast_image"
@@ -68,10 +68,10 @@
         <dl class="actors clearfix">
             <dt><strong>Actors(s):</strong></dt>
             <% cast_count = 0; var hidden = false; %>
-            <% _.each(Actor, function(actor) { %>
+            <% _.each(movie.Actor, function(actor) { %>
                 <% cast_count = cast_count + 1;
-                   if(cast_count > 10 && !hidden) { hidden = true; %>
-                    <div id="all_cast_<%= Movie.movie_id %>" style="display:none;">
+                   if(movie.cast_count > 10 && !hidden) { hidden = true; %>
+                    <div id="all_cast_<%= movie.Movie.movie_id %>" style="display:none;">
                 <% } %>
                 <dd class="pull-left" style="line-height:32px;">
                     <% if (actor.cast_image) { %>
@@ -92,8 +92,8 @@
             <% if (hidden) {%>
                 </div>
                 <br style="clear:both;" />
-                <span id="show_all_cast_<%= Movie.movie_id %>"
-                      data-movie-id="<%= Movie.movie_id %>"
+                <span id="show_all_cast_<%= movie.Movie.movie_id %>"
+                      data-movie-id="<%= movie.Movie.movie_id %>"
                       class="pull-right show-all-link">
                     <a class="btn btn-mini">Show All</a>
                 </span>
@@ -101,7 +101,7 @@
         </dl>
         <dl class="genres clearfix">
             <dt><strong>Genre(s):</strong></dt>
-            <% _.each(Genre, function(genre) { %>
+            <% _.each(movie.Genre, function(genre) { %>
                 <dd class="pull-left">
                     <a target="_blank" href="http://www.imdb.com/genre/<%= genre.genre.toLowerCase().replace(/-/g, '_') %>">
                         <%= genre.genre %>
@@ -116,10 +116,10 @@
         <dl class="keywords clearfix">
             <dt><strong>Keyword(s):</strong></dt>
             <% keyword_count = 0; var hidden = false; %>
-            <% _.each(Keyword, function(keyword) { %>
+            <% _.each(movie.Keyword, function(keyword) { %>
                 <% keyword_count = keyword_count + 1;
                    if(keyword_count > 10 && !hidden) { hidden = true; %>
-                        <div id="all_keyword_<%= Movie.movie_id %>" style="display:none;">
+                        <div id="all_keyword_<%= movie.Movie.movie_id %>" style="display:none;">
                 <% } %>
                 <dd class="pull-left">
                     <a target="_blank"
@@ -136,8 +136,8 @@
             <% if (hidden) {%>
                 </div>
                 <br style="clear:both;" />
-                <span id="show_all_keyword_<%= Movie.movie_id %>"
-                      data-movie-id="<%= Movie.movie_id %>"
+                <span id="show_all_keyword_<%= movie.Movie.movie_id %>"
+                      data-movie-id="<%= movie.Movie.movie_id %>"
                       class="pull-right show-all-link">
                     <a class="btn btn-mini">Show All</a>
                 </span>
@@ -151,24 +151,24 @@
                 <table class="table table-bordered table-condensed file">
                     <tr>
                         <td><strong>ID:</strong></td>
-                        <td><%= Movie.movie_id %></td>
+                        <td><%= movie.Movie.movie_id %></td>
                         <td><strong>Filesize:</strong></td>
-                        <td><%= Movie.filesize %>GB</td>
+                        <td><%= movie.Movie.filesize %>GB</td>
                         <td><strong>Resolution:</strong></td>
                         <td>
-                            <%= Movie.width %>x<%= Movie.height %>
+                            <%= movie.Movie.width %>x<%= movie.Movie.height %>
                         </td>
                         <td><strong>Type:</strong></td>
                         <td>
-                            <%= Movie.path.replace(/.*?\./g, '') %>
+                            <%= movie.Movie.path.replace(/.*?\./g, '') %>
                         </td>
                     </tr>
-                    <% if (authenticated) {%>
+                    <% if (user.authenticated) {%>
                         <tr>
                             <td><strong>File:</strong></td>
                             <td colspan="7">
-                                <a href="/movies/get/<%= Movie.movie_id %>/">
-                                    <%= Movie.path.replace(/.*\//g, '') %>
+                                <a href="/movies/get/<%= movie.Movie.movie_id %>/">
+                                    <%= movie.Movie.path.replace(/.*\//g, '') %>
                                 </a>
                             </td>
                         </tr>
@@ -179,7 +179,7 @@
         <dl>
             <dt>
                 <strong>Media:</strong>
-                <% if (authenticated) {%>
+                <% if (user.authenticated) {%>
                     <span class="edit_media">
                         <a class="menu_item"><i class="icon-edit" /></a>
                     </span>
@@ -190,7 +190,7 @@
                     <tr>
                         <td><strong>Archived:</strong></td>
                         <td>
-                            <% if(Movie.media_id) { %>
+                            <% if(movie.Movie.media_id) { %>
                                 <img class="centre tick_cross"
                                      src='/assets/img/tick.png' />
                             <% } else { %>
@@ -200,18 +200,18 @@
                         </td>
                         <td><strong>Storage:</strong></td>
                         <td>
-                            <% if(Media.Storage &&
-                                  Media.Storage.media_storage) { %>
-                                <%= Media.Storage.media_storage %>
+                            <% if(movie.Media.Storage &&
+                                  movie.Media.Storage.media_storage) { %>
+                                <%= movie.Media.Storage.media_storage %>
                             <% } else { %>
                                 -
                             <% } %>
                         </td>
                         <td><strong>Format:</strong></td>
                         <td>
-                            <% if(Media.MediaFormat &&
-                                  Media.MediaFormat.media_format) { %>
-                                <%= Media.MediaFormat.media_format %>
+                            <% if(movie.Media.MediaFormat &&
+                                  movie.Media.MediaFormat.media_format) { %>
+                                <%= movie.Media.MediaFormat.media_format %>
                             <% } else { %>
                                 -
                             <% } %>
@@ -220,17 +220,17 @@
                     <tr>
                         <td><strong>Region:</strong></td>
                         <td>
-                            <% if(Media.Region &&
-                                  Media.Region.region) { %>
-                                <%= Media.Region.region %>
+                            <% if(movie.Media.Region &&
+                                  movie.Media.Region.region) { %>
+                                <%= movie.Media.Region.region %>
                             <% } else { %>
                                 -
                             <% } %>
                         </td>
                         <td><strong>Special Edition:</strong></td>
                         <td>
-                            <% if(Movie.media_id) { %>
-                                <% if(Media.special_edition) { %>
+                            <% if(movie.Movie.media_id) { %>
+                                <% if(movie.Media.special_edition) { %>
                                     <img class="centre tick_cross"
                                          src='/assets/img/tick.png' />
                                 <% } else { %>
@@ -243,11 +243,11 @@
                         </td>
                         <td><strong>Boxed Set:</strong></td>
                         <td>
-                            <% if(Movie.media_id) { %>
-                                <% if(Media.boxset) { %>
+                            <% if(movie.Movie.media_id) { %>
+                                <% if(movie.Media.boxset) { %>
                                     <span class="media_link link"
-                                          data-media_id="<%= Movie.media_id %>">
-                                        <a><%= Movie.media_id %></a>
+                                          data-media_id="<%= movie.Movie.movie_id %>">
+                                        <a><%= movie.Movie.media_id %></a>
                                     </span>
                                 <% } else { %>
                                     -
@@ -260,26 +260,26 @@
                     <tr>
                         <td><strong>Purchase Price:</strong></td>
                         <td>
-                            <% if(Media.purchase_price) { %>
-                                &pound;<%= Media.purchase_price %>
+                            <% if(movie.Media.purchase_price) { %>
+                                &pound;<%= movie.Media.purchase_price %>
                             <% } else { %>
                                 -
                             <% } %>
                         </td>
                         <td><strong>Current Price:</strong></td>
                         <td>
-                            <% if(Media.current_price) { %>
-                                &pound;<%= Media.current_price %>
+                            <% if(movie.Media.current_price) { %>
+                                &pound;<%= movie.Media.current_price %>
                             <% } else { %>
                                 -
                             <% } %>
                         </td>
                         <td><strong>Amazon:</strong></td>
                         <td>
-                            <% if(Media.amazon_asin) { %>
-                                <a href="http://www.amazon.co.uk/gp/offer-listing/<%= Media.amazon_asin %>/"
+                            <% if(movie.Media.amazon_asin) { %>
+                                <a href="http://www.amazon.co.uk/gp/offer-listing/<%= movie.Media.amazon_asin %>/"
                                    class="black" target="_blank">
-                                    <%= Media.amazon_asin %>
+                                    <%= movie.Media.amazon_asin %>
                                 </a>
                             <% } else { %>
                                 -
@@ -289,8 +289,8 @@
                     <tr>
                         <td><strong>Notes:</strong></td>
                         <td colspan="5">
-                            <% if(Media.notes) { %>
-                                <%= Media.notes %>
+                            <% if(movie.Media.notes) { %>
+                                <%= movie.Media.notes %>
                             <% } else { %>
                                 -
                             <% } %>

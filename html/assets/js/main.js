@@ -20,7 +20,7 @@ require(["config"], function() {
 
             Backbone.history.start({pushState: false, root:app.root});
 
-            window.setInterval(function(){
+            setInterval(function(){
                 user.poll();
             }, 10000);
 

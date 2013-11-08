@@ -12,6 +12,7 @@ define(function(require, exports, module) {
         TableHeaderView = require('views/th'),
         MoviePagingView = require('views/paging'),
         movieSummary = require('models/movie/summary'),
+        downloadMovieSummary = require('models/movie/download_summary'),
         user = require('models/user/user');
 
     module.exports = Backbone.Router.extend({
@@ -61,13 +62,16 @@ define(function(require, exports, module) {
             var tableHeaderView = new TableHeaderView({model:null,
                                                        template:'MovieDownloadedHeaderTemplate'}),
                 movieDownloadedCollection = new MovieDownloadedCollection(),
-                movieDownloadedCollectionView =
-                    new MovieDownloadedCollectionView({model: movieDownloadedCollection}),
+                movieDownloadedCollectionView = new MovieDownloadedCollectionView(
+                                                        {model: movieDownloadedCollection}),
                 moviePagingView = new MoviePagingView();
+
+            State.populateWithQueryStringValues(query_string);
+            movieSummary.fetch({data:null});
+            downloadMovieSummary.fetch({});
 
             $('#movies_table').empty().append(tableHeaderView.render());
 
-            movieSummary.fetch({data:null});
             movieDownloadedCollection.fetch({
                 data:{'p': State.getState().Params.p},
                 success: function() {
@@ -75,7 +79,7 @@ define(function(require, exports, module) {
                     $('#pagination').empty().append(moviePagingView.render().el);
                     Interface.loadingImage(false);
                 },
-                error: function(response) {
+                error: function() {
                     $('#movies_table').append(movieDownloadedCollectionView.render().el);
                     Interface.loadingImage(false);
                 }

@@ -9,5 +9,3 @@
         public $order = "Genre.genre ASC";
 
     }
-
-?>

@@ -26,6 +26,9 @@ body {
 .sidebar-nav {
     padding: 9px 0;
 }
+div#login_popup {
+    z-index:1050;
+}
 div#auth {
     line-height:38px;
     color:#FFFFFF;

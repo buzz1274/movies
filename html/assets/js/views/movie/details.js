@@ -71,7 +71,8 @@ define(function(require, exports, module) {
             Backbone.history.navigate(State.constructQueryString(), {'trigger':true});
         },
         render:function() {
-            $(this.el).html(this.template(this.model.toJSON(), user.toJSON()));
+            $(this.el).html(this.template({movie:this.model.toJSON(),
+                                           user: user.toJSON()}));
             return this;
         }
     });

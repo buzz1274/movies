@@ -13,6 +13,7 @@
         <link rel="stylesheet" type="text/css" href="/assets/css/styles.css" />
     </head>
     <body>
+        <div id="login_popup"></div>
         <div id="opaque"></div>
         <div id="navbar" class="navbar navbar-fixed-top"></div>
         <div class="container"></div>

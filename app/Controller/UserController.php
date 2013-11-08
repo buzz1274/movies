@@ -174,6 +174,7 @@
                 } else {
                     $status = 200;
                 }
+
             } elseif(isset($Params->movie_id) &&
                      ($this->request->is('post') || $this->request->is('put'))) {
 

@@ -11,5 +11,3 @@
         public $order = "media_storage.storage ASC";
 
     }
-
-?>

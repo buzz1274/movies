@@ -11,5 +11,3 @@
         public $order = "media_format.media_format ASC";
 
     }
-
-?>

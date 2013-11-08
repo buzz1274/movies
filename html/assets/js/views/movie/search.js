@@ -18,6 +18,7 @@ define(function(require, exports, module) {
             'click #luckyButton': 'lucky',
             'click #resetButton': 'reset',
             'keypress #search_input': 'autoComplete',
+            'focus #search_input': 'autoComplete',
             'click #download': 'download'
         },
         initialize: function() {
@@ -105,7 +106,7 @@ define(function(require, exports, module) {
                                         State.reset(false);
                                         _.each(data.results, function(result) {
                                             if(result.keyword == $('#search_input').val()) {
-                                                Backbone.history.navigate.navigate(
+                                                Backbone.history.navigate(
                                                     '#search_type='+result.search_type+
                                                     '&search='+encodeURIComponent(result.keyword),
                                                     {'trigger':true});
