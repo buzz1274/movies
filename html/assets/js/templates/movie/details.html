@@ -70,7 +70,7 @@
             <% cast_count = 0; var hidden = false; %>
             <% _.each(movie.Actor, function(actor) { %>
                 <% cast_count = cast_count + 1;
-                   if(movie.cast_count > 10 && !hidden) { hidden = true; %>
+                   if(cast_count > 10 && !hidden) { hidden = true; %>
                     <div id="all_cast_<%= movie.Movie.movie_id %>" style="display:none;">
                 <% } %>
                 <dd class="pull-left" style="line-height:32px;">

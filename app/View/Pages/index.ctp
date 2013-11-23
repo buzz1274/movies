@@ -7,15 +7,12 @@
         <link rel="shortcut icon" href="/assets/img/favicon.ico" type="image/x-icon">
         <link rel="icon" href="/assets/img/favicon.ico" type="image/x-icon">
         <link rel="stylesheet" type="text/css"
-              href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css" />
+              href="//code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css" />
         <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css"
               rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="/assets/css/styles.css" />
     </head>
-    <body>
-        <div id="login_popup"></div>
-        <div id="opaque"></div>
-        <div id="navbar" class="navbar navbar-fixed-top"></div>
+    <body id="body">
         <div class="container"></div>
         <div class="container-fluid">
             <div id="content" class="row-fluid">
