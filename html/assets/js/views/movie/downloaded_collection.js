@@ -12,7 +12,6 @@ define(function(require, exports, module) {
         tagName:"tbody",
         render:function () {
             $('#movies_table > tbody').html('');
-            console.log(this.model);
             if(this.model.models.length) {
                 $('#movies_table').addClass('table-condensed');
                 _.each(this.model.models, function(movie) {

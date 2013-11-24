@@ -66,7 +66,7 @@ define(function(require, exports, module) {
         },
         displaySortIcons: function(ascending, sort) {
             $('.sort_icon').remove();
-            if(ascending) {
+            if(ascending == 1) {
                 $("#"+sort+"_sort").prepend(
                     '<span class="sort_icon">'+
                         '<i class="icon-chevron-up" />'+
