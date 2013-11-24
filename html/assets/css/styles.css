@@ -72,6 +72,17 @@ div.message_popup {
     margin:0 auto;
     width:80%;
 }
+h4.search_title {
+    margin:-15px 0px 1px -13px;
+    color:#999;
+    font-weight:bold;
+}
+div.search_seperator {
+    border-bottom:1px solid #dddddd;
+    margin-right:-20px;
+    margin-left:-20px;
+    padding-top:4px;
+}
 div#loading img {
     width:15;
     height:15;

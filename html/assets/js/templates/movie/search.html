@@ -1,17 +1,18 @@
 <form id="search" class="well" onsubmit="return false;">
+    <h4 class="search_title">
+        Search Movies
+        (<%= summary.totalMovies != 0 && summary.totalMovies != null ? summary.totalMovies : '-' %>)
+        <% if (user.authenticated && summary.totalMovies != 0 && summary.totalMovies != null) {%>
+            <i id="download" class="icon-download-alt"></i>
+        <% } %>
+    </h4>
+    <div class="search_seperator"></div>
     <fieldset>
-        <legend>
-            Search Movies
-            (<%= summary.totalMovies != 0 && summary.totalMovies != null ? summary.totalMovies : '-' %>)
-            <% if (user.authenticated && summary.totalMovies != 0 && summary.totalMovies != null) {%>
-                <i id="download" class="icon-download-alt"></i>
-            <% } %>
-        </legend>
         <ul class="nav nav-list">
-            <li class="nav-header"
+            <li class="nav-header">
                 Keywords
             </li>
-            <li class="span12 seperator">
+            <li class="span12">
                 <input type="text" class="span12" autocomplete="off"
                        id="search_input">
                 <span class="offset0 span3">
