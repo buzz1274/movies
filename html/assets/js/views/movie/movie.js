@@ -8,7 +8,6 @@ define(function(require, exports, module) {
         MovieDetail = require('views/movie/details'),
         ListMovieTemplate = require('text!templates/movie/td_movie.html'),
         Interface = require('helper/interface'),
-
         user = require('models/user/user');
 
     module.exports = Backbone.View.extend({
@@ -40,7 +39,7 @@ define(function(require, exports, module) {
                     movie = new Movie();
 
                 movie.fetch({
-                    url:'../../movies/'+this.Movie.movie_id+'/',
+                    url:'/movies/'+this.Movie.movie_id+'/',
                     async:true,
                     success: function() {
                         var m = movie.get('Movie');

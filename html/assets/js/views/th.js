@@ -26,16 +26,14 @@ define(function(require, exports, module) {
             _.bindAll(this, 'render');
             user.bind("change:authenticated", this.render);
         },
-        cleanup: function() {
-            this.undelegateEvents();
-            $(this.el).empty();
-        },
         render:function () {
             $(this.el).html(this.template(user.toJSON()));
             Interface.displaySortIcons(stateParams.asc, stateParams.s);
         },
         sort:function(ev) {
-            this.cleanup();
+            this.undelegateEvents();
+            $(this.el).empty();
+
             if(stateParams.s == $(ev.currentTarget).attr('data-sort_order')) {
                 State.setStateParams('asc',(stateParams.asc == 1 ? 0 : 1));
             } else {

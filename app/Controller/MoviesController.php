@@ -2,7 +2,8 @@
 
     class MoviesController extends AppController {
 
-        public $uses = array('Movie', 'UserMovieDownloaded');
+        public $uses = array('Movie', 'UserMovieDownloaded', 'User',
+                             'MovieLoaned');
 
         /**
          * retrieves movie details for the movie matching movieID
@@ -147,4 +148,5 @@
 
         }
         //end summary
+
     }

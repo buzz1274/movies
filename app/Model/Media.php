@@ -16,5 +16,11 @@
                                              'foreignKey' => 'media_region_id'),
                                   'MediaFormat');
 
+        public $hasMany = array('Loaned' =>
+                                   array('className' => 'MediaLoaned',
+                                         'joinTable' => 'media_loaned',
+                                         'foreignKey' => 'media_id',
+                                         'conditions' => array('Loaned.date_returned IS NULL'),
+                                         'order' => 'date_loaned DESC'));
 
     }

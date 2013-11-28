@@ -4,7 +4,8 @@ define(function(require, exports, module) {
     var _ = require('underscore'),
         $ = require('jquery'),
         MessagePopupTemplate = require('text!templates/message_popup.html'),
-        LoginTemplate = require('text!templates/login.html');
+        LoginTemplate = require('text!templates/login.html'),
+        LoanedTemplate = require('text!templates/movie/loaned.html');
 
     module.exports = {
         scrollTop:function() {
@@ -28,6 +29,22 @@ define(function(require, exports, module) {
                     $('#navbar').css('z-index', 1050);
                     $('#opaque').css('display', 'none');
                 }
+            }
+        },
+        loanedPopup: function(movie_id, display, message) {
+            if(display) {
+                var template = _.template(LoanedTemplate);
+                this.opaque(true);
+                $('#loaned_popup_'+movie_id).append(template({message: message}));
+
+                $('#loaned_popup_'+movie_id).css({'position': 'fixed',
+                                                  'z-index':2000,
+                                                  'left': '0px',
+                                                  'top': '0px'});
+
+            } else {
+                $('#loaned_popup_'+movie_id).empty();
+                this.opaque(false);
             }
         },
         loginPopup:function(display, message) {

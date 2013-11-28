@@ -13,7 +13,6 @@
         <link rel="stylesheet" type="text/css" href="/assets/css/styles.css" />
     </head>
     <body id="body">
-        <div class="container"></div>
         <div class="container-fluid">
             <div id="content" class="row-fluid">
                 <div id="movies_search" class="span4"></div>

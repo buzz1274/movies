@@ -32,6 +32,9 @@
     Router::connect('/movies/csv',
                     array('controller' => 'movies',
                           'action' => 'csv'));
+    Router::connect('/media/loaned',
+                    array('controller' => 'media',
+                          'action' => 'loaned'));
     Router::connect('/movies/autocomplete/',
                     array('controller' => 'movies',
                           'action' => 'autocomplete'));

@@ -19,6 +19,47 @@
     </div>
     <div id="navbar-menu" style="">
         <div class="menu-header container-fluid" style="">
+            <% if (authenticated) {%>
+                <div class="btn-group">
+                    <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+                        Actions&nbsp;<i class="caret"></i>
+                    </a>
+                    <ul class="dropdown-menu pull-left">
+                        <li>
+                            <a class="menu_item" href="#">
+                                &nbsp;Movies
+                            </a>
+                        </li>
+                        <li>
+                            <a class="menu_item" href="#download_queue">
+                                &nbsp;Movie Download Queue
+                            </a>
+                        </li>
+                        <% if (admin) {%>
+                            <li>
+                                <a class="menu_item" href="#loaned_dvds">
+                                    &nbsp;Loaned Movies
+                                </a>
+                            </li>
+                            <li>
+                                <a class="menu_item" href="#download_queue">
+                                    &nbsp;Movies with Incomplete Data
+                                </a>
+                            </li>
+                            <li>
+                                <a class="menu_item" href="#download_queue">
+                                    &nbsp;Worth Selling(>£5)
+                                </a>
+                            </li>
+                            <li>
+                                <a class="menu_item" href="#download_queue">
+                                    &nbsp;Trash Folder
+                                </a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </div>
+            <% } %>
             <div class="btn-group">
                 <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
                     Stats&nbsp;<i class="caret"></i>
@@ -50,45 +91,14 @@
                         </a>
                     </li>
                     <% if (authenticated) {%>
-                        <li>
-                            <a class="menu_item" href="#download_queue">
-                                &nbsp;Most Watched
-                            </a>
-                        </li>
+                    <li>
+                        <a class="menu_item" href="#download_queue">
+                            &nbsp;Most Watched
+                        </a>
+                    </li>
                     <% } %>
                 </ul>
             </div>
-            <% if (authenticated) {%>
-                <div class="btn-group">
-                    <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
-                        Tools&nbsp;<i class="caret"></i>
-                    </a>
-                    <ul class="dropdown-menu pull-left">
-                        <li>
-                            <a class="menu_item" href="#download_queue">
-                                &nbsp;Download Queue
-                            </a>
-                        </li>
-                        <% if (admin) {%>
-                            <li>
-                                <a class="menu_item" href="#download_queue">
-                                    &nbsp;Movies with Incomplete Data
-                                </a>
-                            </li>
-                            <li>
-                                <a class="menu_item" href="#download_queue">
-                                    &nbsp;Worth Selling(>£5)
-                                </a>
-                            </li>
-                            <li>
-                                <a class="menu_item" href="#download_queue">
-                                    &nbsp;Trash Folder
-                                </a>
-                            </li>
-                        <% } %>
-                    </ul>
-                </div>
-            <% } %>
         </div>
     </div>
 </div>

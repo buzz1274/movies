@@ -142,7 +142,8 @@ define(function(require) {
                             movie_model.set(watched);
                         } else {
                             _.each(watched, function(movie_watched, key) {
-                                if(movie_watched.id == watched_id) {
+                                if(typeof movie_watched !== 'undefined' &&
+                                   movie_watched.id == watched_id) {
                                     watched.splice(key, 1);
                                     movie_model.save(watched);
                                 }

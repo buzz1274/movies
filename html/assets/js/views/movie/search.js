@@ -60,17 +60,27 @@ define(function(require, exports, module) {
             Backbone.history.navigate(State.constructQueryString(), {'trigger':true});
         },
         lucky:function() {
+            var StateParams = State.getState().Params;
+            var current_movie_id = StateParams.id;
+
             State.reset(false);
             State.populateWithSearchFormValues();
-            var StateParams = State.getState();
+            StateParams = State.getState().Params;
+
             $.ajax({
                 url:'/movies/lucky/',
                 data:StateParams,
                 dataType: "json",
-                async:true,
+                async:false,
                 success:function(data) {
-                    Backbone.history.navigate('/id='+data['movieID'],
-                                              {'trigger':true});
+                    if(current_movie_id != data['movieID']) {
+                        Backbone.history.navigate('/id='+data['movieID'],
+                                                  {'trigger':true});
+                    } else {
+                        //FIX ME BUG -- #294
+                        window.location.assign('/#id='+data['movieID']+"&"+
+                                               State.constructQueryString());
+                    }
                 },
                 error: function() {
                     Backbone.history.navigate(State.constructQueryString(),

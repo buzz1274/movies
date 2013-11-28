@@ -1,0 +1,13 @@
+<div class="container">
+    <div class="offset5 span4 popup_info well" style="top:150px;width:250px;">
+        Movie loaned to?<br />
+        <input type="text" class="span12" autocomplete="off" id="loaned_to">
+        <% if(message != false) { %>
+            <p id="error_message"style="display:block;"class="text-error">
+                <%= message %>
+            </p>
+        <% } %>
+        <button type="submit" class="btn" id="loaned_submit_button">Submit</button>
+        <button type="cancel" class="btn" id="loaned_cancel_button">Cancel</button>
+    </div>
+</div>

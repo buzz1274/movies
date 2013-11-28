@@ -215,7 +215,7 @@
          */
         public function afterFind($results, $primary = false) {
 
-             foreach($results as $key => $val) {
+            foreach($results as $key => $val) {
 
                 if(isset($results[$key]['Movie']['date_added'])) {
                     $results[$key]['Movie']['date_added'] =
@@ -275,7 +275,20 @@
                         }
 
                     }
+                }
 
+                if(isset($results[$key]['Media']['Loaned'])) {
+
+                    foreach($results[$key]['Media']['Loaned'] as $k => $Loaned) {
+                        if($Loaned['date_loaned']) {
+                            $results[$key]['Media']['Loaned'][$k]['date_loaned'] =
+                                date('jS F Y', strtotime($Loaned['date_loaned']));
+                        }
+                        if($Loaned['date_returned']) {
+                            $results[$key]['Media']['Loaned'][$k]['date_returned'] =
+                                date('jS F Y', strtotime($Loaned['date_returned']));
+                        }
+                    }
                 }
 
                 if(isset($results[$key]['Movie']['runtime'])) {
@@ -322,7 +335,7 @@
             foreach(array('query', 'randQuery', 'genreQuery', 'certificateQuery', 'personQuery',
                           'searchQuery', 'watchedQuery', 'HDQuery', 'favouritesQuery',
                           'imdb_ratingQuery', 'release_yearQuery', 'runtimeQuery',
-                          'orderQuery', 'limitQuery', 'keywordQuery', 'idQuery') as $queryType) {
+                          'orderQuery', 'limitQuery', 'keywordQuery', 'idQuery', 'mediaQuery') as $queryType) {
                 $$queryType = false;
             }
 
@@ -459,6 +472,10 @@
                     }
                 }
 
+                if(isset($this->_search['mediaID'])) {
+                    $mediaQuery = 'AND media.media_id = '.$this->_search['mediaID'];
+                }
+
                 foreach(array('imdb_rating', 'release_year', 'runtime') as $field) {
                     if(isset($this->_search[$field]) &&
                        is_array($this->_search[$field])) {
@@ -484,7 +501,8 @@
                      '                  genre.movie_genre_ids, Movie.date_added, '.
                      '                  Movie.imdb_rating, Movie.runtime, '.
                      '                  Movie.release_year, Movie.certificate_id, '.
-                     '                  certificate.order, Movie.filesize, '.
+                     '                  media_loaned.media_loaned_id, '.
+                     '                  certificate.order, Movie.filesize, Movie.media_id, '.
                      '                  CASE '.
                      '                    WHEN user_movie_favourite.user_id IS NULL THEN 0 '.
                      '                    ELSE 1 '.
@@ -494,9 +512,13 @@
                      '                    ELSE 1 '.
                      '                  END AS watched '.
                      '        FROM      public.movie AS Movie '.
-                     (isset($this->_search['mediaID']) &&  $this->_search['mediaID'] ?
-                     '        JOIN      media ON (    movie.media_id = media.media_id '.
-                     '                            AND media.media_id = '.$this->_search['mediaID'].') ' : false).' '.
+                     '        LEFT JOIN media ON (movie.media_id = media.media_id) '.
+                     '        LEFT JOIN (SELECT   media_loaned.media_id, '.
+                     '                            MAX(media_loaned.id) AS media_loaned_id '.
+                     '                   FROM     media_loaned '.
+                     '                   WHERE    media_loaned.date_returned IS NULL '.
+                     '                   GROUP BY media_loaned.media_id '.
+                     '                  ) AS media_loaned ON (media.media_id = media_loaned.media_id) '.
                      '        LEFT JOIN certificate ON '.
                      '                  (Movie.certificate_id = certificate.certificate_id) '.
                      '        LEFT JOIN user_movie_favourite ON '.
@@ -529,6 +551,7 @@
                                             $certificateQuery.' '.
                                             $personQuery.' '.
                                             $keywordQuery.' '.
+                                            $mediaQuery.' '.
                                             $searchQuery.' '.
                                             $watchedQuery.' '.
                                             $HDQuery.' '.

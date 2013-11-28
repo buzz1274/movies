@@ -11,10 +11,50 @@
             </div>
         <% } %>
         <br />
+        <div id="loaned_popup_<%= movie.Movie.movie_id %>"></div>
+        <% var loaned_found = false;
+            if((movie.Media.Loaned && _.size(movie.Media.Loaned)) ||
+               (user.authenticated && user.admin)) { %>
+                <dl id="loaned_list">
+                    <dt>
+                        <strong>Loaned: </strong>
+                        <% if (user.authenticated && user.admin &&
+                               (!movie.Media.Loaned || !_.size(movie.Media.Loaned))) { %>
+                            <a class="link loaned_link">
+                                <i title="Mark as Loaned" class="icon-plus"
+                                   id="loaned_link" />
+                            </a>
+                        <% } %>
+                    </dt>
+                <% if(movie.Media.Loaned && _.size(movie.Media.Loaned)) {
+                    _.each(movie.Media.Loaned, function(loaned) {
+                        if (!loaned_found && !loaned.date_returned) {
+                            loaned_found = true; %>
+                            <table id="loaned_<%= movie.Movie.movie_id %>"
+                                   class="table table-bordered table-condensed file">
+                                <tr>
+                                    <td>
+                                        <%= loaned.loaned_to %> on <%= loaned.date_loaned %>
+                                    </td>
+                                    <td style="width:1%;text-align:center;">
+                                        <a class="return_loan_link link"
+                                            data-loaned-id="<%= loaned.id %>" >
+                                            <i title="Loan Returned" class="icon-trash"
+                                               id="return_loaned_link" />
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        <% }
+                    });
+                }
+            }
+        %>
+        </dl>
         <% if (user.authenticated) {%>
             <dl>
                 <dt>
-                    <strong>Watched:</strong>&nbsp;
+                    <strong>Watched:</strong>
                     <a class="watched_link link">
                         <i title="Mark as Watched" class="icon-plus" />
                     </a>
@@ -103,7 +143,8 @@
             <dt><strong>Genre(s):</strong></dt>
             <% _.each(movie.Genre, function(genre) { %>
                 <dd class="pull-left">
-                    <a target="_blank" href="http://www.imdb.com/genre/<%= genre.genre.toLowerCase().replace(/-/g, '_') %>">
+                    <a target="_blank"
+                       href="http://www.imdb.com/genre/<%= genre.genre.toLowerCase().replace(/-/g, '_') %>">
                         <%= genre.genre %>
                     </a>
                     <span class="genre_link link"
@@ -179,7 +220,7 @@
         <dl>
             <dt>
                 <strong>Media:</strong>
-                <% if (user.authenticated) {%>
+                <% if (user.authenticated && user.admin) {%>
                     <span class="edit_media">
                         <a class="menu_item"><i class="icon-edit" /></a>
                     </span>
