@@ -96,11 +96,12 @@ define(function(require) {
                 });
             }
         },
-        populateWithQueryStringValues:function(query_string) {
+        populateWithQueryStringValues:function(query_string, action) {
             if(query_string == undefined || !query_string) {
                 this.reset(true);
             } else {
                 State.qs = query_string;
+
                 var page_in_params = false;
                 query_string.split('&').forEach(function(argument) {
                     if(argument) {
@@ -130,6 +131,11 @@ define(function(require) {
                     State.Params.p = 1;
                 }
             }
+
+            if(action) {
+                State.qs = action + (State.qs ? ('&' + State.qs) : '');
+            }
+
         },
         populateWithSearchFormValues:function() {
             State.Params.gid = "";

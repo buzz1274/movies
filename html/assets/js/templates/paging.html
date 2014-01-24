@@ -5,12 +5,12 @@
             <li class="disabled"><a>Prev</a></li>
         <% } else { %>
             <li>
-                <a href="#p=1&<%= helper.removePageFromQueryString() %>">
+                <a href="#<%= helper.removePageFromQueryString() %>p=1">
                     First
                 </a>
             </li>
             <li>
-                <a href="#p=<%= (parseInt(page) - 1) %><%= helper.removePageFromQueryString() %>">
+                <a href="#<%= helper.removePageFromQueryString() %>p=<%= (parseInt(page) - 1) %>">
                     Prev
                 </a>
             </li>
@@ -31,7 +31,7 @@
                 <% if(page == i) { %>
                     <a><%= i %></a>
                 <% } else if(i <= totalPages) { %>
-                    <a href="#p=<%= i %>&<%= helper.removePageFromQueryString() %>">
+                    <a href="#<%= helper.removePageFromQueryString() %>p=<%= i %>">
                         <%= i %>
                     </a>
                 <% } %>
@@ -42,12 +42,12 @@
             <li class="disabled"><a>Last</a></li>
         <% } else { %>
             <li>
-                <a href="#p=<%= (parseInt(page) + 1) %><%= helper.removePageFromQueryString() %>">
+                <a href="#<%= helper.removePageFromQueryString() %>p=<%= (parseInt(page) + 1) %>">
                     Next
                 </a>
             </li>
             <li>
-                <a href="#p=<%= totalPages %><%= helper.removePageFromQueryString() %>">
+                <a href="#<%= helper.removePageFromQueryString() %>p=<%= totalPages %>">
                     Last
                 </a>
             </li>

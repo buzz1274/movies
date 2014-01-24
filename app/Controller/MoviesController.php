@@ -120,7 +120,7 @@
         //end lucky
 
         /**
-         * returns all movies that match the supplied search critera
+         * returns all movies that match the supplied search criteria
          * @author David
          */
         public function movies() {
@@ -135,7 +135,7 @@
         //end movies
 
         /**
-         * provides summary details for the current resultset
+         * provides summary details for the current result set
          * @author David
          */
         public function summary() {

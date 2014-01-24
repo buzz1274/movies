@@ -25,10 +25,10 @@ define(function(require, exports, module) {
         removePageFromQueryString:function() {
             var qs = State.getQueryString().replace(/&?p=[0-9]{1,}&?/gm, '');
             qs = qs.replace(/&{1,}/gm, '&');
-            if(qs[0] == '&') {
-                qs = qs.slice(0);
+            if(qs.length > 0 && qs[(qs.length - 1)] != '&') {
+                qs = qs+'&';
             }
-            return qs.length ? '&'+qs : '';
+            return qs;
         }
     }
 });

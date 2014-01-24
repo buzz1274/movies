@@ -35,6 +35,10 @@
     Router::connect('/media/loaned',
                     array('controller' => 'media',
                           'action' => 'loaned'));
+    Router::connect('/media/loaned/summary',
+                    array('controller' => 'media',
+                          'action' => 'loaned',
+                          'summary' => 'summary'));
     Router::connect('/movies/autocomplete/',
                     array('controller' => 'movies',
                           'action' => 'autocomplete'));

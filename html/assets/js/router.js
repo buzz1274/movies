@@ -9,10 +9,13 @@ define(function(require, exports, module) {
         MovieCollectionView = require('views/movie/collection'),
         MovieDownloadedCollection = require('collections/downloaded'),
         MovieDownloadedCollectionView = require('views/movie/downloaded_collection'),
+        LoanedCollection = require('collections/loaned'),
+        LoanedCollectionView = require('views/media/loaned_collection'),
         TableHeaderView = require('views/th'),
         MoviePagingView = require('views/paging'),
         movieSummary = require('models/movie/summary'),
         downloadMovieSummary = require('models/movie/download_summary'),
+        loanedSummary = require('models/media/loaned_summary'),
         user = require('models/user/user');
 
     module.exports = Backbone.Router.extend({
@@ -20,6 +23,7 @@ define(function(require, exports, module) {
             "/user/login": "login",
             "/user/logout": "logout",
             "download_queue*query_string": "downloadQueue",
+            "loaned*query_string": "loaned",
             "auto_logout": "autoLogout",
             "file_error": "fileError",
             'login': "login",
@@ -45,7 +49,7 @@ define(function(require, exports, module) {
                 data:State.getState().Params,
                 success:function() {
                     $('#movies_table').append(movieCollectionView.render().el);
-                    $('#pagination').empty().append(moviePagingView.render().el);
+                    $('#pagination').empty().append(moviePagingView.render('summary').el);
 
                     Interface.loadingImage(false);
                 },
@@ -55,6 +59,34 @@ define(function(require, exports, module) {
                     Interface.loadingImage(false);
                 }
             })
+        },
+        loaned:function(query_string) {
+            Interface.loadingImage(true);
+            Interface.scrollTop();
+            var tableHeaderView = new TableHeaderView({model:null,
+                                                       template:'LoanedHeaderTemplate'}),
+                loanedCollection = new LoanedCollection(),
+                loanedCollectionView = new LoanedCollectionView({model: loanedCollection}),
+                moviePagingView = new MoviePagingView();
+
+            State.populateWithQueryStringValues(query_string, 'loaned');
+            movieSummary.fetch({data:null});
+            loanedSummary.fetch({data:null}, {async: false});
+
+            $('#movies_table').empty().append(tableHeaderView.render());
+
+            loanedCollection.fetch({
+                data:{'p': State.getState().Params.p},
+                success: function() {
+                    $('#movies_table').append(loanedCollectionView.render().el);
+                    $('#pagination').empty().append(moviePagingView.render('loanedSummary').el);
+                    Interface.loadingImage(false);
+                },
+                error: function() {
+                    $('#movies_table').append(loanedCollectionView.render().el);
+                    Interface.loadingImage(false);
+                }
+            });
         },
         downloadQueue:function(query_string) {
             Interface.loadingImage(true);

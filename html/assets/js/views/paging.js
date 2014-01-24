@@ -6,7 +6,8 @@ define(function(require, exports, module) {
         PagingTemplate = require('text!templates/paging.html'),
         State = require('helper/state'),
         Helper = require('helper/helper'),
-        summary = require('models/movie/summary');
+        summary = require('models/movie/summary'),
+        loanedSummary = require('models/media/loaned_summary');
 
     module.exports = Backbone.View.extend({
         tagName:"div",
@@ -17,11 +18,19 @@ define(function(require, exports, module) {
         initialize: function() {
             $('#pagination').css('display', 'none');
         },
-        render: function() {
-            if(summary.get('totalPages') > 1) {
-                $(this.el).append(this.template({totalPages: summary.get('totalPages'),
-                                                 page: summary.get('page'),
-                                                 helper: Helper}));
+        render: function(type) {
+            if(type == 'loanedSummary') {
+                var data = {totalPages: loanedSummary.get('totalPages'),
+                            page: loanedSummary.get('page'),
+                            helper: Helper};
+            } else if(type == 'summary') {
+                var data = {totalPages: summary.get('totalPages'),
+                            page: summary.get('page'),
+                            helper: Helper};
+            }
+
+            if(data.totalPages > 1) {
+                $(this.el).append(this.template(data));
                 $('#pagination').css('display', 'block');
             }
             return this;
