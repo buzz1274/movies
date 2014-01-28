@@ -38,7 +38,7 @@ if (!defined('DS')) {
  *
  */
 if (!defined('ROOT')) {
-    define('ROOT', DS.'var'.DS.'www'.DS.'movies.zz50.co.uk');
+    define('ROOT', DS.'var'.DS.'www'.DS.'movies.zz50.co.uk'.DS.'movies');
 }
 /**
  * The actual directory name for the "app".
