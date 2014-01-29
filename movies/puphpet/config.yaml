@@ -105,11 +105,22 @@ drush:
     settings:
         drush.tag_branch: 6.x
 mysql:
-    install: 0    
+    install: 0
     root_password:
     phpmyadmin: 0
     adminer: 0
     databases: {}
+postgresql:
+    root_password: '123'
+    user_group: postgres
+    databases:
+        wxga7y4l2e9S:
+            grant: ALL
+            name: movies
+            user: movies
+            password: 77777
+            sql_file: ''
+    adminer: 0
 mongodb:
     install: 0
     auth: 1

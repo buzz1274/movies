@@ -9,9 +9,7 @@ if $server_values == undef {
 include '::ntp'
 
 Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/' ] }
-File { owner => 0, group => 0, mode => 0644 }
-
-group { 'puppet': ensure => present }
+group { 'puppet':   ensure => present }
 group { 'www-data': ensure => present }
 
 user { $::ssh_username:
@@ -269,6 +267,20 @@ if has_key($apache_values, 'mod_spdy') and $apache_values['mod_spdy'] == 1 {
   class { 'puphpet::apache::modspdy': }
 }
 
+if count($apache_values['vhosts']) > 0 {
+  each( $apache_values['vhosts'] ) |$key, $vhost| {
+    exec { "exec mkdir -p ${vhost['docroot']}":
+      command => "mkdir -p ${vhost['docroot']}",
+      creates => $vhost['docroot'],
+    }
+
+    file { $vhost['docroot']:
+      ensure  => directory,
+      require => Exec["exec mkdir -p ${vhost['docroot']}"]
+    }
+  }
+}
+
 create_resources(apache::vhost, $apache_values['vhosts'])
 
 define apache_mod {
@@ -400,7 +412,7 @@ if count($php_values['ini']) > 0 {
 
     file { $php_values['ini']['session.save_path']:
       ensure  => directory,
-      group   => 'vagrant',
+      group   => 'www-data',
       mode    => 0775,
       require => Exec["mkdir -p ${php_values['ini']['session.save_path']}"]
     }
@@ -500,154 +512,84 @@ if $drush_values['install'] != undef and $drush_values['install'] == 1 {
 
 ## End Drush manifest
 
-## Begin MySQL manifest
+## Begin PostgreSQL manifest
 
-if $mysql_values == undef {
-  $mysql_values = hiera('mysql', false)
+if $postgresql_values == undef {
+  $postgresql_values = hiera('postgresql', false)
 }
 
 if $php_values == undef {
   $php_values = hiera('php', false)
 }
 
-if $apache_values == undef {
-  $apache_values = hiera('apache', false)
-}
-
-if $nginx_values == undef {
-  $nginx_values = hiera('nginx', false)
-}
-
 if is_hash($apache_values) or is_hash($nginx_values) {
-  $mysql_webserver_restart = true
+  $postgresql_webserver_restart = true
 } else {
-  $mysql_webserver_restart = false
+  $postgresql_webserver_restart = false
 }
 
-if $mysql_values['root_password'] {
-  class { 'mysql::server':
-    root_password => $mysql_values['root_password'],
+if $postgresql_values['root_password'] {
+  group { $postgresql_values['user_group']:
+      ensure => present
   }
 
-  if is_hash($mysql_values['databases']) and count($mysql_values['databases']) > 0 {
-    create_resources(mysql_db, $mysql_values['databases'])
+  class { 'postgresql::server':
+    postgres_password => $postgresql_values['root_password'],
+    require           => Group[$postgresql_values['user_group']]
   }
 
-  if is_hash($php_values) {
-    if $::osfamily == 'redhat' and $php_values['version'] == '53' and ! defined(Php::Module['mysql']) {
-      php::module { 'mysql':
-        service_autorestart => $mysql_webserver_restart,
-      }
-    } elsif ! defined(Php::Module['mysqlnd']) {
-      php::module { 'mysqlnd':
-        service_autorestart => $mysql_webserver_restart,
-      }
+  if is_hash($postgresql_values['databases']) and count($postgresql_values['databases']) > 0 {
+    create_resources(postgresql_db, $postgresql_values['databases'])
+  }
+
+  if is_hash($php_values) and ! defined(Php::Module['pgsql']) {
+    php::module { 'pgsql':
+      service_autorestart => $postgresql_webserver_restart,
     }
   }
 }
 
-define mysql_db (
+define postgresql_db (
   $user,
   $password,
-  $host,
-  $grant    = [],
+  $grant,
   $sql_file = false
 ) {
-  if $name == '' or $password == '' or $host == '' {
-    fail( 'MySQL DB requires that name, password and host be set. Please check your settings!' )
+  if $name == '' or $user == '' or $password == '' or $grant == '' {
+    fail( 'PostgreSQL DB requires that name, user, password and grant be set. Please check your settings!' )
   }
 
-  mysql::db { $name:
+  postgresql::server::db { $name:
     user     => $user,
     password => $password,
-    host     => $host,
-    grant    => $grant,
-    sql      => $sql_file,
+    grant    => $grant
+  }
+
+  if $sql_file {
+    $table = "${name}.*"
+
+    exec{ "${name}-import":
+      command     => "psql ${name} < ${sql_file}",
+      logoutput   => true,
+      refreshonly => $refresh,
+      require     => Postgresql::Server::Db[$name],
+      onlyif      => "test -f ${sql_file}"
+    }
   }
 }
 
-if has_key($mysql_values, 'phpmyadmin') and $mysql_values['phpmyadmin'] == 1 and is_hash($php_values) {
-  if $::osfamily == 'debian' {
-    if $::operatingsystem == 'ubuntu' {
-      apt::key { '80E7349A06ED541C': key_server => 'hkp://keyserver.ubuntu.com:80' }
-      apt::ppa { 'ppa:nijel/phpmyadmin': require => Apt::Key['80E7349A06ED541C'] }
-    }
-
-    $phpMyAdmin_package = 'phpmyadmin'
-    $phpMyAdmin_folder = 'phpmyadmin'
-  } elsif $::osfamily == 'redhat' {
-    $phpMyAdmin_package = 'phpMyAdmin.noarch'
-    $phpMyAdmin_folder = 'phpMyAdmin'
-  }
-
-  if ! defined(Package[$phpMyAdmin_package]) {
-    package { $phpMyAdmin_package:
-      require => Class['mysql::server']
-    }
-  }
-
-  include puphpet::params
-
+if has_key($postgresql_values, 'adminer') and $postgresql_values['adminer'] == 1 and is_hash($php_values) {
   if is_hash($apache_values) {
-    $mysql_pma_webroot_location = $puphpet::params::apache_webroot_location
+    $postgresql_adminer_webroot_location = $puphpet::params::apache_webroot_location
   } elsif is_hash($nginx_values) {
-    $mysql_pma_webroot_location = $puphpet::params::nginx_webroot_location
-
-    mysql_nginx_default_conf { 'override_default_conf':
-      webroot => $mysql_pma_webroot_location
-    }
-  }
-
-  exec { 'move phpmyadmin to webroot':
-    command => "mv /usr/share/${phpMyAdmin_folder} ${mysql_pma_webroot_location}/phpmyadmin",
-    onlyif  => "test ! -d ${mysql_pma_webroot_location}/phpmyadmin",
-    require => [
-      Package[$phpMyAdmin_package],
-      File[$mysql_pma_webroot_location]
-    ]
-  }
-
-  file { "/usr/share/${phpMyAdmin_folder}":
-    target  => "${mysql_pma_webroot_location}/phpmyadmin",
-    ensure  => link,
-    replace => 'no',
-    require => Exec['move phpmyadmin to webroot']
-  }
-}
-
-if has_key($mysql_values, 'adminer') and $mysql_values['adminer'] == 1 and is_hash($php_values) {
-  if is_hash($apache_values) {
-    $mysql_adminer_webroot_location = $puphpet::params::apache_webroot_location
-  } elsif is_hash($nginx_values) {
-    $mysql_adminer_webroot_location = $puphpet::params::nginx_webroot_location
+    $postgresql_adminer_webroot_location = $puphpet::params::nginx_webroot_location
   } else {
-    $mysql_adminer_webroot_location = $puphpet::params::apache_webroot_location
+    $postgresql_adminer_webroot_location = $puphpet::params::apache_webroot_location
   }
 
   class { 'puphpet::adminer':
-    location => "${mysql_adminer_webroot_location}/adminer",
+    location => "${postgresql_adminer_webroot_location}/adminer",
     owner    => 'www-data'
-  }
-}
-
-define mysql_nginx_default_conf (
-  $webroot
-) {
-  if $php5_fpm_sock == undef {
-    $php5_fpm_sock = '/var/run/php5-fpm.sock'
-  }
-
-  if $fastcgi_pass == undef {
-    $fastcgi_pass = $php_values['version'] ? {
-      undef   => null,
-      '53'    => '127.0.0.1:9000',
-      default => "unix:${php5_fpm_sock}"
-    }
-  }
-
-  class { 'puphpet::nginx':
-    fastcgi_pass => $fastcgi_pass,
-    notify       => Class['nginx::service'],
   }
 }
 

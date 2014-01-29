@@ -5,6 +5,11 @@ movies/html/assets/img/cast/
 *.pyc
 .project
 .idea
+movies/error/
+movies/icons/
+movies/cgi-bin/
 movies/app/Console
 movies/app/tmp/
+movies/.vagrant/
 movies.komodoproject
+
