@@ -105,6 +105,7 @@
          * @author David
          */
         public function lucky() {
+
             $data = $this->Movie->search('search',
                          array_merge($this->request->query,
                                      array('limit' => 1, 'lucky' => true,
