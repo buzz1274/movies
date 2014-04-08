@@ -22,7 +22,7 @@ define(function(require, exports, module) {
         routes:{
             "/user/login": "login",
             "/user/logout": "logout",
-            "download_queue*query_string": "downloadQueue",
+            "download*query_string": "downloadQueue",
             "loaned*query_string": "loaned",
             "auto_logout": "autoLogout",
             "file_error": "fileError",

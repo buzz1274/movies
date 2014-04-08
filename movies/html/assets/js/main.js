@@ -8,7 +8,7 @@ require(["config"], function() {
 
         "use strict"
 
-        //FX ME::Need to get genre types and initial counts
+        //FIX ME::Need to get genre types and initial counts
 
         user.fetch({}).done(function() {
 

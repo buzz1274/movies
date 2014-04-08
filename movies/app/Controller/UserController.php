@@ -52,10 +52,10 @@
                     $body = array('error_type' => 'invalid_credentials',
                                   'error_message' => 'Invalid username/password');
                 }
-
-                return new CakeResponse(array('status' => $status,
-                                              'body' => json_encode($body)));
             }
+
+            return new CakeResponse(array('status' => $status,
+                                          'body' => json_encode($body)));
 
         }
         //end login
@@ -71,12 +71,14 @@
                 $this->Auth->logout();
             }
 
-            return new CakeResponse(array('status' => 200,
-                                          'body' => json_encode(array('name' => null,
-                                                                      'authenticated' => false))));
+            return new CakeResponse(
+                array('status' => 200,
+                      'body' => json_encode(array('name' => null,
+                                                  'authenticated' => false))));
 
         }
         //end logout
+
         /**
          * add/removes a movie from users favourite list
          * @author David
@@ -112,7 +114,8 @@
         //end favourite
 
         /**
-         * add/removes a movie from the currently logged in users watched list
+         * add/removes a movie from the currently logged in users
+         * watched list
          * @author David
          * @return mixed
          */
@@ -151,7 +154,8 @@
         //end watched
 
         /**
-         * returns a list of movies the user has flagged for download/auto downloaded
+         * returns a list of movies the user has flagged for
+         * download/auto downloaded
          * @author David
          * @return mixed
          */
