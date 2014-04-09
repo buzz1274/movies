@@ -20,6 +20,3 @@ class httpd {
   	}
 
 }
-
-include yum
-include httpd
