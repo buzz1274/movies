@@ -153,6 +153,7 @@ define add_dotdeb ($release){
     repos             => 'all',
     required_packages => 'debian-keyring debian-archive-keyring',
     key               => '89DF5277',
+    key               => '89DF5277',
     key_server        => 'keys.gnupg.net',
     include_src       => true
   }

@@ -3,7 +3,7 @@ vagrantfile-local:
     vm:
         box: centos64-x64-vbox43-1383512148
         box_url: 'http://box.puphpet.com/centos64-x64-vbox43.box'
-        hostname: vg.movies.zz50.co.uk
+        hostname: alpha.movies.zz50.co.uk
         network:
             private_network: 192.168.56.101
             forwarded_port:
@@ -27,8 +27,8 @@ vagrantfile-local:
                     - '--parser future'
         synced_folder:
             OEieF9DYrXeD:
-                source: ./movies
-                target: /var/www/movies
+                source: ./
+                target: /var/www/movies.zz50.co.uk
                 nfs: 'false'
         usable_port_range: 2200..2250
     ssh:
@@ -63,10 +63,10 @@ apache:
         - rewrite
     vhosts:
         0IE7bghLiUJW:
-            servername: vg.movies.zz50.co.uk
+            servername: alpha.movies.zz50.co.uk
             serveraliases:
-                - vg.movies.zz50.co.uk
-            docroot: /var/www/movies
+                - alpha.movies.zz50.co.uk
+            docroot: /var/www/movies.zz50.co.uk/movies/html
             port: '80'
             setenv:
                 - 'APP_ENV dev'
@@ -95,5 +95,5 @@ php:
     ini:
         display_errors: On
         error_reporting: '-1'
-        session.save_path: /var/lib/php/session
+        session.save_path: /tmp/php/session
     timezone: Europe/London
