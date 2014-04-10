@@ -2,7 +2,7 @@ require 'yaml'
 
 dir = File.dirname(File.expand_path(__FILE__))
 
-configValues = YAML.load_file("#{dir}/puphpet/config.yaml")
+configValues = YAML.load_file("#{dir}/_docs/puphpet/config.yaml")
 data = configValues['vagrantfile-local']
 
 if !data['vm']['provider']['virtualbox'].empty?

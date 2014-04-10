@@ -10,6 +10,6 @@ movies/icons/
 movies/cgi-bin/
 movies/app/Console
 movies/app/tmp/
-movies/.vagrant/
+.vagrant/
 movies.komodoproject
 
