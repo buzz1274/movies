@@ -1,5 +1,3 @@
-## Begin Server manifest
-
 import 'modules/*.pp'
 
 class {'ntp':}
@@ -123,24 +121,6 @@ case $::osfamily {
   }
 }
 
-if $php_values == undef {
-  $php_values = hiera('php', false)
-}
-
-case $::operatingsystem {
-  'redhat', 'centos': {
-    if hash_key_equals($php_values, 'install', 1) {
-      if $php_values['version'] == '54' {
-        #class { 'yum::repo::remi': }
-      }
-      # remi_php55 requires the remi repo as well
-      elsif $php_values['version'] == '55' {
-        class { 'yum::repo::remi': }
-        class { 'yum::repo::remi_php55': }
-      }
-    }
-  }
-}
 
 if !empty($server_values['packages']) {
   ensure_packages( $server_values['packages'] )
@@ -156,122 +136,5 @@ define add_dotdeb ($release){
     key               => '89DF5277',
     key_server        => 'keys.gnupg.net',
     include_src       => true
-  }
-}
-
-## Begin PHP manifest
-
-if $php_values == undef {
-  $php_values = hiera('php', false)
-} if $apache_values == undef {
-  $apache_values = hiera('apache', false)
-} if $nginx_values == undef {
-  $nginx_values = hiera('nginx', false)
-}
-
-if hash_key_equals($php_values, 'install', 1) {
-  Class['Php'] -> Class['Php::Devel'] -> Php::Module <| |> -> Php::Pear::Module <| |> -> Php::Pecl::Module <| |>
-
-    include apache::params
-
-    $php_prefix = 'php-'
-    $php_fpm_ini = '/etc/php.ini'
-    $php_webserver_service_ini = 'httpd'
-    $php_webserver_service = 'httpd'
-    $php_webserver_user    = $apache::params::user
-    $php_webserver_restart = true
-
-    class { 'php':
-      service => $php_webserver_service
-    }
-
-  class { 'php::devel': }
-
-  if count($php_values['modules']['php']) > 0 {
-    php_mod { $php_values['modules']['php']:; }
-  }
-  if count($php_values['modules']['pear']) > 0 {
-    php_pear_mod { $php_values['modules']['pear']:; }
-  }
-  if count($php_values['modules']['pecl']) > 0 {
-    php_pecl_mod { $php_values['modules']['pecl']:; }
-  }
-  if count($php_values['ini']) > 0 {
-    each( $php_values['ini'] ) |$key, $value| {
-      if is_array($value) {
-        each( $php_values['ini'][$key] ) |$innerkey, $innervalue| {
-          puphpet::ini { "${key}_${innerkey}":
-            entry       => "CUSTOM_${innerkey}/${key}",
-            value       => $innervalue,
-            php_version => $php_values['version'],
-            webserver   => $php_webserver_service_ini
-          }
-        }
-      } else {
-        puphpet::ini { $key:
-          entry       => "CUSTOM/${key}",
-          value       => $value,
-          php_version => $php_values['version'],
-          webserver   => $php_webserver_service_ini
-        }
-      }
-    }
-
-    if $php_values['ini']['session.save_path'] != undef {
-      exec {"mkdir -p ${php_values['ini']['session.save_path']}":
-        onlyif  => "test ! -d ${php_values['ini']['session.save_path']}",
-      }
-
-      file { $php_values['ini']['session.save_path']:
-        ensure  => directory,
-        group   => 'www-data',
-        mode    => 0775,
-        require => Exec["mkdir -p ${php_values['ini']['session.save_path']}"]
-      }
-    }
-  }
-
-  puphpet::ini { $key:
-    entry       => 'CUSTOM/date.timezone',
-    value       => $php_values['timezone'],
-    php_version => $php_values['version'],
-    webserver   => $php_webserver_service_ini
-  }
-
-  if hash_key_equals($php_values, 'composer', 1) {
-    class { 'composer':
-      target_dir      => '/usr/local/bin',
-      composer_file   => 'composer',
-      download_method => 'curl',
-      logoutput       => false,
-      tmp_path        => '/tmp',
-      php_package     => "${php::params::module_prefix}cli",
-      curl_package    => 'curl',
-      suhosin_enabled => false,
-    }
-  }
-}
-
-define php_mod {
-  if ! defined(Php::Module[$name]) {
-    php::module { $name:
-      service_autorestart => $php_webserver_restart,
-    }
-  }
-}
-define php_pear_mod {
-  if ! defined(Php::Pear::Module[$name]) {
-    php::pear::module { $name:
-      use_package         => false,
-      service_autorestart => $php_webserver_restart,
-    }
-  }
-}
-define php_pecl_mod {
-  if ! defined(Php::Pecl::Module[$name]) {
-    php::pecl::module { $name:
-      use_package         => false,
-      service_autorestart => $php_webserver_restart,
-    }
   }
 }
