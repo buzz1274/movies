@@ -6,9 +6,7 @@ class {'postgresql::globals':
     manage_package_repo => true,
     encoding            => 'UTF8',
     version             => '9.3'
-}
-
-class {'postgresql::server':
+}->class {'postgresql::server':
     postgres_password => '123',
     version           => '9.3',
     require           => Group['postgres']

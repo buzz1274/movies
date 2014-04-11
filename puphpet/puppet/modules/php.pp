@@ -56,41 +56,40 @@ class {'composer':
 }
 
 
-/*
-
-    ini:
-        display_errors: On
-        error_reporting: '-1'
-        session.save_path: /tmp/php/session
-    timezone: Europe/London
-
-if count($php_values['ini']) > 0 {
-each( $php_values['ini'] ) |$key, $value| {
-if is_array($value) {
-each( $php_values['ini'][$key] ) |$innerkey, $innervalue| {
-puphpet::ini { "${key}_${innerkey}":
-entry       => "CUSTOM_${innerkey}/${key}",
-value       => $innervalue,
-php_version => $php_values['version'],
-webserver   => 'httpd'
+php::augeas {
+    'php-memorylimit':
+        target => $php::config_file,
+        entry  => 'PHP/memory_limit',
+        value  => '256M',
+        require => Class['php'];
+    'php-expose_php':
+        target => $php::config_file,
+        entry  => 'PHP/expose_php',
+        value  => 'Off',
+        require => Class['php'];
+    'php-error_reporting':
+        target => $php::config_file,
+        entry  => 'PHP/error_reporting',
+        value  => 'E_ALL & ~E_DEPRECATED & ~E_STRICT',
+        require => Class['php'];
+    'php-display_errors':
+        target => $php::config_file,
+        entry  => 'PHP/display_errors',
+        value  => 'On',
+        require => Class['php'];
+    'php-error_log':
+        target => $php::config_file,
+        entry  => 'PHP/error_log',
+        ensure => absent,
+        require => Class['php'];
+    'php-sendmail_path':
+        target => $php::config_file,
+        entry  => 'mail function/sendmail_path',
+        value  => '/usr/bin/env catchmail',
+        require => Class['php'];
+    'php-date_timezone':
+        target => $php::config_file,
+        entry  => 'Date/date.timezone',
+        value  => 'Europe/London',
+        require => Class['php'];
 }
-}
-} else {
-puphpet::ini { $key:
-entry       => "CUSTOM/${key}",
-value       => $value,
-php_version => $php_values['version'],
-webserver   => 'httpd'
-}
-}
-}
-
-
-puphpet::ini { $key:
-  entry       => 'CUSTOM/date.timezone',
-  value       => $php_values['timezone'],
-  php_version => $php_values['version'],
-  webserver   => $php_webserver_service_ini
-}
-
-*/
