@@ -50,7 +50,7 @@ file { "/var/www/movies.zz50.co.uk/movies/html":
     require => Exec["exec mkdir -p /var/www/movies.zz50.co.uk/movies/html"]
 }
 
-apache::vhost {'alpha.movie.zz50.co.uk':
+apache::vhost {'alpha.movie.zz50.co.uk non_ssl':
     custom_fragment => '',
     ssl             => false,
     ssl_cert        => false,
@@ -63,6 +63,21 @@ apache::vhost {'alpha.movie.zz50.co.uk':
     port            => '80',
     setenv          => 'APP_ENV dev',
     override        => 'All',
+}
+
+apache::vhost {'alpha.movie.zz50.co.uk ssl':
+  custom_fragment => '',
+  ssl             => true,
+  ssl_cert        => undef,
+  ssl_key         => undef,
+  ssl_chain       => undef,
+  ssl_certs_dir   => undef,
+  servername      => 'alpha.movie.zz50.co.uk',
+  serveraliases   => [],
+  docroot         => '/var/www/movies.zz50.co.uk/movies/html',
+  port            => '443',
+  setenv          => 'APP_ENV dev',
+  override        => 'All',
 }
 
 class { "apache::mod::php": }
