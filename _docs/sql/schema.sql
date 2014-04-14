@@ -8,6 +8,100 @@ SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
+SET search_path = public, pg_catalog;
+
+ALTER TABLE ONLY public.user_movie_watched DROP CONSTRAINT user_movie_watched_user_id_fkey;
+ALTER TABLE ONLY public.user_movie_watched DROP CONSTRAINT user_movie_watched_movie_id_fkey;
+ALTER TABLE ONLY public.user_movie_favourite DROP CONSTRAINT user_movie_favourite_user_id_fkey;
+ALTER TABLE ONLY public.user_movie_favourite DROP CONSTRAINT user_movie_favourite_movie_id_fkey;
+ALTER TABLE ONLY public.user_movie_downloaded DROP CONSTRAINT user_movie_downloaded_user_id_fkey;
+ALTER TABLE ONLY public.user_movie_downloaded DROP CONSTRAINT user_movie_downloaded_movie_id_fkey;
+ALTER TABLE ONLY public.movie_role DROP CONSTRAINT movie_role_role_id_fkey;
+ALTER TABLE ONLY public.movie_role DROP CONSTRAINT movie_role_person_id_fkey;
+ALTER TABLE ONLY public.movie_role DROP CONSTRAINT movie_role_movie_id_fkey;
+ALTER TABLE ONLY public.movie DROP CONSTRAINT movie_media_id_fkey;
+ALTER TABLE ONLY public.movie_keyword DROP CONSTRAINT movie_keyword_movie_id_fkey;
+ALTER TABLE ONLY public.movie_keyword DROP CONSTRAINT movie_keyword_keyword_id_fkey;
+ALTER TABLE ONLY public.movie_genre DROP CONSTRAINT movie_genre_movie_id_fkey;
+ALTER TABLE ONLY public.movie_genre DROP CONSTRAINT movie_genre_genre_id_fkey;
+ALTER TABLE ONLY public.movie DROP CONSTRAINT movie_certificate_id_fkey;
+ALTER TABLE ONLY public.media DROP CONSTRAINT media_media_storage_id_fkey;
+ALTER TABLE ONLY public.media DROP CONSTRAINT media_media_region_id_fkey;
+ALTER TABLE ONLY public.media DROP CONSTRAINT media_media_format_id_fkey;
+ALTER TABLE ONLY public.media_loaned DROP CONSTRAINT media_loaned_media_id_fkey;
+DROP INDEX public.user_movie_favourite_user_id_movie_id_idx;
+DROP INDEX public.person_idx;
+DROP INDEX public.movie_role_person_idx;
+DROP INDEX public.keyword_movie_idx;
+DROP INDEX public.keyword_idx;
+DROP INDEX public.certificate_idx;
+ALTER TABLE ONLY public."user" DROP CONSTRAINT user_pkey;
+ALTER TABLE ONLY public.user_movie_watched DROP CONSTRAINT user_movie_watched_pkey;
+ALTER TABLE ONLY public.user_movie_favourite DROP CONSTRAINT user_movie_favourite_user_id_movie_id_key;
+ALTER TABLE ONLY public.user_movie_favourite DROP CONSTRAINT user_movie_favourite_pkey;
+ALTER TABLE ONLY public.user_movie_downloaded DROP CONSTRAINT user_movie_downloaded_pkey;
+ALTER TABLE ONLY public.role DROP CONSTRAINT role_pkey;
+ALTER TABLE ONLY public.person DROP CONSTRAINT person_pkey;
+ALTER TABLE ONLY public.movie_role DROP CONSTRAINT movie_role_movie_id_key;
+ALTER TABLE ONLY public.movie DROP CONSTRAINT movie_pkey;
+ALTER TABLE ONLY public.media_loaned DROP CONSTRAINT movie_loaned_pkey;
+ALTER TABLE ONLY public.movie_keyword DROP CONSTRAINT mk;
+ALTER TABLE ONLY public.movie_genre DROP CONSTRAINT mg;
+ALTER TABLE ONLY public.media_storage DROP CONSTRAINT media_storage_pkey;
+ALTER TABLE ONLY public.media_region DROP CONSTRAINT media_region_pkey;
+ALTER TABLE ONLY public.media DROP CONSTRAINT media_pkey;
+ALTER TABLE ONLY public.media_format DROP CONSTRAINT media_format_pkey;
+ALTER TABLE ONLY public.keyword DROP CONSTRAINT keyword_pkey;
+ALTER TABLE ONLY public.movie DROP CONSTRAINT imdb;
+ALTER TABLE ONLY public.genre DROP CONSTRAINT genre_pkey;
+ALTER TABLE ONLY public.genre DROP CONSTRAINT genre_genre_key;
+ALTER TABLE ONLY public.certificate DROP CONSTRAINT certificate_pkey;
+DROP TABLE public.user_movie_watched;
+DROP SEQUENCE public.user_movie_watched_id_seq;
+DROP TABLE public.user_movie_favourite;
+DROP SEQUENCE public.user_movie_favourite_id_seq;
+DROP TABLE public.user_movie_downloaded;
+DROP SEQUENCE public.user_movie_downloaded_id_seq;
+DROP TABLE public."user";
+DROP TABLE public.role;
+DROP SEQUENCE public.role_id;
+DROP TABLE public.person;
+DROP SEQUENCE public.person_id;
+DROP TABLE public.movie_role;
+DROP TABLE public.movie_keyword;
+DROP TABLE public.movie_genre;
+DROP TABLE public.movie;
+DROP SEQUENCE public.movie_id;
+DROP TABLE public.media_storage;
+DROP TABLE public.media_region;
+DROP TABLE public.media_loaned;
+DROP SEQUENCE public.media_loaned_id_seq;
+DROP TABLE public.media_format;
+DROP TABLE public.media;
+DROP SEQUENCE public.media_id;
+DROP TABLE public.keyword;
+DROP SEQUENCE public.keyword_id;
+DROP TABLE public.genre;
+DROP SEQUENCE public.genre_id;
+DROP TABLE public.certificate;
+DROP EXTENSION plpgsql;
+DROP SCHEMA public;
+--
+-- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA public;
+
+
+ALTER SCHEMA public OWNER TO postgres;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON SCHEMA public IS 'standard public schema';
+
+
 --
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
@@ -139,6 +233,35 @@ CREATE TABLE media_format (
 
 
 ALTER TABLE public.media_format OWNER TO movies;
+
+--
+-- Name: media_loaned_id_seq; Type: SEQUENCE; Schema: public; Owner: movies
+--
+
+CREATE SEQUENCE media_loaned_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.media_loaned_id_seq OWNER TO movies;
+
+--
+-- Name: media_loaned; Type: TABLE; Schema: public; Owner: movies; Tablespace: 
+--
+
+CREATE TABLE media_loaned (
+    id smallint DEFAULT nextval('media_loaned_id_seq'::regclass) NOT NULL,
+    media_id smallint NOT NULL,
+    loaned_to text NOT NULL,
+    date_loaned date NOT NULL,
+    date_returned date
+);
+
+
+ALTER TABLE public.media_loaned OWNER TO movies;
 
 --
 -- Name: media_region; Type: TABLE; Schema: public; Owner: movies; Tablespace: 
@@ -334,11 +457,12 @@ ALTER TABLE public.user_movie_downloaded_id_seq OWNER TO movies;
 --
 
 CREATE TABLE user_movie_downloaded (
-    id integer DEFAULT nextval('user_movie_downloaded_id_seq'::regclass) NOT NULL,
-    user_id integer NOT NULL,
-    movie_id integer NOT NULL,
-    date_downloaded timestamp without time zone NOT NULL,
-    filesize numeric(4,2) NOT NULL
+    id smallint DEFAULT nextval('user_movie_downloaded_id_seq'::regclass) NOT NULL,
+    user_id smallint NOT NULL,
+    movie_id smallint NOT NULL,
+    date_downloaded timestamp(6) without time zone NOT NULL,
+    filesize numeric(4,2) NOT NULL,
+    status character varying(11)
 );
 
 
@@ -488,6 +612,14 @@ ALTER TABLE ONLY movie_keyword
 
 
 --
+-- Name: movie_loaned_pkey; Type: CONSTRAINT; Schema: public; Owner: movies; Tablespace: 
+--
+
+ALTER TABLE ONLY media_loaned
+    ADD CONSTRAINT movie_loaned_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: movie_pkey; Type: CONSTRAINT; Schema: public; Owner: movies; Tablespace: 
 --
 
@@ -601,6 +733,14 @@ CREATE INDEX person_idx ON person USING btree (person_name);
 --
 
 CREATE UNIQUE INDEX user_movie_favourite_user_id_movie_id_idx ON user_movie_favourite USING btree (user_id, movie_id);
+
+
+--
+-- Name: media_loaned_media_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: movies
+--
+
+ALTER TABLE ONLY media_loaned
+    ADD CONSTRAINT media_loaned_media_id_fkey FOREIGN KEY (media_id) REFERENCES media(media_id);
 
 
 --
