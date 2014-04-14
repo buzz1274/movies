@@ -39,18 +39,18 @@ class {'apache': mpm_module => 'prefork',
                  manage_group => false
 }
 
-exec { "exec mkdir -p /var/www/":
-    command => "mkdir -p /var/www/",
-    creates => "/var/www/",
+exec { "exec mkdir -p /var/www/movies.zz50.co.uk/movies/html":
+    command => "mkdir -p /var/www/movies.zz50.co.uk/movies/html",
+    creates => "/var/www/movies.zz50.co.uk/movies/html",
 }
 
-file { "/var/www/":
+file { "/var/www/movies.zz50.co.uk/movies/html":
     ensure  => directory,
     mode    => 0765,
-    require => Exec["exec mkdir -p /var/www/ffdc/public"]
+    require => Exec["exec mkdir -p /var/www/movies.zz50.co.uk/movies/html"]
 }
 
-apache::vhost {'alpha.movie.zz50.co.uk':
+apache::vhost {'alpha.movie.zz50.co.uk non_ssl':
     custom_fragment => '',
     ssl             => false,
     ssl_cert        => false,
@@ -59,8 +59,23 @@ apache::vhost {'alpha.movie.zz50.co.uk':
     ssl_certs_dir   => false,
     servername      => 'alpha.movie.zz50.co.uk',
     serveraliases   => [],
-    docroot         => '',
+    docroot         => '/var/www/movies.zz50.co.uk/movies/html',
     port            => '80',
+    setenv          => 'APP_ENV dev',
+    override        => 'All',
+}
+
+apache::vhost {'alpha.movie.zz50.co.uk ssl':
+    custom_fragment => '',
+    ssl             => true,
+    ssl_cert        => undef,
+    ssl_key         => undef,
+    ssl_chain       => undef,
+    ssl_certs_dir   => undef,
+    servername      => 'alpha.movie.zz50.co.uk',
+    serveraliases   => [],
+    docroot         => '/var/www/movies.zz50.co.uk/movies/html',
+    port            => '443',
     setenv          => 'APP_ENV dev',
     override        => 'All',
 }
