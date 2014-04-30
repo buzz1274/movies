@@ -37,35 +37,6 @@ fi
 cp "${VAGRANT_CORE_FOLDER}/puppet/Puppetfile" "${PUPPET_DIR}"
 echo "Copied Puppetfile"
 
-if [ "${OS}" == 'debian' ] || [ "${OS}" == 'ubuntu' ]; then
-    if [[ ! -f /.puphpet-stuff/r10k-base-packages ]]; then
-        echo 'Installing base packages for r10k'
-        apt-get install -y build-essential ruby-dev >/dev/null
-        echo 'Finished installing base packages for r10k'
-
-        touch /.puphpet-stuff/r10k-base-packages
-    fi
-fi
-
-if [ "${OS}" == 'ubuntu' ]; then
-    if [[ ! -f /.puphpet-stuff/r10k-libgemplugin-ruby ]]; then
-        echo 'Updating libgemplugin-ruby (Ubuntu only)'
-        apt-get install -y libgemplugin-ruby >/dev/null
-        echo 'Finished updating libgemplugin-ruby (Ubuntu only)'
-
-        touch /.puphpet-stuff/r10k-libgemplugin-ruby
-    fi
-
-    if [ "${CODENAME}" == 'lucid' ] && [ ! -f /.puphpet-stuff/r10k-rubygems-update ]; then
-        echo 'Updating rubygems (Ubuntu Lucid only)'
-        echo 'Ignore all "conflicting chdir" errors!'
-        gem install rubygems-update >/dev/null
-        /var/lib/gems/1.8/bin/update_rubygems >/dev/null
-        echo 'Finished updating rubygems (Ubuntu Lucid only)'
-
-        touch /.puphpet-stuff/r10k-rubygems-update
-    fi
-fi
 
 if [[ ! -f /.puphpet-stuff/r10k-puppet-installed ]]; then
     echo 'Installing r10k'

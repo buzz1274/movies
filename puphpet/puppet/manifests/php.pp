@@ -55,7 +55,6 @@ class {'composer':
     suhosin_enabled => false,
 }
 
-
 php::augeas {
     'php-memorylimit':
         target => $php::config_file,

@@ -1,4 +1,4 @@
-import 'modules/*.pp'
+import 'manifests/*.pp'
 
 class {'ntp':}
 
