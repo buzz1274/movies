@@ -15,7 +15,14 @@ class {'postgresql::globals':
 postgresql::server::db {'movies':
     user     => 'movies',
     password => '123',
-    grant    => 'ALL'
+    grant    => 'ALL',
+}
+
+exec{"movies-import":
+  command     => 'psql movies < /var/www/movies.zz50.co.uk/_docs/sql/schema.sql',
+  logoutput   => true,
+  require     => Postgresql::Server::Db['movies'],
+  onlyif      => "test -f /var/www/movies.zz50.co.uk/_docs/sql/schema.sql"
 }
 
 php::module {'pgsql':

@@ -53,10 +53,6 @@ file { "/var/www/movies.zz50.co.uk/movies/html":
 apache::vhost {'alpha.movie.zz50.co.uk non_ssl':
     custom_fragment => '',
     ssl             => false,
-    ssl_cert        => false,
-    ssl_key         => false,
-    ssl_chain       => false,
-    ssl_certs_dir   => false,
     servername      => 'alpha.movie.zz50.co.uk',
     serveraliases   => [],
     docroot         => '/var/www/movies.zz50.co.uk/movies/html',
