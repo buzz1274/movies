@@ -392,6 +392,7 @@
                     $queryParameters['offset'] = (($this->_search['page'] - 1) *
                                                    $this->_search['limit']);
                 }
+
                 $orderQuery = 'ORDER BY '.$this->_search['sort'].' '.
                                           $this->_search['sortDirection'].' ';
             }
@@ -666,7 +667,7 @@
                         array('title', 'release_year',
                               'imdb_rating', 'hd',
                               'runtime', 'filesize',
-                              'date_added', 'cert'))) {
+                              'watched', 'date_added', 'cert'))) {
 
                 $this->_search['sort'] = $searchParams['s'];
 
