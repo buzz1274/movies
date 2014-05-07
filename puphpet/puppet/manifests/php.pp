@@ -24,24 +24,24 @@ file {'/tmp/php/sessions':
 }
 
 php::module {'cli':
-  service_autorestart => true,
+    service_autorestart => true,
 }
 
 php::module {'intl':
-  service_autorestart => true,
+    service_autorestart => true,
 }
 
 php::module {'mcrypt':
-  service_autorestart => true,
+    service_autorestart => true,
 }
 
 php::module {'soap':
-  service_autorestart => true,
+    service_autorestart => true,
 }
 
 php::pecl::module {'pecl_http':
-  use_package         => false,
-  service_autorestart => true,
+    use_package         => false,
+    service_autorestart => true,
 }
 
 class {'composer':
@@ -54,7 +54,6 @@ class {'composer':
     curl_package    => 'curl',
     suhosin_enabled => false,
 }
-
 
 php::augeas {
     'php-memorylimit':
