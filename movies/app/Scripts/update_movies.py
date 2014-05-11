@@ -10,12 +10,11 @@ movie = Movie()
 movie.update_rating()
 movie.update_movies()
 movie.update_invalid_movies()
-movie.update_prices()
 
 try:
     invalid_movies = movie.find_invalid_movies()
     movies_missing_images = movie.find_missing_images()
-    have_movie_prices_updated = movie.prices_updated()
+
     if invalid_movies or movies_missing_images:
         body = ""
         if invalid_movies:
@@ -31,10 +30,6 @@ try:
                 body += "%s %s %s\n" % (movies_missing_image.movie_id,
                                         movies_missing_image.imdb_id,
                                         movies_missing_image)
-
-        if not have_movie_prices_updated:
-            body += "Amazon scraping script does not "\
-                    "appear to be updating prices\n"
 
         message = MIMEText(body)
         message['Subject'] = 'Movie Spidering Issues'

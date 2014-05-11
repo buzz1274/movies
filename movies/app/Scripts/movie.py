@@ -74,41 +74,8 @@ class Movie():
                 __or__(self.config.movie_table.c.runtime < 60).\
                 __or__(self.config.movie_table.c.runtime > 600)).\
                 order_by(asc(self.config.movie_table.c.title))
-
+          
         return self.config.db.execute(query).fetchall()
-
-    def due_price_updates(self):
-        """
-        returns all movies requiring price updates
-        @return dictionary
-        """
-        query = select([self.config.media_table.c.media_id,
-                        self.config.media_table.c.amazon_asin,
-                        self.config.media_table.c.current_price]).\
-                where(func.date_part('day', func.now() -
-                      self.config.media_table.c.date_price_last_updated) >
-                      self.days_before_price_update_due).\
-                limit(100)
-
-        return self.config.db.execute(query)
-
-    def prices_updated(self):
-        """
-        determines if any movies have had their prices updated
-        in the last n days
-        """
-        query = select([func.count(self.config.media_table.c.media_id)]).\
-                where(func.date_part('day', func.now() -
-                      self.config.media_table.c.date_price_last_updated) <
-                      self.days_before_price_update_due)
-
-        count = self.config.db.execute(query)
-        if count:
-            for c in count:
-                if c[0] > 0:
-                    return True
-                else:
-                    return False
 
     def find_missing_images(self):
         """
@@ -141,23 +108,6 @@ class Movie():
                       password=self.config.password):
             run(('mv "%s" "%s"' % (old_path, new_path)),
                 shell=False, pty=True, combine_stderr=True)
-
-    def update_prices(self):
-        """
-        updates prices for movies
-        """
-        movies = self.due_price_updates()
-        if movies:
-            amazon = Amazon()
-            for movie in movies:
-                price = amazon.get_secondhandprice(movie['amazon_asin'])
-                if price:
-                    query = self.config.media_table.update().\
-                                 where(self.config.media_table.c.media_id==\
-                                       movie['media_id']).\
-                                 values(current_price=price,
-                                        date_price_last_updated=func.now())
-                    self.config.db.execute(query)
 
     def update_rating(self):
         """
@@ -277,19 +227,32 @@ class Movie():
         try:
             self.movie = self.get(imdb_id)
             imdb = IMDB(imdb_id)
-            if imdb.title:
-                certificate_query =\
-                    select([self.config.certificate_table.c.certificate_id]).\
-                    where(self.config.certificate_table.c.certificate==imdb.certificate)
 
+            if imdb.title:
+                if not imdb.certificate:
+                    certificate = self.movie.certificate_id
+                else:
+                    certificate = select([self.config.certificate_table.c.certificate_id]).\
+                                   where(self.config.certificate_table.c.certificate==imdb.certificate)
+
+                if not imdb.synopsis:
+                    synopsis = self.movie.synopsis
+                else:                             
+                    synopsis = imdb.synopsis    
+
+                if not imdb.release_year:
+                    release_year = self.movie.release_year
+                else:                             
+                    release_year = imdb.release_year
+                    
                 query = self.config.movie_table.update().\
                                 where(self.config.movie_table.c.imdb_id==\
                                       imdb_id).\
                                 values(title=imdb.title,
                                        imdb_rating=imdb.rating,
-                                       certificate_id=certificate_query,
-                                       synopsis=imdb.synopsis,
-                                       release_year=imdb.release_year,
+                                       certificate_id=certificate,
+                                       synopsis=synopsis,
+                                       release_year=release_year,
                                        has_image=bool(imdb.image_path),
                                        date_last_scraped=func.now())
 
@@ -307,7 +270,7 @@ class Movie():
                     self._add_role(imdb.directors, 'director')
 
                 if imdb.actors:
-                    self._add_role(imdb.actors, 'actor')
+                    self._add_role(imdb.actors, 'actor')                
 
                 if imdb.genres:
                     self._add_genre(imdb.genres)
@@ -315,7 +278,8 @@ class Movie():
                 if imdb.plot_keywords:
                     self._add_keywords(imdb.plot_keywords)
 
-        except Exception, e:
+        except Exception, e:    
+            print e        
             pass
 
     def get(self, imdb_id):
@@ -326,7 +290,10 @@ class Movie():
         """
         query = select([self.config.movie_table.c.movie_id,
                         self.config.movie_table.c.imdb_id,
+                        self.config.movie_table.c.certificate_id,
                         self.config.movie_table.c.path,
+                        self.config.movie_table.c.synopsis,
+                        self.config.movie_table.c.release_year,
                         self.config.movie_table.c.width,
                         self.config.movie_table.c.height,
                         self.config.movie_table.c.hd,
@@ -341,7 +308,7 @@ class Movie():
         gets the id for the supplied name
         """
         query = select([self.config.person_table.c.person_id,
-                        self.config.person_table.c.name]).\
+                        self.config.person_table.c.person_name]).\
                 where(self.config.person_table.c.person_imdb_id==person['id'])
         person_db = self.config.db.execute(query).fetchone()
 
@@ -354,8 +321,8 @@ class Movie():
         else:
             person_id = person_db.person_id                         
             if person_db.person_name != person['name']:
-                query = self.config.self.config.person_table.update().\
-                             where(self.config.person_table.c.person_imdb_id==\
+                query = self.config.person_table.update().\
+                             where(self.config.person_table.c.person_id==\
                                    person_id).\
                              values(person_name=person['name'])
                 self.config.db.execute(query)
@@ -390,30 +357,32 @@ class Movie():
         i = 0
 
         for name in names:
+            i = i + 1
             try:
-                i = i + 1
                 person_id = self.person(name)
                 query = self.config.movie_role_table.insert().\
                                          values(movie_id=self.movie['movie_id'],
                                                 person_id=person_id,
                                                 order=i,
                                                 role_id=role_id)
-                self.config.db.execute(query)
-
-                if role == 'actor' and name['image_src']:
-                    save_path = "%s/%s/%s.jpg" %\
-                                   (self.config.image_save_path,
-                                    'cast', name['id'],)
-
-                    if not os.path.isfile(save_path) and name['image_src']:
-                        image = urllib.urlretrieve(name['image_src'], save_path)
-
-                        if not os.path.isfile(save_path):
-                            raise MovieException('error saving cast image(%s)' %
-                                                  (self.imdb_id))
+                self.config.db.execute(query)                                            
 
             except exc.IntegrityError:
-                pass
+                pass                                                
+                                                  
+            if role == 'actor' and name['image_src']:
+                save_path = "%s/%s/%s.jpg" %\
+                               (self.config.image_save_path,
+                                'cast', name['id'],)
+
+                if not os.path.isfile(save_path) and name['image_src']:
+                    image = urllib.urlretrieve(name['image_src'], save_path)
+
+                    if not os.path.isfile(save_path):
+                        raise MovieException('error saving cast image(%s)' %
+                                              (self.imdb_id))
+
+
 
     def _add_genre(self, genres):
         """

@@ -114,34 +114,46 @@ class IMDB(object):
         self.cast_page =\
             self._get_page_mechanize('http://uk.imdb.com/title/%s/fullcredits' %\
                                      (self.imdb_id,))
-
+         
         try:
-            tags = self.cast_page.find('table', {'class': 'cast'}).findAll('tr')
+            tags = self.cast_page.find('table', {'class': 'cast_list'}).findAll('tr')
             if tags:
                 for tag in tags:
                     try:
-                        image = tag.find('td', {'class': 'hs'}).find('img')
-                        actor = tag.find('td', {'class': 'nm'}).find('a')
                         actor_id = None
+                        actor = None
+                        image = None
+                        image_src = None
+
+                        try:
+                            image = tag.find('td', {'class': 'primary_photo'}).find('img')
+                        except Exception:
+                            pass
+
+                        try:
+                            actor = tag.find('td', {'itemprop': 'actor'}).find('a')
+                        except Exception:
+                            pass
+                       
                         if actor:
                             actor_id = re.match('\/name\/(.*)\/', actor['href'])
-                            actor = actor.contents[0]
+                            actor = actor.find('span').contents[0]
+                            
                             if actor_id and actor_id.group(1):
                                 actor_id = actor_id.group(1)
+
                         if image:
-                            if (image['src'] and
-                                not re.match('.*no_photo.png', image['src'])):
-                                image_src = image['src']
-                            else:
+                            try:
+                                image_src = image['loadlate']
+                            except KeyError:
                                 image_src = None
 
-                        self.actors.append({'id': actor_id,
-                                            'name': actor,
-                                            'image_src': image_src})
+                        if actor_id and actor:     
+                            self.actors.append({'id': actor_id,
+                                                'name': actor,
+                                                'image_src': image_src})                            
 
-                    except KeyError:
-                        pass
-                    except AttributeError:
+                    except (KeyError, AttributeError), e:
                         pass
 
         except Exception, e:
