@@ -38,51 +38,6 @@ class AppSchema extends CakeSchema {
 		'tableParameters' => array()
 	);
 
-	public $media = array(
-		'media_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 11, 'key' => 'primary'),
-		'media_format_id' => array('type' => 'integer', 'null' => false),
-		'media_region_id' => array('type' => 'integer', 'null' => false),
-		'media_storage_id' => array('type' => 'integer', 'null' => false),
-		'amazon_asin' => array('type' => 'string', 'null' => false, 'length' => 10),
-		'purchase_price' => array('type' => 'float', 'null' => true),
-		'current_price' => array('type' => 'float', 'null' => true),
-		'special_edition' => array('type' => 'boolean', 'null' => false),
-		'boxset' => array('type' => 'boolean', 'null' => false),
-		'notes' => array('type' => 'text', 'null' => true, 'length' => 1073741824),
-		'date_price_last_updated' => array('type' => 'date', 'null' => true),
-		'indexes' => array(
-			'PRIMARY' => array('unique' => true, 'column' => 'media_id')
-		),
-		'tableParameters' => array()
-	);
-
-	public $media_format = array(
-		'media_format_id' => array('type' => 'integer', 'null' => false, 'length' => 11, 'key' => 'primary'),
-		'media_format' => array('type' => 'string', 'null' => false, 'length' => 7),
-		'indexes' => array(
-			'PRIMARY' => array('unique' => true, 'column' => 'media_format_id')
-		),
-		'tableParameters' => array()
-	);
-
-	public $media_region = array(
-		'media_region_id' => array('type' => 'integer', 'null' => false, 'length' => 11, 'key' => 'primary'),
-		'region' => array('type' => 'string', 'null' => false, 'length' => 4),
-		'indexes' => array(
-			'PRIMARY' => array('unique' => true, 'column' => 'media_region_id')
-		),
-		'tableParameters' => array()
-	);
-
-	public $media_storage = array(
-		'media_storage_id' => array('type' => 'integer', 'null' => false, 'length' => 11, 'key' => 'primary'),
-		'media_storage' => array('type' => 'string', 'null' => false, 'length' => 6),
-		'indexes' => array(
-			'PRIMARY' => array('unique' => true, 'column' => 'media_storage_id')
-		),
-		'tableParameters' => array()
-	);
-
 	public $movie = array(
 		'movie_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 11, 'key' => 'primary'),
 		'imdb_id' => array('type' => 'string', 'null' => false, 'length' => 10),
