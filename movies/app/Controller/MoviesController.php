@@ -2,7 +2,7 @@
 
     class MoviesController extends AppController {
 
-        public $uses = array('Movie', 'UserMovieDownloaded', 'User');
+        public $uses = array('Movie', 'User');
 
         /**
          * retrieves movie details for the movie matching movieID
@@ -39,13 +39,6 @@
                 header('Location: /#file_error');
                 die();
             } else {
-
-                $this->UserMovieDownloaded->save(
-                        array('movie_id' => $this->request->params['movieID'],
-                              'user_id' => $this->Auth->user('user_id'),
-                              'filesize' => $movie['Movie']['filesize'],
-                              'date_downloaded' => date('Y-m-d H:i:s', strtotime('now')),
-                              'status' => 'complete'));
 
                 $this->viewClass = 'Media';
                 $params = array('id'        => $filename,
