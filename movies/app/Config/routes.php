@@ -46,7 +46,7 @@
                     array('controller' => 'movies',
                           'action' => 'movie',
                           'movieID', '[0-9]{1,}'));
-    Router::connect('/movies/',
+    Router::connect('/movies',
                     array('controller' => 'movies',
                           'action' => 'movies'));
 

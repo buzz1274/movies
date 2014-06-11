@@ -17,6 +17,7 @@ define(function(require, exports, module) {
         render:function () {
             this.MovieView = MovieView;
             $('#movies_table > tbody').html('');
+
             if(this.model.models.length) {
                 $('#movies_table').addClass('table-condensed');
                 _.each(this.model.models, function (movie) {

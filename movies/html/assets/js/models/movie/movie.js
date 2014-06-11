@@ -1,8 +1,7 @@
 define(function(require, exports, module) {
     "use strict";
 
-    var Backbone = require('backbone'),
-        Interface = require('helper/interface');
+    var Backbone = require('backbone');
 
     module.exports = Backbone.Model.extend({
         url:'/movies/',

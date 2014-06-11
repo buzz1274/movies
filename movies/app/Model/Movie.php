@@ -127,7 +127,8 @@
 
                 while(list($key, $val) = each($results)) {
                     $movie[$key]['Movie'] = array_pop($val);
-                    $clean[$key] = array_pop($this->afterFind($movie));
+                    $movie = $this->afterFind($movie);
+                    $clean[$key] = array_pop($movie);
                 }
 
                 $results = $clean;
