@@ -51,6 +51,14 @@ INSERT INTO genre VALUES (40, 'Film-Noir');
 
 
 --
+-- Data for Name: role; Type: TABLE DATA; Schema: public; Owner: movies
+--
+
+INSERT INTO role VALUES (1, 'director');
+INSERT INTO role VALUES (2, 'actor');
+
+
+--
 -- PostgreSQL database dump complete
 --
 
