@@ -8,24 +8,6 @@ SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
-SET search_path = public, pg_catalog;
-
---
--- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
---
-
-CREATE SCHEMA public;
-
-
-ALTER SCHEMA public OWNER TO postgres;
-
---
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
---
-
-COMMENT ON SCHEMA public IS 'standard public schema';
-
-
 --
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
@@ -126,39 +108,6 @@ CREATE SEQUENCE media_id
 ALTER TABLE public.media_id OWNER TO movies;
 
 --
--- Name: media; Type: TABLE; Schema: public; Owner: movies; Tablespace: 
---
-
-CREATE TABLE media (
-    media_id integer DEFAULT nextval('media_id'::regclass) NOT NULL,
-    media_format_id smallint NOT NULL,
-    media_region_id smallint NOT NULL,
-    media_storage_id smallint NOT NULL,
-    amazon_asin character varying(10) NOT NULL,
-    purchase_price numeric(5,2),
-    current_price numeric(5,2),
-    special_edition boolean NOT NULL,
-    boxset boolean NOT NULL,
-    notes text,
-    date_price_last_updated date
-);
-
-
-ALTER TABLE public.media OWNER TO movies;
-
---
--- Name: media_format; Type: TABLE; Schema: public; Owner: movies; Tablespace: 
---
-
-CREATE TABLE media_format (
-    media_format_id smallint NOT NULL,
-    media_format character varying(7) NOT NULL
-);
-
-
-ALTER TABLE public.media_format OWNER TO movies;
-
---
 -- Name: media_loaned_id_seq; Type: SEQUENCE; Schema: public; Owner: movies
 --
 
@@ -171,45 +120,6 @@ CREATE SEQUENCE media_loaned_id_seq
 
 
 ALTER TABLE public.media_loaned_id_seq OWNER TO movies;
-
---
--- Name: media_loaned; Type: TABLE; Schema: public; Owner: movies; Tablespace: 
---
-
-CREATE TABLE media_loaned (
-    id smallint DEFAULT nextval('media_loaned_id_seq'::regclass) NOT NULL,
-    media_id smallint NOT NULL,
-    loaned_to text NOT NULL,
-    date_loaned date NOT NULL,
-    date_returned date
-);
-
-
-ALTER TABLE public.media_loaned OWNER TO movies;
-
---
--- Name: media_region; Type: TABLE; Schema: public; Owner: movies; Tablespace: 
---
-
-CREATE TABLE media_region (
-    media_region_id smallint NOT NULL,
-    region character varying(4) NOT NULL
-);
-
-
-ALTER TABLE public.media_region OWNER TO movies;
-
---
--- Name: media_storage; Type: TABLE; Schema: public; Owner: movies; Tablespace: 
---
-
-CREATE TABLE media_storage (
-    media_storage_id smallint NOT NULL,
-    media_storage character(6) NOT NULL
-);
-
-
-ALTER TABLE public.media_storage OWNER TO movies;
 
 --
 -- Name: movie_id; Type: SEQUENCE; Schema: public; Owner: movies
@@ -243,10 +153,10 @@ CREATE TABLE movie (
     runtime smallint,
     synopsis text,
     release_year smallint,
+    watched boolean DEFAULT false NOT NULL,
     has_image boolean DEFAULT false NOT NULL,
     hd boolean DEFAULT false NOT NULL,
     certificate_id smallint,
-    media_id smallint,
     width smallint DEFAULT 0 NOT NULL,
     height smallint DEFAULT 0 NOT NULL
 );
@@ -377,22 +287,6 @@ CREATE SEQUENCE user_movie_downloaded_id_seq
 ALTER TABLE public.user_movie_downloaded_id_seq OWNER TO movies;
 
 --
--- Name: user_movie_downloaded; Type: TABLE; Schema: public; Owner: movies; Tablespace: 
---
-
-CREATE TABLE user_movie_downloaded (
-    id smallint DEFAULT nextval('user_movie_downloaded_id_seq'::regclass) NOT NULL,
-    user_id smallint NOT NULL,
-    movie_id smallint NOT NULL,
-    date_downloaded timestamp(6) without time zone NOT NULL,
-    filesize numeric(4,2) NOT NULL,
-    status character varying(11)
-);
-
-
-ALTER TABLE public.user_movie_downloaded OWNER TO movies;
-
---
 -- Name: user_movie_favourite_id_seq; Type: SEQUENCE; Schema: public; Owner: movies
 --
 
@@ -488,38 +382,6 @@ ALTER TABLE ONLY keyword
 
 
 --
--- Name: media_format_pkey; Type: CONSTRAINT; Schema: public; Owner: movies; Tablespace: 
---
-
-ALTER TABLE ONLY media_format
-    ADD CONSTRAINT media_format_pkey PRIMARY KEY (media_format_id);
-
-
---
--- Name: media_pkey; Type: CONSTRAINT; Schema: public; Owner: movies; Tablespace: 
---
-
-ALTER TABLE ONLY media
-    ADD CONSTRAINT media_pkey PRIMARY KEY (media_id);
-
-
---
--- Name: media_region_pkey; Type: CONSTRAINT; Schema: public; Owner: movies; Tablespace: 
---
-
-ALTER TABLE ONLY media_region
-    ADD CONSTRAINT media_region_pkey PRIMARY KEY (media_region_id);
-
-
---
--- Name: media_storage_pkey; Type: CONSTRAINT; Schema: public; Owner: movies; Tablespace: 
---
-
-ALTER TABLE ONLY media_storage
-    ADD CONSTRAINT media_storage_pkey PRIMARY KEY (media_storage_id);
-
-
---
 -- Name: mg; Type: CONSTRAINT; Schema: public; Owner: movies; Tablespace: 
 --
 
@@ -533,14 +395,6 @@ ALTER TABLE ONLY movie_genre
 
 ALTER TABLE ONLY movie_keyword
     ADD CONSTRAINT mk UNIQUE (movie_id, keyword_id);
-
-
---
--- Name: movie_loaned_pkey; Type: CONSTRAINT; Schema: public; Owner: movies; Tablespace: 
---
-
-ALTER TABLE ONLY media_loaned
-    ADD CONSTRAINT movie_loaned_pkey PRIMARY KEY (id);
 
 
 --
@@ -573,46 +427,6 @@ ALTER TABLE ONLY person
 
 ALTER TABLE ONLY role
     ADD CONSTRAINT role_pkey PRIMARY KEY (role_id);
-
-
---
--- Name: user_movie_downloaded_pkey; Type: CONSTRAINT; Schema: public; Owner: movies; Tablespace: 
---
-
-ALTER TABLE ONLY user_movie_downloaded
-    ADD CONSTRAINT user_movie_downloaded_pkey PRIMARY KEY (id);
-
-
---
--- Name: user_movie_favourite_pkey; Type: CONSTRAINT; Schema: public; Owner: movies; Tablespace: 
---
-
-ALTER TABLE ONLY user_movie_favourite
-    ADD CONSTRAINT user_movie_favourite_pkey PRIMARY KEY (id);
-
-
---
--- Name: user_movie_favourite_user_id_movie_id_key; Type: CONSTRAINT; Schema: public; Owner: movies; Tablespace: 
---
-
-ALTER TABLE ONLY user_movie_favourite
-    ADD CONSTRAINT user_movie_favourite_user_id_movie_id_key UNIQUE (user_id, movie_id);
-
-
---
--- Name: user_movie_watched_pkey; Type: CONSTRAINT; Schema: public; Owner: movies; Tablespace: 
---
-
-ALTER TABLE ONLY user_movie_watched
-    ADD CONSTRAINT user_movie_watched_pkey PRIMARY KEY (id);
-
-
---
--- Name: user_pkey; Type: CONSTRAINT; Schema: public; Owner: movies; Tablespace: 
---
-
-ALTER TABLE ONLY "user"
-    ADD CONSTRAINT user_pkey PRIMARY KEY (user_id);
 
 
 --
@@ -650,45 +464,6 @@ CREATE UNIQUE INDEX movie_role_person_idx ON movie_role USING btree (movie_id, r
 --
 
 CREATE INDEX person_idx ON person USING btree (person_name);
-
-
---
--- Name: user_movie_favourite_user_id_movie_id_idx; Type: INDEX; Schema: public; Owner: movies; Tablespace: 
---
-
-CREATE UNIQUE INDEX user_movie_favourite_user_id_movie_id_idx ON user_movie_favourite USING btree (user_id, movie_id);
-
-
---
--- Name: media_loaned_media_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: movies
---
-
-ALTER TABLE ONLY media_loaned
-    ADD CONSTRAINT media_loaned_media_id_fkey FOREIGN KEY (media_id) REFERENCES media(media_id);
-
-
---
--- Name: media_media_format_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: movies
---
-
-ALTER TABLE ONLY media
-    ADD CONSTRAINT media_media_format_id_fkey FOREIGN KEY (media_format_id) REFERENCES media_format(media_format_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
-
-
---
--- Name: media_media_region_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: movies
---
-
-ALTER TABLE ONLY media
-    ADD CONSTRAINT media_media_region_id_fkey FOREIGN KEY (media_region_id) REFERENCES media_region(media_region_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
-
-
---
--- Name: media_media_storage_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: movies
---
-
-ALTER TABLE ONLY media
-    ADD CONSTRAINT media_media_storage_id_fkey FOREIGN KEY (media_storage_id) REFERENCES media_storage(media_storage_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
 
 
 --
@@ -732,14 +507,6 @@ ALTER TABLE ONLY movie_keyword
 
 
 --
--- Name: movie_media_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: movies
---
-
-ALTER TABLE ONLY movie
-    ADD CONSTRAINT movie_media_id_fkey FOREIGN KEY (media_id) REFERENCES media(media_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
-
-
---
 -- Name: movie_role_movie_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: movies
 --
 
@@ -761,54 +528,6 @@ ALTER TABLE ONLY movie_role
 
 ALTER TABLE ONLY movie_role
     ADD CONSTRAINT movie_role_role_id_fkey FOREIGN KEY (role_id) REFERENCES role(role_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
-
-
---
--- Name: user_movie_downloaded_movie_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: movies
---
-
-ALTER TABLE ONLY user_movie_downloaded
-    ADD CONSTRAINT user_movie_downloaded_movie_id_fkey FOREIGN KEY (movie_id) REFERENCES movie(movie_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
-
-
---
--- Name: user_movie_downloaded_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: movies
---
-
-ALTER TABLE ONLY user_movie_downloaded
-    ADD CONSTRAINT user_movie_downloaded_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(user_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
-
-
---
--- Name: user_movie_favourite_movie_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: movies
---
-
-ALTER TABLE ONLY user_movie_favourite
-    ADD CONSTRAINT user_movie_favourite_movie_id_fkey FOREIGN KEY (movie_id) REFERENCES movie(movie_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
-
-
---
--- Name: user_movie_favourite_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: movies
---
-
-ALTER TABLE ONLY user_movie_favourite
-    ADD CONSTRAINT user_movie_favourite_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(user_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
-
-
---
--- Name: user_movie_watched_movie_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: movies
---
-
-ALTER TABLE ONLY user_movie_watched
-    ADD CONSTRAINT user_movie_watched_movie_id_fkey FOREIGN KEY (movie_id) REFERENCES movie(movie_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
-
-
---
--- Name: user_movie_watched_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: movies
---
-
-ALTER TABLE ONLY user_movie_watched
-    ADD CONSTRAINT user_movie_watched_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(user_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
 
 
 --
