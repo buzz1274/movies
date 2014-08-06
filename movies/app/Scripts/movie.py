@@ -140,14 +140,14 @@ class Movie():
         if movies:
             for line in movies:
                 line = re.search(self.config.regex_pattern, line)
-                if (line and line.group(1) and line.group(2) and
-                    line.group(3) and line.group(4) and
-                    line.group(5) and re.match("[^0-9]", line.group(5))):
+                if (line and line.group(2) and line.group(3) and
+                    line.group(4) and line.group(5) and
+                    line.group(6) and re.match("[^0-9]", line.group(6))):
 
-                    title = line.group(4)
-                    path = line.group(2)
-                    filesize = line.group(1)
-                    imdb_id = line.group(5)
+                    title = line.group(5)
+                    path = line.group(3)
+                    filesize = line.group(2)
+                    imdb_id = line.group(6)
 
                     self.movie = self.get(imdb_id)
 
@@ -451,9 +451,12 @@ class Movie():
         path = '%s/%s' % (self.config.path.replace('/Movies', ''),
                           path,)
 
-        output = subprocess.Popen(["ffmpeg","-i", path],
-                                  stdout=subprocess.PIPE,
-                                  stderr=subprocess.STDOUT)
+        try:
+            output = subprocess.Popen(["ffmpeg","-i", path],
+                                      stdout=subprocess.PIPE,
+                                      stderr=subprocess.STDOUT)
+        except:
+            return [0,0,0,True]
 
         while True:
             line =  output.stdout.readline()
