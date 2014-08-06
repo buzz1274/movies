@@ -6,7 +6,7 @@ import os
 import sys
 import subprocess
 
-MOVIES_TO_POPULATE = 1
+MOVIES_TO_POPULATE = 5
 config = Config()
 
 if os.listdir(config.path):

@@ -32,6 +32,7 @@ class IMDB(object):
     certificate = None
     plot_keywords = []
     rating_only = False
+    run_time = False
 
     def __init__(self, imdb_id, rating_only = False):
         """
@@ -65,6 +66,7 @@ class IMDB(object):
                 self._set_release_date()
                 self._set_directors()
                 self._set_actors()
+                self._set_runtime()
 
         except Exception, e:
             print "failed", e
@@ -278,3 +280,15 @@ class IMDB(object):
         except Exception, e:
             raise IMDBException('Unable to retrieve synopsis(%s)(%s)' %
                                  (self.imdb_id, e))
+
+    def _set_runtime(self):
+        """
+        sets the movie runtime
+        """
+        try:
+            tags = self.page.find('time', itemprop='duration')
+            if tags and tags.contents:
+                self.runtime = re.sub('[^0-9]', '', tags.contents[0])
+        except Exception, e:
+            raise IMDBException('Unable to retrieve run time(%s)(%s)' %
+                                (self.imdb_id, e))

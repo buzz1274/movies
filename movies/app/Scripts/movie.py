@@ -244,6 +244,11 @@ class Movie():
                     release_year = self.movie.release_year
                 else:                             
                     release_year = imdb.release_year
+
+                if not self.movie['runtime']:
+                    runtime = imdb.runtime
+                else:
+                    runtime = self.movie['runtime']
                     
                 query = self.config.movie_table.update().\
                                 where(self.config.movie_table.c.imdb_id==\
@@ -252,6 +257,7 @@ class Movie():
                                        imdb_rating=imdb.rating,
                                        certificate_id=certificate,
                                        synopsis=synopsis,
+                                       runtime=runtime,
                                        release_year=release_year,
                                        has_image=bool(imdb.image_path),
                                        date_last_scraped=func.now())
