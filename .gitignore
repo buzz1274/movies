@@ -12,4 +12,5 @@ movies/app/Console
 movies/app/tmp/
 .vagrant/
 movies.komodoproject
+movies.sql
 
