@@ -15,7 +15,6 @@ define(function(require, exports, module) {
             'click img.paging_link': 'paging'
         },
         initialize: function() {
-            $('#pagination').css('display', 'none');
         },
         render: function(type) {
             if(type == 'summary') {

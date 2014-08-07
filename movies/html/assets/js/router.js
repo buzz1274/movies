@@ -34,27 +34,39 @@ define(function(require, exports, module) {
                                                        template:'MovieHeaderTemplate'}),
                 movieCollection = new MovieCollection(),
                 movieCollectionView = new MovieCollectionView({model: movieCollection}),
-                moviePagingView = new MoviePagingView();
+                moviePagingView = new MoviePagingView({model: movieSummary});
 
             State.populateWithQueryStringValues(query_string);
-            movieSummary.fetch({data:State.getState().Params});
 
-            $('#movies_table').empty().append(tableHeaderView.render());
+            movieSummary.fetch({
+                data: State.getState().Params,
+                success: function () {
+                    $('#movies_table').empty().append(tableHeaderView.render());
 
-            movieCollection.fetch({
-                data:State.getState().Params,
-                success:function() {
-                    $('#movies_table').append(movieCollectionView.render().el);
-                    $('#pagination').empty().append(moviePagingView.render('summary').el);
+                    if(!movieSummary.get('totalMovies')) {
+                        Interface.loadingImage(false);
+                        $('#movies_table').append(movieCollectionView.render().el);
+                    } else {
+                        movieCollection.fetch({
+                            data: State.getState().Params,
+                            success: function () {
+                                $('#movies_table').append(movieCollectionView.render().el);
+                                $('#pagination').empty().append(moviePagingView.render('summary').el);
 
-                    Interface.loadingImage(false);
+                                Interface.loadingImage(false);
+                            },
+                            error: function () {
+                                //display error page
+                                Interface.loadingImage(false);
+                            }
+                        })
+                    }
                 },
-                error:function() {
-                    $('#movies_table').append(movieCollectionView.render().el);
-
+                error: function() {
+                    //display error page
                     Interface.loadingImage(false);
                 }
-            })
+            });
         },
         downloadQueue:function(query_string) {
             Interface.loadingImage(true);
