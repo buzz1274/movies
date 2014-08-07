@@ -13,6 +13,10 @@ body {
     margin-left:auto;
     max-width: 1200px;
 }
+#javascript_alert {
+    text-align:center;
+    font-weight:bold;
+}
 .navbar-inner {
     z-index:10;
 }

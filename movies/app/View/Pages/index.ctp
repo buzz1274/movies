@@ -14,6 +14,9 @@
     </head>
     <body id="body">
         <div class="container-fluid">
+            <div id="javascript_alert">
+                This site requires javascript. Please enable in your browser.
+            </div>
             <div id="content" class="row-fluid">
                 <div id="movies_search" class="span4"></div>
                 <div id="movies_list" class="span8">

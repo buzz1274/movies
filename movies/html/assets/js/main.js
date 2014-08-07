@@ -2,11 +2,13 @@ require(["config"], function() {
     require(["app", "router", "helper/state",
              "views/header", "views/movie/search",
              "models/movie/summary",
-             "models/user/user"], function(app, Router, State,
-                                           HeaderView, MovieSearchView,
-                                           movieSummary, user) {
+             "models/user/user", "bootstrap"],
+        function(app, Router, State, HeaderView, MovieSearchView,
+                 movieSummary, user, $) {
 
         "use strict"
+
+        $('#javascript_alert').remove();
 
         //FIX ME::Need to get genre types and initial counts
 
