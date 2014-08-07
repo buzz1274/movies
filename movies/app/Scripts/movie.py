@@ -263,9 +263,13 @@ class Movie():
                                        date_last_scraped=func.now())
 
                 self.config.db.execute(query)
-                save_path = "%s/%s/%s.jpg" % (self.config.image_save_path, 'movies', imdb_id)
+                movie_save_directory = '%s/%s' % (self.config.image_save_path, 'movies',)
+                save_path = "%s/%s.jpg" % (movie_save_directory, imdb_id)
 
                 if not os.path.isfile(save_path) and imdb.image_path:
+                    if not os.path.exists(movie_save_directory):
+                        os.makedirs(movie_save_directory)
+
                     image = urllib.urlretrieve(imdb.image_path, save_path)
 
                     if not os.path.isfile(save_path):
@@ -374,14 +378,18 @@ class Movie():
                 self.config.db.execute(query)                                            
 
             except exc.IntegrityError:
-                pass                                                
-                                                  
+                pass
+
             if role == 'actor' and name['image_src']:
+                cast_save_directory = '%s/%s' % \
+                               (self.config.image_save_path, 'movies',)
                 save_path = "%s/%s/%s.jpg" %\
-                               (self.config.image_save_path,
-                                'cast', name['id'],)
+                               (cast_save_directory, name['id'],)
 
                 if not os.path.isfile(save_path) and name['image_src']:
+                    if not os.path.exists(cast_save_directory):
+                        os.makedirs(cast_save_directory)
+
                     image = urllib.urlretrieve(name['image_src'], save_path)
 
                     if not os.path.isfile(save_path):
