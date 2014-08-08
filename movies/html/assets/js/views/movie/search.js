@@ -72,14 +72,20 @@ define(function(require, exports, module) {
                 data:StateParams,
                 dataType: "json",
                 async:false,
+                context:this,
                 success:function(data) {
                     if(current_movie_id != data['movieID']) {
                         Backbone.history.navigate('/id='+data['movieID'],
                                                   {'trigger':true});
                     } else {
-                        //FIX ME BUG -- #294
                         window.location.assign('/#id='+data['movieID']+"&"+
                                                State.constructQueryString());
+
+                        State.populateWithQueryStringValues('id='+data['movieID']+"&"+
+                                                            State.constructQueryString());
+
+                        this.fillForm();
+                        this.render();
                     }
                 },
                 error: function() {

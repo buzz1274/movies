@@ -100,9 +100,11 @@ define(function(require) {
             if(query_string == undefined || !query_string) {
                 this.reset(true);
             } else {
+
                 State.qs = query_string;
 
                 var page_in_params = false;
+
                 query_string.split('&').forEach(function(argument) {
                     if(argument) {
                         var fragment = argument.split('=');
