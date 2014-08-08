@@ -49,5 +49,8 @@
     Router::connect('/movies',
                     array('controller' => 'movies',
                           'action' => 'movies'));
+    Router::connect('/*',
+                    array('controller' => 'pages',
+                          'action' => 'index'));
 
 
