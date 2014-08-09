@@ -9,7 +9,7 @@ movie = Movie()
 current_genres = movie.current_genres()
 current_certificates = movie.current_certificates()
 
-#movie.update_rating()
+movie.update_rating()
 movie.update_movies()
 movie.update_invalid_movies()
 
