@@ -13,6 +13,8 @@ if not os.path.isdir(config.backup_path):
     sys.exit()
 
 sql_dump_file = 'movies.sql'
+os.popen('export PGPASSWORD="%s";psql -U%s %s -c "VACUUM ANALYZE;" > /dev/null 2>&1' %
+         (config.db_password, config.db_user, config.db_name,))
 os.popen('export PGPASSWORD="%s";pg_dump -U %s %s '
          '--inserts --clean > %s/%s' %
           (config.db_password, config.db_user,
