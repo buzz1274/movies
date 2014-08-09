@@ -156,6 +156,8 @@ class Movie():
                             not self.movie['runtime'] or not self.movie['width'] or
                             not self.movie['height']):
                             runtime, width, height, hd = self._scan_video(path)
+                            if not runtime:
+                                runtime = self.movie['runtime']
                         else:
                             runtime = self.movie['runtime']
                             hd = self.movie['hd']
@@ -174,6 +176,7 @@ class Movie():
                                             date_last_scanned=func.now())
                         self.config.db.execute(query)
                     else:
+                        print title
                         runtime, width, height, hd = self._scan_video(path)
                         query = self.config.movie_table.insert().\
                                      values(imdb_id=imdb_id,
@@ -230,10 +233,9 @@ class Movie():
 
             if imdb.title:
                 if not imdb.certificate:
-                    certificate = self.movie.certificate_id
+                    certificate_id = self.movie.certificate_id
                 else:
-                    certificate = select([self.config.certificate_table.c.certificate_id]).\
-                                   where(self.config.certificate_table.c.certificate==imdb.certificate)
+                    certificate_id = self.certificate(imdb.certificate)
 
                 if not imdb.synopsis:
                     synopsis = self.movie.synopsis
@@ -245,7 +247,7 @@ class Movie():
                 else:                             
                     release_year = imdb.release_year
 
-                if not self.movie['runtime']:
+                if not self.movie['runtime'] and imdb.runtime:
                     runtime = imdb.runtime
                 else:
                     runtime = self.movie['runtime']
@@ -255,7 +257,7 @@ class Movie():
                                       imdb_id).\
                                 values(title=imdb.title,
                                        imdb_rating=imdb.rating,
-                                       certificate_id=certificate,
+                                       certificate_id=certificate_id,
                                        synopsis=synopsis,
                                        runtime=runtime,
                                        release_year=release_year,
@@ -264,13 +266,13 @@ class Movie():
 
                 self.config.db.execute(query)
                 movie_save_directory = '%s/%s' % (self.config.image_save_path, 'movies',)
-                save_path = "%s/%s.jpg" % (movie_save_directory, imdb_id)
+                save_path = "%s/%s.jpg" % (movie_save_directory, imdb_id,)
 
                 if not os.path.isfile(save_path) and imdb.image_path:
                     if not os.path.exists(movie_save_directory):
                         os.makedirs(movie_save_directory)
 
-                    image = urllib.urlretrieve(imdb.image_path, save_path)
+                    urllib.urlretrieve(imdb.image_path, save_path)
 
                     if not os.path.isfile(save_path):
                         raise MovieException('error saving movie image(%s)' %
@@ -288,8 +290,8 @@ class Movie():
                 if imdb.plot_keywords:
                     self._add_keywords(imdb.plot_keywords)
 
-        except Exception, e:    
-            print e        
+        except Exception, e:
+            print Exception, e
             pass
 
     def get(self, imdb_id):
@@ -339,22 +341,6 @@ class Movie():
         
         return person_id
 
-    def genre(self, genre):
-        """
-        gets the genre ID for the supplied genre.If the genre doesn't
-        exist it will be added
-        """
-        query = select([self.config.genre_table.c.genre_id]).\
-                where(self.config.genre_table.c.genre==genre)
-        genre_id = self.config.db.execute(query).scalar()
-
-        if not genre_id:
-            query = self.config.genre_table.insert().values(genre=genre)
-            self.config.db.execute(query)
-            genre_id = self.genre(genre)
-
-        return genre_id
-
     def _add_role(self, names, role):
         """
         adds a new role to the current movie
@@ -383,20 +369,72 @@ class Movie():
             if role == 'actor' and name['image_src']:
                 cast_save_directory = '%s/%s' % \
                                (self.config.image_save_path, 'movies',)
-                save_path = "%s/%s/%s.jpg" %\
+                save_path = "%s/%s.jpg" %\
                                (cast_save_directory, name['id'],)
 
                 if not os.path.isfile(save_path) and name['image_src']:
                     if not os.path.exists(cast_save_directory):
                         os.makedirs(cast_save_directory)
 
-                    image = urllib.urlretrieve(name['image_src'], save_path)
+                    urllib.urlretrieve(name['image_src'], save_path)
 
                     if not os.path.isfile(save_path):
                         raise MovieException('error saving cast image(%s)' %
                                               (self.imdb_id))
 
+    def certificate(self, certificate):
+        """
+        gets the certificate ID for the supplied certificate.
+        If the certificate doesn't exist it will be added
+        """
+        query = select([self.config.certificate_table.c.certificate_id]). \
+            where(self.config.certificate_table.c.certificate==certificate)
+        certificate_id = self.config.db.execute(query).scalar()
 
+        if not certificate_id:
+            order = int(self.config.db.execute(
+                        select([func.max(self.config.certificate_table.c.order)])).\
+                        scalar()) + 1
+            self.config.db.execute(self.config.certificate_table.insert().values(
+                                        certificate=certificate,
+                                        order=order))
+            certificate_id = self.certificate(certificate)
+
+        return certificate_id
+
+    def current_certificates(self):
+        """
+        returns all current certificates in a list
+        :return: list
+        """
+        return [result[0] for result in
+                self.config.db.execute(select([self.config.certificate_table.c.certificate])). \
+                    fetchall()]
+
+    def genre(self, genre):
+        """
+        gets the genre ID for the supplied genre.If the genre doesn't
+        exist it will be added
+        """
+        query = select([self.config.genre_table.c.genre_id]). \
+            where(self.config.genre_table.c.genre==genre)
+        genre_id = self.config.db.execute(query).scalar()
+
+        if not genre_id:
+            query = self.config.genre_table.insert().values(genre=genre)
+            self.config.db.execute(query)
+            genre_id = self.genre(genre)
+
+        return genre_id
+
+    def current_genres(self):
+        """
+        returns all current genres in a list
+        :return: list
+        """
+        return [result[0] for result in
+                  self.config.db.execute(select([self.config.genre_table.c.genre])).\
+                       fetchall()]
 
     def _add_genre(self, genres):
         """
