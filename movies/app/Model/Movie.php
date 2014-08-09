@@ -16,14 +16,14 @@
 
         public $hasMany = array(
             'Watched' =>
-                array('className'             => 'UserMovieWatched',
-                      'joinTable'             => 'user_movie_watched',
-                      'foreignKey'            => 'movie_id',
-                      'order'                 => 'date_watched ASC NULLS FIRST'),
+                array('className'  => 'UserMovieWatched',
+                      'joinTable' => 'user_movie_watched',
+                      'foreignKey' => 'movie_id',
+                      'order' => 'date_watched ASC NULLS FIRST'),
             'Favourite' =>
-                array('className'             => 'UserMovieFavourite',
-                      'joinTable'             => 'user_movie_favourite',
-                      'foreignKey'            => 'movie_id'));
+                array('className' => 'UserMovieFavourite',
+                      'joinTable' => 'user_movie_favourite',
+                      'foreignKey' => 'movie_id'));
 
         public $hasAndBelongsToMany = array(
             'Genre' =>
@@ -405,7 +405,8 @@
 
                 if(isset($this->_search['cid']) && $this->_search['cid']) {
                     $certificateQuery =
-                        "AND Movie.certificate_id = ANY(ARRAY[".implode(',', $this->_search['cid'])."])";
+                        "AND Movie.certificate_id::VARCHAR = ANY(regexp_split_to_array(:cid, ','))";
+                    $queryParameters['cid'] = implode(',', $this->_search['cid']);
                 }
 
                 if(isset($this->_search['keywordID']) && $this->_search['keywordID']) {
@@ -416,29 +417,39 @@
                 if(isset($this->_search['search']) && $this->_search['search']) {
                     if($this->_search['search_type'] == 'all') {
                         $searchQuery =
-                            "AND ((Movie.title ILIKE '%".$this->_search['search']."%') OR ".
-                            "     (Movie.synopsis ILIKE '%".$this->_search['search']."%') OR ".
-                            "     (person.person_name ILIKE '%".$this->_search['search']."%') OR ".
-                            "     (Movie.imdb_id = '".$this->_search['search']."') OR ".
-                            "     (keyword.keyword ILIKE '%".$this->_search['search']."%'))";
+                            "AND ((Movie.title ILIKE :search) OR ".
+                            "     (Movie.synopsis ILIKE :search) OR ".
+                            "     (person.person_name ILIKE :search) OR ".
+                            "     (Movie.imdb_id = :imdb_search) OR ".
+                            "     (keyword.keyword ILIKE :search))";
+
+                        $queryParameters['search'] = '%'.$this->_search['search'].'%';
+                        $queryParameters['imdb_search'] = $this->_search['search'];
+
                     } elseif($this->_search['search_type'] == 'keyword' &&
                              !$this->_search['keywordID']) {
                         $searchQuery =
-                            "AND keyword.keyword ILIKE '%".$this->_search['search']."%' ";
+                            "AND keyword.keyword ILIKE :search ";
+                        $queryParameters['search'] = '%'.$this->_search['search'].'%';
+
                     } elseif($this->_search['search_type'] == 'cast' &&
                              !$this->_search['personID']) {
                         $searchQuery =
-                            "AND person.person_name ILIKE '%".$this->_search['search']."%' ";
+                            "AND person.person_name ILIKE :search ";
+                        $queryParameters['search'] = '%'.$this->_search['search'].'%';
+
                     } elseif($this->_search['search_type'] == 'title') {
                         $searchQuery =
-                            "AND Movie.title ILIKE '%".$this->_search['search']."%' ";
+                            "AND Movie.title ILIKE :search ";
+                        $queryParameters['search'] = '%'.$this->_search['search'].'%';
                     }
                 }
 
                 if(isset($this->_search['hd']) &&
                    $this->_search['hd'] !== false) {
                     $HDQuery =
-                        "AND Movie.hd = '".(int)$this->_search['hd']."'";
+                        "AND Movie.hd = :hd";
+                    $queryParameters['hd'] = (int)$this->_search['hd'];
                 }
 
                 if(isset($this->_search['watched']) &&
@@ -463,8 +474,10 @@
                     if(isset($this->_search[$field]) &&
                        is_array($this->_search[$field])) {
                         ${$field.'Query'} = 'AND Movie.'.$field.' BETWEEN
-                                            '.$this->_search[$field]['min'].' AND '.
-                                            $this->_search[$field]['max'];
+                                            :'.$field.'_min AND :'.$field.'_max';
+                        $queryParameters[$field.'_min'] = $this->_search[$field]['min'];
+                        $queryParameters[$field.'_max'] = $this->_search[$field]['max'];
+
                     }
                 }
 
@@ -498,10 +511,10 @@
                      '                  (Movie.certificate_id = certificate.certificate_id) '.
                      '        LEFT JOIN user_movie_favourite ON '.
                      '                  (    Movie.movie_id = user_movie_favourite.movie_id '.
-                     '                   AND user_movie_favourite.user_id = '.$this->_search['userID'].') '.
+                     '                   AND user_movie_favourite.user_id = :userID) '.
                      '        LEFT JOIN user_movie_watched ON '.
                      '                  (    Movie.movie_id = user_movie_watched.movie_id '.
-                     '                   AND user_movie_watched.user_id = '.$this->_search['userID'].') '.
+                     '                   AND user_movie_watched.user_id = :userID) '.
                      ($personQuery || $searchQuery ?
                      '        LEFT JOIN (SELECT person.person_id, person.person_name, '.
                      '                          movie_role.movie_id '.
@@ -536,6 +549,8 @@
                                             $orderQuery.' '.
                                             $limitQuery.' ').
                       '      ) AS results';
+
+            $queryParameters['userID'] = $this->_search['userID'];
 
             if(is_array($results = $db->fetchAll($query, $queryParameters)) &&
                $resultType == 'summary') {
@@ -688,6 +703,9 @@
          * @return mixed
          */
         private function _castCount($movieID) {
+
+
+
             $castCount = false;
             $db = $this->getDataSource();
             $query = 'SELECT   movie_role.person_id, COUNT(DISTINCT r.movie_id) '.
