@@ -176,7 +176,6 @@ class Movie():
                                             date_last_scanned=func.now())
                         self.config.db.execute(query)
                     else:
-                        print title
                         runtime, width, height, hd = self._scan_video(path)
                         query = self.config.movie_table.insert().\
                                      values(imdb_id=imdb_id,
