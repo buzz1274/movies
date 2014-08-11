@@ -755,7 +755,7 @@
             return $genreCount;
 
         }
-        //end _keywordCount
+        //end _genreCount
 
         /**
          * retrieves a movie count for all keywords attached to
@@ -765,20 +765,22 @@
          * @return mixed
          */
         private function _keywordCount($movieID) {
-            $keywordCount = false;
-            $db = $this->getDataSource();
-            $query = 'SELECT   movie_keyword.keyword_id, COUNT(mk.movie_id) '.
-                     'FROM     movie_keyword '.
-                     'JOIN     movie_keyword AS mk ON (mk.keyword_id = movie_keyword.keyword_id) '.
-                     'WHERE    movie_keyword.movie_id = :movie_id '.
-                     'GROUP BY movie_keyword.keyword_id';
 
-            if(is_array($results = $db->fetchAll($query, array('movie_id' => $movieID)))) {
+            $results = $this->MovieKeyword->find('all',
+                array('fields' => array('keyword_id',
+                                        'COUNT(DISTINCT mk.movie_id)'),
+                      'joins' => array(array('table' => 'movie_keyword',
+                                             'alias' => 'mk',
+                                             'conditions' => 'mk.keyword_id = MovieKeyword.keyword_id')),
+                      'conditions' => array('MovieKeyword.movie_id' => $movieID),
+                      'group' => 'MovieKeyword.keyword_id'));
+
+            if(!is_array($results)) {
+                $keywordCount = false;
+            } else {
                 foreach($results as $result) {
-                    $result = array_pop($result);
-                    $keywordCount[$result['keyword_id']] = $result['count'];
+                    $keywordCount[$result['MovieKeyword']['keyword_id']] = $result[0]['count'];
                 }
-
             }
 
             return $keywordCount;
