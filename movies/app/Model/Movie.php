@@ -724,7 +724,7 @@
             return $castCount;
 
         }
-        //end _keywordCount
+        //end _castCount
 
         /**
          * retrieves a movie count for all genres attached to
@@ -734,20 +734,22 @@
          * @return mixed
          */
         private function _genreCount($movieID) {
-            $genreCount = false;
-            $db = $this->getDataSource();
-            $query = 'SELECT   movie_genre.genre_id, COUNT(mg.movie_id) '.
-                     'FROM     movie_genre '.
-                     'JOIN     movie_genre AS mg ON (mg.genre_id = movie_genre.genre_id) '.
-                     'WHERE    movie_genre.movie_id = :movie_id '.
-                     'GROUP BY movie_genre.genre_id';
 
-            if(is_array($results = $db->fetchAll($query, array('movie_id' => $movieID)))) {
+            $results = $this->MovieGenre->find('all',
+                array('fields' => array('genre_id',
+                                        'COUNT(DISTINCT mg.movie_id)'),
+                    'joins' => array(array('table' => 'movie_genre',
+                                           'alias' => 'mg',
+                                           'conditions' => 'mg.genre_id = MovieGenre.genre_id')),
+                    'conditions' => array('MovieGenre.movie_id' => $movieID),
+                    'group' => 'MovieGenre.genre_id'));
+
+            if(!is_array($results)) {
+                $genreCount = false;
+            } else {
                 foreach($results as $result) {
-                    $result = array_pop($result);
-                    $genreCount[$result['genre_id']] = $result['count'];
+                    $genreCount[$result['MovieGenre']['genre_id']] = $result[0]['count'];
                 }
-
             }
 
             return $genreCount;
