@@ -704,20 +704,20 @@
          */
         private function _castCount($movieID) {
 
+            $results = $this->MovieRole->find('all',
+                            array('fields' => array('person_id',
+                                                    'COUNT(DISTINCT mr.movie_id)'),
+                                  'joins' => array(array('table' => 'movie_role',
+                                                         'alias' => 'mr',
+                                                         'conditions' => 'mr.person_id = MovieRole.person_id')),
+                                  'conditions' => array('MovieRole.movie_id' => $movieID),
+                                  'group' => 'MovieRole.person_id'));
 
-
-            $castCount = false;
-            $db = $this->getDataSource();
-            $query = 'SELECT   movie_role.person_id, COUNT(DISTINCT r.movie_id) '.
-                     'FROM     movie_role '.
-                     'JOIN     movie_role AS r ON (r.person_id = movie_role.person_id) '.
-                     'WHERE    movie_role.movie_id = :movie_id '.
-                     'GROUP BY movie_role.person_id';
-
-            if(is_array($results = $db->fetchAll($query, array('movie_id' => $movieID)))) {
+            if(!is_array($results)) {
+                $castCount = false;
+            } else {
                 foreach($results as $result) {
-                    $result = array_pop($result);
-                    $castCount[$result['person_id']] = $result['count'];
+                    $castCount[$result['MovieRole']['person_id']] = $result[0]['count'];
                 }
             }
 
