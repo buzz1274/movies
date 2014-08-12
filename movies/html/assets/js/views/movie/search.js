@@ -106,22 +106,24 @@ define(function(require, exports, module) {
             if(ev.keyCode == 13) {
                 this.search(ev, false);
             } else {
-                var search = $('#search_input').val() + String.fromCharCode(ev.keyCode);
+                var search = $('#search_input').val() + String.fromCharCode(ev.keyCode),
+                    search_type = $('input:radio[name=search_type]:checked').val();
 
                 if(search.length >= 3) {
                     $.ajax({
                         url:'/movies/autocomplete/',
-                        data:{'search':search},
+                        data:{'search':search,
+                              'search_type':search_type},
                         dataType: "json",
                         async:true,
                         success:function(data) {
                             if(data) {
                                 $("#search_input").autocomplete({
                                     source: data.dropdown,
-                                    select: function() {
+                                    select: function(event, ui) {
                                         State.reset(false);
                                         _.each(data.results, function(result) {
-                                            if(result.keyword == $('#search_input').val()) {
+                                            if(result.keyword == ui.item['value']) {
                                                 Backbone.history.navigate(
                                                     '#search_type='+result.search_type+
                                                     '&search='+encodeURIComponent(result.keyword),

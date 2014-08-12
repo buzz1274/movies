@@ -86,7 +86,8 @@
         public function autocomplete() {
 
             return new CakeResponse(array('body' =>
-                        json_encode($this->Movie->autocomplete($this->request->query['search']))));
+                        json_encode($this->Movie->autocomplete($this->request->query['search'],
+                                                               $this->request->query['search_type']))));
 
         }
         //end autocomplete

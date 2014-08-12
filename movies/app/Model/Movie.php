@@ -164,40 +164,59 @@
         /**
          * @author David
          * @param string $search
+         * @param string $searchType - [cast|keyword|all]title]
          * @return mixed
          */
-        public function autocomplete($search) {
-            $autocomplete = false;
-            $db = $this->getDataSource();
-            $query = "(SELECT movie_id AS idn, 'title' AS search_type, title AS keyword ".
-                     " FROM   movie ".
-                     " WHERE  title ILIKE :search_movie ".
-                     " LIMIT  :movie_limit) ".
-                     "UNION ALL ".
-                     "(SELECT person_id AS idn, 'cast' AS search_type, person_name AS keyword ".
-                     " FROM   person ".
-                     " WHERE  person_name ILIKE :search_person ".
-                     " LIMIT  :person_limit) ".
-                     "UNION ALL ".
-                     "(SELECT keyword_id AS idn, 'keyword' AS search_type, keyword ".
-                     " FROM   keyword ".
-                     " WHERE  keyword ILIKE :search_keyword ".
-                     " LIMIT  :keyword_limit)";
+        public function autocomplete($search, $searchType) {
 
-            if(is_array($results = $db->fetchAll($query, array('search_movie' => '%'.$search.'%',
-                                                               'movie_limit' => 10,
-                                                               'search_person' => '%'.$search.'%',
-                                                               'person_limit' => 10,
-                                                               'search_keyword' => '%'.$search.'%',
-                                                               'keyword_limit' => 5)))) {
+            $autocomplete = false;
+
+            if($searchType == 'all' || $searchType == 'title') {
+                $results = $this->find('all',
+                              array('fields' => array('movie_id AS idn',
+                                                      "'title' AS search_type",
+                                                      'title AS keyword'),
+                                    'recursive' => -1,
+                                    'conditions' => array('title ILIKE' => '%'.$search.'%'),
+                                    'limit' => '10'));
 
                 foreach($results as $result) {
-                    $result = array_pop($result);
-                    $autocomplete['dropdown'][] = $result['keyword'];
-                    $autocomplete['results'][] = array('keyword' => $result['keyword'],
-                                                       'search_type' => $result['search_type']);
+                    $autocomplete['dropdown'][] = $result[0]['keyword'];
+                    $autocomplete['results'][] = array('keyword' => $result[0]['keyword'],
+                                                       'search_type' => $result[0]['search_type']);
                 }
+            }
 
+            if($searchType == 'all' || $searchType == 'cast') {
+                $results = $this->Actor->find('all',
+                              array('fields' => array('person_id AS idn',
+                                                      "'cast' AS search_type",
+                                                      'person_name AS keyword'),
+                                                      'recursive' => -1,
+                                    'conditions' => array('person_name ILIKE' => '%'.$search.'%'),
+                                    'limit' => '10'));
+
+                foreach($results as $result) {
+                    $autocomplete['dropdown'][] = $result[0]['keyword'];
+                    $autocomplete['results'][] = array('keyword' => $result[0]['keyword'],
+                                                       'search_type' => $result[0]['search_type']);
+                }
+            }
+
+            if($searchType == 'all' || $searchType == 'keyword') {
+                $results = $this->Keyword->find('all',
+                              array('fields' => array('keyword_id AS idn',
+                                                      "'keyword' AS search_type",
+                                                      'keyword AS keyword'),
+                                    'recursive' => -1,
+                                    'conditions' => array('keyword ILIKE' => '%'.$search.'%'),
+                                    'limit' => '10'));
+
+                foreach($results as $result) {
+                    $autocomplete['dropdown'][] = $result[0]['keyword'];
+                    $autocomplete['results'][] = array('keyword' => $result[0]['keyword'],
+                                                       'search_type' => $result[0]['search_type']);
+                }
             }
 
             return $autocomplete;
