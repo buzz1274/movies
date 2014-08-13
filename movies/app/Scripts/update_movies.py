@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import smtplib
+import re
 from config import Config
 from email.mime.text import MIMEText
 from movie import Movie
@@ -13,10 +14,19 @@ movie.update_rating()
 movie.update_movies()
 movie.update_invalid_movies()
 
-print current_genres
-print current_certificates
-
 try:
+    imdb_ids = []
+    duplicate_imdb_ids = []
+    files = movie.scan_folders()
+
+    for file in files:
+        imdb_id = re.search("\[(tt[0-9]{1,})\]", file)
+        if imdb_id and imdb_id.group(1):
+            if imdb_id.group(1) in imdb_ids:
+                duplicate_imdb_ids.append(imdb_id.group(1))
+            else:
+                imdb_ids.append(imdb_id.group(1))
+
     invalid_movies = movie.find_invalid_movies()
     movies_missing_images = movie.find_missing_images()
     new_genres = list(set(movie.current_genres()) - set(current_genres))
@@ -24,7 +34,7 @@ try:
                             set(current_certificates))
 
     if (invalid_movies or movies_missing_images or new_genres or
-        new_certificates):
+        new_certificates or duplicate_imdb_ids):
 
         body = ""
         if invalid_movies:
@@ -47,6 +57,9 @@ try:
 
         if new_certificates:
             body += "New certificates added:\n%s\n" % ("\n".join(new_certificates),)
+
+        if duplicate_imdb_ids:
+            body += "Duplicate IMDB IDs Found:\n%s\n" % ("\n".join(duplicate_imdb_ids),)
 
         print body
 
