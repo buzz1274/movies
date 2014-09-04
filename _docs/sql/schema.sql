@@ -24,6 +24,20 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 SET search_path = public, pg_catalog;
 
+--
+-- Name: certificate_id; Type: SEQUENCE; Schema: public; Owner: movies
+--
+
+CREATE SEQUENCE certificate_id
+    START WITH 7
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.certificate_id OWNER TO movies;
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -33,7 +47,7 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE certificate (
-    certificate_id smallint NOT NULL,
+    certificate_id smallint DEFAULT nextval('certificate_id'::regclass) NOT NULL,
     certificate character varying(3) NOT NULL,
     "order" smallint NOT NULL
 );
@@ -86,40 +100,12 @@ ALTER TABLE public.keyword_id OWNER TO movies;
 --
 
 CREATE TABLE keyword (
-    keyword_id smallint DEFAULT nextval('keyword_id'::regclass) NOT NULL,
+    keyword_id integer DEFAULT nextval('keyword_id'::regclass) NOT NULL,
     keyword text NOT NULL
 );
 
 
 ALTER TABLE public.keyword OWNER TO movies;
-
---
--- Name: media_id; Type: SEQUENCE; Schema: public; Owner: movies
---
-
-CREATE SEQUENCE media_id
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.media_id OWNER TO movies;
-
---
--- Name: media_loaned_id_seq; Type: SEQUENCE; Schema: public; Owner: movies
---
-
-CREATE SEQUENCE media_loaned_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.media_loaned_id_seq OWNER TO movies;
 
 --
 -- Name: movie_id; Type: SEQUENCE; Schema: public; Owner: movies
@@ -182,7 +168,7 @@ ALTER TABLE public.movie_genre OWNER TO movies;
 
 CREATE TABLE movie_keyword (
     movie_id smallint NOT NULL,
-    keyword_id smallint NOT NULL,
+    keyword_id integer NOT NULL,
     "order" smallint DEFAULT 0 NOT NULL
 );
 
