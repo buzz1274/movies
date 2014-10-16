@@ -13,4 +13,5 @@ movies/app/tmp/
 .vagrant/
 movies.komodoproject
 movies.sql
-
+movies/html/assets/js/lib/*
+!movies/html/assets/js/lib/empty
