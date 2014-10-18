@@ -19,5 +19,8 @@
     "bootstrap": "3.2",
     "jquery-ui": "1.9",
     "text": "2.0"
+  },
+  "install" : {
+    "path" : "movies/html/assets/js/lib/"
   }
 }
