@@ -48,6 +48,10 @@ if (!defined('APP_DIR')) {
     define('APP_DIR', 'app');
 }
 
+if (!defined('CACHE')) {
+    define('CACHE', '/tmp/movies/');
+}
+
 /**
  * The absolute path to the "cake" directory, WITHOUT a trailing DS.
  *

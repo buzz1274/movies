@@ -75,13 +75,18 @@ class Config(object):
         """
         config = ConfigParser.ConfigParser()
         config.read(self.CONFIG_PATH)
+
+	if os.environ['POSTGRES_PORT_5432_TCP_ADDR']:
+	    self.db_host = os.environ['POSTGRES_PORT_5432_TCP_ADDR']
+        else:
+	    self.db_host = config.get('DB', 'db_host').strip('"')
+
         self.path = config.get('MEDIASERVER', 'path').strip('"')
         self.regex_pattern = config.get('MEDIASERVER', 'regex_pattern').strip('"')
         self.image_save_path = config.get('WEBESERVER', 'image_save_path').strip('"')
         self.db_engine = config.get('DB', 'db_engine').strip('"')
         self.db_user = config.get('DB', 'db_user').strip('"')
         self.db_password = config.get('DB', 'db_password').strip('"')
-        self.db_host = config.get('DB', 'db_host').strip('"')
         self.db_port = config.get('DB', 'db_port').strip('"')
         self.db_name = config.get('DB', 'db_name').strip('"')
         self.backup_path = config.get('BACKUP', 'backup_path').strip('"')
