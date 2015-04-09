@@ -76,10 +76,11 @@ class Config(object):
         config = ConfigParser.ConfigParser()
         config.read(self.CONFIG_PATH)
 
-	if os.environ['POSTGRES_PORT_5432_TCP_ADDR']:
-	    self.db_host = os.environ['POSTGRES_PORT_5432_TCP_ADDR']
+        if ('POSTGRES_PORT_5432_TCP_ADDR' in os.environ and
+            os.environ['POSTGRES_PORT_5432_TCP_ADDR']):
+            self.db_host = os.environ['POSTGRES_PORT_5432_TCP_ADDR']
         else:
-	    self.db_host = config.get('DB', 'db_host').strip('"')
+            self.db_host = config.get('DB', 'db_host').strip('"')
 
         self.path = config.get('MEDIASERVER', 'path').strip('"')
         self.regex_pattern = config.get('MEDIASERVER', 'regex_pattern').strip('"')
