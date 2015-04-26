@@ -63,11 +63,12 @@
 
         public function __construct() {
 
-	    if(!($db_host = getenv('POSTGRES_PORT_5432_TCP_ADDR'))) {
-   	        $db_host = $config['db_host'];
-	    }
-
             $config = parse_ini_file(dirname(__FILE__).'/config.ini');
+
+            if(!($db_host = getenv('POSTGRES_PORT_5432_TCP_ADDR'))) {
+                $db_host = $config['db_host'];
+            }
+
             $this->default = array(
                     'datasource' => $config['cake_db_engine'],
                     'persistent' => false,
