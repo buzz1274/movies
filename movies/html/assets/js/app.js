@@ -1,4 +1,4 @@
-define(function(require, exports, module) {
+define(function (require, exports, module) {
     "use strict";
 
     // Alias the module for easier identification.

@@ -1,5 +1,6 @@
 require(["config"], function () {
-    "use strict"
+    "use strict";
+
     require(["app", "router", "helper/state",
              "views/header", "views/movie/search",
              "models/movie/summary",
@@ -7,8 +8,6 @@ require(["config"], function () {
         function (app, Router, State, HeaderView, MovieSearchView,
                  movieSummary, user, $) {
             $('#javascript_alert').remove();
-
-            //FIX ME::Need to get genre types and initial counts
 
             user.fetch({}).done(function () {
 

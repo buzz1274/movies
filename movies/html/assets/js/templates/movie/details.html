@@ -144,38 +144,5 @@
                 </span>
             <% } %>
         </dl>
-        <dl>
-            <dt>
-                <strong>File:</strong>
-            </dt>
-            <dd>
-                <table class="table table-bordered table-condensed file">
-                    <tr>
-                        <td><strong>ID:</strong></td>
-                        <td><%= movie.Movie.movie_id %></td>
-                        <td><strong>Filesize:</strong></td>
-                        <td><%= movie.Movie.filesize %>GB</td>
-                        <td><strong>Resolution:</strong></td>
-                        <td>
-                            <%= movie.Movie.width %>x<%= movie.Movie.height %>
-                        </td>
-                        <td><strong>Type:</strong></td>
-                        <td>
-                            <%= movie.Movie.path.replace(/.*?\./g, '') %>
-                        </td>
-                    </tr>
-                    <% if (user.authenticated) {%>
-                        <tr>
-                            <td><strong>File:</strong></td>
-                            <td colspan="7">
-                                <a href="/movies/get/<%= movie.Movie.movie_id %>/">
-                                    <%= movie.Movie.path.replace(/.*\//g, '') %>
-                                </a>
-                            </td>
-                        </tr>
-                    <% } %>
-                </table>
-            </dd>
-        </dl>
     </div>
 </td>

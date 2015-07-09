@@ -33,8 +33,6 @@ class Config(object):
     email_address = None
 
     def __init__(self):
-        """
-        """
         try:
             self._set_config_variables()
             self.db = create_engine('%s://%s:%s@%s:%s/%s' %
@@ -76,14 +74,7 @@ class Config(object):
         config = ConfigParser.ConfigParser()
         config.read(self.CONFIG_PATH)
 
-        if ('POSTGRES_PORT_5432_TCP_ADDR' in os.environ and
-            os.environ['POSTGRES_PORT_5432_TCP_ADDR']):
-            self.db_host = os.environ['POSTGRES_PORT_5432_TCP_ADDR']
-        else:
-            self.db_host = config.get('DB', 'db_host').strip('"')
-
-        self.path = config.get('MEDIASERVER', 'path').strip('"')
-        self.regex_pattern = config.get('MEDIASERVER', 'regex_pattern').strip('"')
+        self.db_host = config.get('DB', 'db_host').strip('"')
         self.image_save_path = config.get('WEBESERVER', 'image_save_path').strip('"')
         self.db_engine = config.get('DB', 'db_engine').strip('"')
         self.db_user = config.get('DB', 'db_user').strip('"')

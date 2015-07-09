@@ -1,37 +1,21 @@
 from bs4 import BeautifulSoup
 from config import Config
-from sqlalchemy import *
+from sqlalchemy import exc, select
 import mechanize
 import re
 import os
-import sys
 import subprocess
 
 CLEAN_TITLE_REGEX = ':|/'
-MOVIES_TO_POPULATE = 5
+MOVIES_TO_POPULATE = 25
 config = Config()
-
-if os.listdir(config.path):
-    print "movies directory(%s) must be empty" % (config.path,)
-    sys.exit()
 
 movies = config.db.execute(select([config.movie_table.c.movie_id,
                                    config.movie_table.c.imdb_id,
                                    config.movie_table.c.title])).\
                            fetchall()
 
-if movies:
-    for movie in movies:
-        try:
-            file = '%s/%s[%s].mkv' % (config.path,
-                                      re.sub(CLEAN_TITLE_REGEX, '', movie['title']),
-                                      movie['imdb_id'],)
-            if not os.path.isfile(file):
-                open(file, 'a').close()
-        except UnicodeEncodeError:
-            pass
-
-else:
+if not movies or len(movies) < MOVIES_TO_POPULATE:
     browser = mechanize.Browser()
     browser.set_handle_robots(False)
     browser.addheaders = [('User-agent',
@@ -50,17 +34,19 @@ else:
         for tag in tags:
             link = tag.find('a')
             if movies_found < MOVIES_TO_POPULATE and link:
-                href = re.match('\/title\/(.*?)\/', link['href'])
+                href = re.match('/title/(.*?)/', link['href'])
                 movies_found += 1
                 if href:
-                    file = '%s/%s[%s].mkv' % \
-                            (config.path,
-                             re.sub(CLEAN_TITLE_REGEX, '', link.contents[0]),
-                             href.group(1),)
+                    query = config.movie_table.insert(). \
+                        values(imdb_id=href.group(1),
+                               title=re.sub(CLEAN_TITLE_REGEX, '',
+                                            link.contents[0]))
+                    try:
+                        config.db.execute(query)
+                    except exc.IntegrityError:
+                        pass
 
-                    if not os.path.isfile(file):
-                        open(file, 'a').close()
-
-    subprocess.call(["python", os.getcwd()+"/update_movies.py"])
+    subprocess.call(["python", os.path.dirname(os.path.realpath(__file__))+
+                               "/update_movies.py"])
 
 

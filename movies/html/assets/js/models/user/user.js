@@ -100,31 +100,6 @@ define(function(require) {
                 }
             );
         },
-        download:function(movie_id, download_id) {
-            var data = {'movie_id': movie_id,
-                        'download_id': download_id};
-
-            this.save(data,
-                {url:'/user/downloaded/',
-                    success:function() {
-                        if(download_id) {
-                            var message = 'Movie download cancelled';
-                        } else {
-                            var message = 'Movie queued for download';
-                        }
-                        Interface.messagePopup('success', message);
-                    },
-                    error:function(m, r) {
-                        if(download_id) {
-                            var message = 'An error occurred removing movie from download queue';
-                        } else {
-                            var message = 'An error occurred queuing movie for download';
-                        }
-                        Interface.messagePopup('error', message);
-                    }
-                }
-            );
-        },
         watched:function(movie_model, movie_summary, watched_id) {
             var movie = movie_model.get('Movie');
             var watched = movie_model.get('Watched');

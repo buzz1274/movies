@@ -11,7 +11,7 @@ define(function(require, exports, module) {
         user = require('models/user/user');
 
     module.exports = Backbone.View.extend({
-        template:_.template(MovieDetailsTemplate),
+        template: _.template(MovieDetailsTemplate),
         events: {
             'click a.watched_link': 'watched',
             'click a.unwatched_link': 'watched',
@@ -27,7 +27,7 @@ define(function(require, exports, module) {
             this.movie_summary = this.options.movie_summary;
             this.model.bind("change", _.bind(this.render, this));
         },
-        watched:function(ev) {
+        watched: function (ev) {
             user.watched(this.model, this.movie_summary,
                          $(ev.target).parent().attr('data-watched-id'));
         },
@@ -43,7 +43,7 @@ define(function(require, exports, module) {
                 $('#show_all_'+type+'_'+id).html('<a class="btn btn-mini">Show All</a>');
             }
         },
-        keywordSearch:function(ev) {
+        keywordSearch: function (ev) {
             State.reset(true);
             State.setStateParams('kid', $(ev.currentTarget).attr('data-keyword_id'));
             State.setStateParams('search', $(ev.currentTarget).attr('data-keyword'));

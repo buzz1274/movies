@@ -65,14 +65,10 @@
 
             $config = parse_ini_file(dirname(__FILE__).'/config.ini');
 
-            if(!($db_host = getenv('POSTGRES_PORT_5432_TCP_ADDR'))) {
-                $db_host = $config['db_host'];
-            }
-
             $this->default = array(
                     'datasource' => $config['cake_db_engine'],
                     'persistent' => false,
-                    'host' => $db_host,
+                    'host' => $config['db_host'],
                     'login' => $config['db_user'],
                     'password' => $config['db_password'],
                     'database' => $config['db_name'],

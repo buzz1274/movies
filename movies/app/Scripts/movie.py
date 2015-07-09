@@ -1,24 +1,17 @@
 #!/usr/bin/python2.7
 import os
-import re
-import csv
-import stat
-import json
 import sys
 import urllib
-import subprocess
 from sqlalchemy import *
 from sqlalchemy import exc
 from config import Config
 from imdb import IMDB
-from amazon import Amazon
 
 class MovieException(Exception):
     pass
 
-class Movie():
+class Movie:
 
-    days_before_price_update_due = 5
     config = None
     movie = []
 
@@ -27,21 +20,6 @@ class Movie():
             self.config = Config()
         except Exception, e:
             sys.exit("An Error Occurred %s " % e)
-
-    def scan_folders(self):
-        """
-        spiders the supplied drives and directories for files
-        @return string
-        """
-        movies = []
-        p = os.popen('find %s -type f -print0 | xargs -0 ls -l' % (self.config.path,))
-        while True:
-            line = p.readline()
-            if not line:
-                break
-            movies.append(line)
-
-        return movies
 
     def find_invalid_movies(self):
         """
@@ -96,19 +74,6 @@ class Movie():
 
         return movies_without_image
 
-    def rename_movie(self, old_path, new_path):
-        """
-        renames a movie
-        @param old_path: string
-        @param new_path: string
-        """
-        with settings(hide('running', 'stdout'), warn_only=True,
-                      host_string=self.config.hostname,
-                      user=self.config.username,
-                      password=self.config.password):
-            run(('mv "%s" "%s"' % (old_path, new_path)),
-                shell=False, pty=True, combine_stderr=True)
-
     def update_rating(self):
         """
         updates the rating for all movies that havn't been scraped in the
@@ -130,66 +95,6 @@ class Movie():
                                  values(imdb_rating=imdb.rating,
                                         date_last_scraped=func.now())
                     self.config.db.execute(query)
-
-    def update_movies(self):
-        """
-        parses the list of movies returned when scanning folders and
-        adds, updates and deletes movies as appropriate
-        """
-        movies = self.scan_folders()
-        if movies:
-            for line in movies:
-                line = re.search(self.config.regex_pattern, line)
-                if (line and line.group(2) and line.group(3) and
-                    line.group(4) and line.group(5) and
-                    line.group(6) and re.match("[^0-9]", line.group(6))):
-
-                    title = line.group(5)
-                    path = line.group(3)
-                    filesize = line.group(2)
-                    imdb_id = line.group(6)
-
-                    self.movie = self.get(imdb_id)
-
-                    if self.movie:
-                        if (int(self.movie['filesize']) != int(filesize) or
-                            not self.movie['runtime'] or not self.movie['width'] or
-                            not self.movie['height']):
-                            runtime, width, height, hd = self._scan_video(path)
-                            if not runtime:
-                                runtime = self.movie['runtime']
-                        else:
-                            runtime = self.movie['runtime']
-                            hd = self.movie['hd']
-                            width = self.movie['width']
-                            height = self.movie['height']
-
-                        query = self.config.movie_table.update().\
-                                     where(self.config.movie_table.c.imdb_id==\
-                                           imdb_id).\
-                                     values(filesize=filesize,
-                                            runtime=runtime,
-                                            hd=hd,
-                                            width=width,
-                                            height=height,
-                                            path=path,
-                                            date_last_scanned=func.now())
-                        self.config.db.execute(query)
-                    else:
-                        runtime, width, height, hd = self._scan_video(path)
-                        query = self.config.movie_table.insert().\
-                                     values(imdb_id=imdb_id,
-                                            filesize=filesize,
-                                            runtime=runtime,
-                                            hd=hd,
-                                            width=width,
-                                            height=height,
-                                            path=path,
-                                            title=title,
-                                            date_last_scanned=func.now())
-                        self.config.db.execute(query)
-                        self.movie = self.get(imdb_id)
-                        self.scrape_imdb(imdb_id)
 
     def update_invalid_movies(self):
         """
@@ -289,8 +194,7 @@ class Movie():
                 if imdb.plot_keywords:
                     self._add_keywords(imdb.plot_keywords)
 
-        except Exception, e:
-            print Exception, e
+        except Exception:
             pass
 
     def get(self, imdb_id):
@@ -302,14 +206,10 @@ class Movie():
         query = select([self.config.movie_table.c.movie_id,
                         self.config.movie_table.c.imdb_id,
                         self.config.movie_table.c.certificate_id,
-                        self.config.movie_table.c.path,
                         self.config.movie_table.c.synopsis,
                         self.config.movie_table.c.release_year,
-                        self.config.movie_table.c.width,
-                        self.config.movie_table.c.height,
                         self.config.movie_table.c.hd,
-                        self.config.movie_table.c.runtime,
-                        self.config.movie_table.c.filesize]).\
+                        self.config.movie_table.c.runtime]).\
                 where(self.config.movie_table.c.imdb_id==imdb_id)
 
         return self.config.db.execute(query).fetchone()
@@ -352,7 +252,7 @@ class Movie():
         i = 0
 
         for name in names:
-            i = i + 1
+            i += 1
             try:
                 person_id = self.person(name)
                 query = self.config.movie_role_table.insert().\
@@ -367,7 +267,7 @@ class Movie():
 
             if role == 'actor' and name['image_src']:
                 cast_save_directory = '%s/%s' % \
-                               (self.config.image_save_path, 'movies',)
+                               (self.config.image_save_path, 'cast',)
                 save_path = "%s/%s.jpg" %\
                                (cast_save_directory, name['id'],)
 
@@ -466,7 +366,7 @@ class Movie():
             try:
                 keyword = keyword.strip()
                 if len(keyword):
-                    i = i + 1
+                    i += 1
                     keyword_id = self.keyword(keyword)
                     query = self.config.movie_keyword_table.insert().\
                                          values(movie_id=self.movie['movie_id'],
@@ -493,48 +393,3 @@ class Movie():
             keyword_id = self.keyword(keyword)
 
         return keyword_id
-
-    def _scan_video(self, path):
-        """
-        retrieves the video resolution for the video at the supplied path
-        """
-        lines = []
-        path = '%s/%s' % (self.config.path.replace('/Movies', ''),
-                          path,)
-
-        try:
-            output = subprocess.Popen(["ffmpeg","-i", path],
-                                      stdout=subprocess.PIPE,
-                                      stderr=subprocess.STDOUT)
-        except:
-            return [0,0,0,True]
-
-        while True:
-            line =  output.stdout.readline()
-            if line != '':
-                lines.append(line)
-            else:
-                break
-
-        output = ' '.join(lines)
-        duration = re.search('Duration:\s([0-9]{1,}):([0-5]{1}[0-9]{1})', output)
-        resolution = re.search('Stream\s.*?([0-9]{3,})x([0-9]{3,})', output)
-
-        if resolution and resolution.group(1) and resolution.group(2):
-            width = int(resolution.group(1))
-            height = int(resolution.group(2))
-        else:
-            width = 0
-            height = 0
-
-        if duration and duration.group(1) and duration.group(2):
-            runtime = (int(duration.group(1)) * 60) + int(duration.group(2))
-        else:
-            runtime = 0
-
-        if width >= 1280 and height >= 720:
-            hd = True
-        else:
-            hd = False
-
-        return [runtime, width, height, hd]

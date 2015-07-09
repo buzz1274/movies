@@ -22,38 +22,6 @@
         //end movie
 
         /**
-         * returns the movie file
-         * @author David
-         */
-        public function file() {
-
-            $movie = $this->Movie->find('first',
-                         array('recursive' => -1,
-                               'conditions' => array('movie_id' =>
-                                                        $this->request->params['movieID'])));
-
-            $filename = preg_replace('/.*\//is', '', $movie['Movie']['path']);
-
-            if(!$movie || !file_exists(MEDIA_SERVER_PATH.'/'.$filename)) {
-                header('HTTP/1.1 404 Not Found', true, 401);
-                header('Location: /#file_error');
-                die();
-            } else {
-
-                $this->viewClass = 'Media';
-                $params = array('id'        => $filename,
-                                'name'      => preg_replace('/].*/', ']', $filename),
-                                'download'  => true,
-                                'extension' => preg_replace('/.*]\./', '', $filename),
-                                'path'      => MEDIA_SERVER_PATH.'/');
-                $this->set($params);
-
-            }
-
-        }
-        //end file
-
-        /**
          * returns a csv formatted list of movies
          * @author David
          */

@@ -28,7 +28,7 @@ define(function(require, exports, module) {
             this.model.on('change',this.render, this);
             this.user.bind("change:authenticated", this.render);
 
-            if(typeof this.model != 'undefined') {
+            if(typeof this.model !== 'undefined') {
                 this.model.bind("change:watched", this.render);
                 this.model.bind("change:favourites", this.render);
             }

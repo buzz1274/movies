@@ -60,10 +60,12 @@
                         </a>
                     <% } %>
                 </li>
-                <li class="queue_download_link">
-                    <a class="menu_item">
-                        <i class="icon-download"></i>
-                        &nbsp;Queue for Download
+            <% } %>
+            <% if (user.admin) {%>
+                <li class="delete_movie_link">
+                    <a id="delete_movie_link" class="menu_item">
+                        <i class="icon-trash"></i>
+                        &nbsp;Delete movie
                     </a>
                 </li>
             <% } %>

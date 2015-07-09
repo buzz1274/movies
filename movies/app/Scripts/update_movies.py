@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import smtplib
-import re
 from config import Config
 from email.mime.text import MIMEText
 from movie import Movie
@@ -11,21 +10,12 @@ current_genres = movie.current_genres()
 current_certificates = movie.current_certificates()
 
 movie.update_rating()
-movie.update_movies()
 movie.update_invalid_movies()
+
+print config.email_address
 
 try:
     imdb_ids = []
-    duplicate_imdb_ids = []
-    files = movie.scan_folders()
-
-    for file in files:
-        imdb_id = re.search("\[(tt[0-9]{1,})\]", file)
-        if imdb_id and imdb_id.group(1):
-            if imdb_id.group(1) in imdb_ids:
-                duplicate_imdb_ids.append(imdb_id.group(1))
-            else:
-                imdb_ids.append(imdb_id.group(1))
 
     invalid_movies = movie.find_invalid_movies()
     movies_missing_images = movie.find_missing_images()
@@ -33,8 +23,9 @@ try:
     new_certificates = list(set(movie.current_certificates()) -
                             set(current_certificates))
 
-    if (invalid_movies or movies_missing_images or new_genres or
-        new_certificates or duplicate_imdb_ids):
+    if (config.email_address and
+        (invalid_movies or movies_missing_images or
+         new_genres or new_certificates)):
 
         body = ""
         if invalid_movies:
@@ -52,14 +43,10 @@ try:
                                         movies_missing_image)
 
         if new_genres:
-            print new_genres
             body += "New genres added:\n%s\n" % ("\n".join(new_genres),)
 
         if new_certificates:
             body += "New certificates added:\n%s\n" % ("\n".join(new_certificates),)
-
-        if duplicate_imdb_ids:
-            body += "Duplicate IMDB IDs Found:\n%s\n" % ("\n".join(duplicate_imdb_ids),)
 
         message = MIMEText(body.encode('utf-8'), 'plain', 'utf-8')
         message['Subject'] = 'Movie Spidering Issues'

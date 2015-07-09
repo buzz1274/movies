@@ -233,10 +233,16 @@ class IMDB(object):
         """
         sets certificate for the current movie
         """
-        infobar = self.page.find(True, {'class': 'infobar'})
-        if infobar:
+        tag = self.page.find('meta', itemprop='contentRating')
+        if tag:
             try:
-                self.certificate = infobar.contents[1]['title']
+                self.certificate = tag['content']
+                if self.certificate.strip().lower() == 'x':
+                    self.certificate = "18"
+                elif self.certificate.strip().lower() == 'r':
+                    self.certificate = "15"
+                elif self.certificate.strip().lower() == 'a':
+                    self.certificate = "PG"
             except KeyError:
                 pass
 

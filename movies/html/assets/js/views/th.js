@@ -7,7 +7,6 @@ define(function(require, exports, module) {
         State = require('helper/state'),
         Interface = require('helper/interface'),
         MovieHeaderTemplate = require('text!templates/movie/th_movie.html'),
-        MovieDownloadedHeaderTemplate = require('text!templates/movie/th_downloaded.html'),
         stateParams = State.getState().Params,
         user = require('models/user/user');
 
@@ -18,10 +17,8 @@ define(function(require, exports, module) {
             'click span.sort_link': 'sort'
         },
         initialize: function() {
-            if(this.options.template == 'MovieHeaderTemplate') {
+            if(this.options.template === 'MovieHeaderTemplate') {
                 this.template = _.template(MovieHeaderTemplate);
-            } else if(this.options.template == 'MovieDownloadedHeaderTemplate') {
-                this.template = _.template(MovieDownloadedHeaderTemplate);
             }
             _.bindAll(this, 'render');
             user.bind("change:authenticated", this.render);
@@ -34,8 +31,8 @@ define(function(require, exports, module) {
             this.undelegateEvents();
             $(this.el).empty();
 
-            if(stateParams.s == $(ev.currentTarget).attr('data-sort_order')) {
-                State.setStateParams('asc',(stateParams.asc == 1 ? 0 : 1));
+            if(stateParams.s === $(ev.currentTarget).attr('data-sort_order')) {
+                State.setStateParams('asc',(stateParams.asc === 1 ? 0 : 1));
             } else {
                 State.setStateParams('s',$(ev.currentTarget).attr('data-sort_order'));
                 State.setStateParams('asc',

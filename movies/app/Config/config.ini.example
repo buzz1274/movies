@@ -14,10 +14,6 @@ cipher_seed=""
 [WEBESERVER]
 image_save_path="" #location to save downloaded movie posters
 
-[MEDIASERVER]
-path="" #path to movie samba share
-regex_pattern=".*wheel\s+([0-9]{1,})\s.*?((movies|movies2)\/(.*?)\[(.*?)\].*)" #pattern to identify movie files
-
 [BACKUP]
 backup_path="" #path to backup db dump and movie images.
 backup_files_to_keep = "" #how manny back up files to keep before oldest is deleted

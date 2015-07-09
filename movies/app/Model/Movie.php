@@ -516,7 +516,7 @@
                      '                  genre.movie_genre_ids, Movie.date_added, '.
                      '                  Movie.imdb_rating, Movie.runtime, '.
                      '                  Movie.release_year, Movie.certificate_id, '.
-                     '                  certificate.order, Movie.filesize, '.
+                     '                  certificate.order, '.
                      '                  CASE '.
                      '                    WHEN user_movie_favourite.user_id IS NULL THEN 0 '.
                      '                    ELSE 1 '.
@@ -732,7 +732,7 @@
                                   'conditions' => array('MovieRole.movie_id' => $movieID),
                                   'group' => 'MovieRole.person_id'));
 
-            if(!is_array($results)) {
+            if(!is_array($results) || empty($results)) {
                 $castCount = false;
             } else {
                 foreach($results as $result) {
@@ -763,7 +763,7 @@
                     'conditions' => array('MovieGenre.movie_id' => $movieID),
                     'group' => 'MovieGenre.genre_id'));
 
-            if(!is_array($results)) {
+            if(!is_array($results) || empty($results)) {
                 $genreCount = false;
             } else {
                 foreach($results as $result) {
@@ -794,7 +794,7 @@
                       'conditions' => array('MovieKeyword.movie_id' => $movieID),
                       'group' => 'MovieKeyword.keyword_id'));
 
-            if(!is_array($results)) {
+            if(!is_array($results) || empty($results)) {
                 $keywordCount = false;
             } else {
                 foreach($results as $result) {

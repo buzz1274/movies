@@ -63,7 +63,7 @@ if (!defined('CACHE')) {
  *
  * Leaving this constant undefined will result in it being defined in Cake/bootstrap.php
  */
-    define('CAKE_CORE_INCLUDE_PATH', '/usr/local/cakephp2.7/lib/');
+    define('CAKE_CORE_INCLUDE_PATH', '/usr/local/cakephp/lib/');
 
 /**
  * Editing below this line should NOT be necessary.

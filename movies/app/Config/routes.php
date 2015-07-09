@@ -20,12 +20,6 @@
     Router::connect('/user/watched/',
                     array('controller' => 'user',
                           'action' => 'watched'));
-    Router::connect('/user/downloaded/',
-                    array('controller' => 'user',
-                          'action' => 'downloaded'));
-    Router::connect('/user/downloaded/summary/',
-                    array('controller' => 'user',
-                          'action' => 'downloaded'));
     Router::connect('/movies/summary',
                     array('controller' => 'movies',
                           'action' => 'summary'));

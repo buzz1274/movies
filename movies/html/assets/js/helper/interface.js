@@ -24,7 +24,7 @@ define(function(require, exports, module) {
                 $('#navbar').css('z-index', 125);
                 $('#opaque').css('display', 'block');
             } else {
-                if($('div.alert').css('display') != 'block' || bypassPopupCheck) {
+                if($('div.alert').css('display') !== 'block' || bypassPopupCheck) {
                     $('#navbar').css('z-index', 1050);
                     $('#opaque').css('display', 'none');
                 }

@@ -35,7 +35,7 @@
         public function login() {
 
             $User = $this->request->input('json_decode');
-
+            
             if(!$User || !isset($User->username) || !isset($User->password)) {
                 $status = 400;
                 $body = array();

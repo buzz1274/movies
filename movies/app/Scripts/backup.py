@@ -39,10 +39,10 @@ os.popen('cd %s;tar -czf %s %s %s' %
 os.popen('rm %s/%s' % (config.backup_path, sql_dump_file))
 os.popen('rm %s/%s' % (config.backup_path, image_archive_file))
 
-files = os.popen('ls -t %s/*.tar.gz' % (config.backup_path))
+files = os.popen('ls -t %s/*.tar.gz' % config.backup_path)
 
 if files:
     files = list(files)[config.backup_files_to_keep:]
     if files:
-        for file in files:
-            os.popen('rm %s' % (file))
+        for f in files:
+            os.popen('rm %s' % (f,))
