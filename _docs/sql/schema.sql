@@ -3,6 +3,7 @@
 --
 
 SET statement_timeout = 0;
+SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
@@ -129,8 +130,6 @@ CREATE TABLE movie (
     movie_id smallint DEFAULT nextval('movie_id'::regclass) NOT NULL,
     imdb_id character varying(10) NOT NULL,
     title text NOT NULL,
-    path text NOT NULL,
-    filesize bigint NOT NULL,
     deleted boolean DEFAULT false NOT NULL,
     date_added date DEFAULT now() NOT NULL,
     date_last_scanned date DEFAULT now() NOT NULL,
@@ -139,12 +138,9 @@ CREATE TABLE movie (
     runtime smallint,
     synopsis text,
     release_year smallint,
-    watched boolean DEFAULT false NOT NULL,
     has_image boolean DEFAULT false NOT NULL,
     hd boolean DEFAULT false NOT NULL,
-    certificate_id smallint,
-    width smallint DEFAULT 0 NOT NULL,
-    height smallint DEFAULT 0 NOT NULL
+    certificate_id smallint
 );
 
 
@@ -257,20 +253,6 @@ CREATE TABLE "user" (
 
 
 ALTER TABLE public."user" OWNER TO movies;
-
---
--- Name: user_movie_downloaded_id_seq; Type: SEQUENCE; Schema: public; Owner: movies
---
-
-CREATE SEQUENCE user_movie_downloaded_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.user_movie_downloaded_id_seq OWNER TO movies;
 
 --
 -- Name: user_movie_favourite_id_seq; Type: SEQUENCE; Schema: public; Owner: movies
