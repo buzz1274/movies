@@ -12,8 +12,6 @@ current_certificates = movie.current_certificates()
 movie.update_rating()
 movie.update_invalid_movies()
 
-print config.email_address
-
 try:
     imdb_ids = []
 

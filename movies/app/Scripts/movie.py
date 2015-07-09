@@ -109,6 +109,9 @@ class Movie:
                 except Exception, e:
                     pass
 
+            os.popen('chown -R apache:apache %s' %
+                     (self.config.image_save_path,))
+
     def due_scraping(self):
         """
         returns a list of imdb_id's that havn't already been scraped
