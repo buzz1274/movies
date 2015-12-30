@@ -131,10 +131,10 @@
 
             $provider = $this->Provider->find('first', array('conditions' =>
                                 array('provider_shortcode' => $movie->provider)));
-
+            
             if(!$this->save(array('imdb_id' => (string)$movie->imdb_id,
                                   'title' => '',
-                                  'hd' => (boolean)$movie->hd,
+                                  'hd' => $movie->hd == 'yes' ? true : false,
                                   'provider_id' => $provider['Provider']['provider_id']))) {
                 return false;
             } else {

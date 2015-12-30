@@ -57,9 +57,6 @@ class IMDB(object):
             self._set_rating()
 
             if not self.rating_only and self.rating:
-
-                print "getting all details"
-
                 self._set_title()
                 self._set_certificate()
                 self._set_genres()
