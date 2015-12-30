@@ -32,14 +32,17 @@
     Router::connect('/movies/lucky/',
                     array('controller' => 'movies',
                           'action' => 'lucky'));
-    Router::connect('/movies/get/:movieID/',
-                    array('controller' => 'movies',
-                          'action' => 'file',
-                          'movieID', '[0-9]{1,}'));
     Router::connect('/movies/:movieID/',
                     array('controller' => 'movies',
                           'action' => 'movie',
-                          'movieID', '[0-9]{1,}'));
+                          'movieID', '[0-9]+'));
+    Router::connect('/movie/delete/:movieID/',
+                array('controller' => 'movies',
+                      'action' => 'delete',
+                      'movieID', '[0-9]+'));
+    Router::connect('/movie/add/',
+                array('controller' => 'movies',
+                      'action' => 'add'));
     Router::connect('/movies',
                     array('controller' => 'movies',
                           'action' => 'movies'));

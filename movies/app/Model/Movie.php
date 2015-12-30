@@ -10,9 +10,14 @@
 
         public $primaryKey = 'movie_id';
 
+        public $errors = false;
+
         public $belongsTo = array('Certificate' =>
                                         array('className' => 'Certificate',
-                                              'foreignKey' => 'certificate_id'));
+                                              'foreignKey' => 'certificate_id'),
+                                  'Provider' =>
+                                        array('className' => 'Provider',
+                                              'foreignKey' => 'provider_id'));
 
         public $hasMany = array(
             'Watched' =>
@@ -110,6 +115,33 @@
             parent::__construct($id, $table, $ds);
 
         }
+
+        /**
+         * queue a movie to be scraped
+         * @author David
+         * @param string
+         * @param string
+         * @param string
+         * @return mixed
+         */
+        public function add($movie) {
+            if(!$this->_isValidMovie($movie)) {
+                return false;
+            }
+
+            $provider = $this->Provider->find('first', array('conditions' =>
+                                array('provider_shortcode' => $movie->provider)));
+
+            if(!$this->save(array('imdb_id' => (string)$movie->imdb_id,
+                                  'title' => '',
+                                  'hd' => (boolean)$movie->hd,
+                                  'provider_id' => $provider['Provider']['provider_id']))) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        //end add
 
         /**
          * @author David
@@ -554,6 +586,7 @@
                      '                   GROUP BY movie_genre.movie_id '.
                      '                  ) AS genre ON (genre.movie_id = Movie.movie_id) '.
                      '        WHERE Movie.deleted = False '.
+                     "          AND Movie.title != '' ".
                      ($idQuery ? $idQuery : $genreQuery.' '.
                                             $certificateQuery.' '.
                                             $personQuery.' '.
@@ -806,6 +839,43 @@
 
         }
         //end _keywordCount
+
+        /**
+         * validates that movie data supplied for queuing
+         * is valid
+         * @param array $movie
+         * @return mixed
+         */
+        private function _isValidMovie($movie) {
+            $this->errors = false;
+
+            if(!is_object($movie) ||
+               !isset($movie->imdb_id) || !$movie->imdb_id) {
+                $this->errors['imdb_id'] = 'Please enter an imdb id';
+            } elseif($this->find('first', array('conditions' =>
+                         array('imdb_id' => $movie->imdb_id)))) {
+                $this->errors['imdb_id'] = 'imdb id already in database';
+            }
+
+            if(!is_object($movie) ||
+                !isset($movie->hd) ||
+                !in_array($movie->hd, array('yes', 'no'))) {
+                $this->errors['hd'] = 'Please select HD';
+            }
+
+            if(!is_object($movie) ||
+                !isset($movie->provider) ||
+                !$this->Provider->find('first', array('conditions' =>
+                    array('provider_shortcode' => $movie->provider)))) {
+
+                $this->errors['provider'] = 'Please select a valid provider';
+
+            }
+
+            return !is_array($this->errors);
+
+        }
+        //end validateAdd
 
     }
     //end Movie

@@ -56,9 +56,25 @@ CREATE TABLE certificate (
 
 ALTER TABLE public.certificate OWNER TO movies;
 
---
--- Name: genre_id; Type: SEQUENCE; Schema: public; Owner: movies
---
+
+CREATE SEQUENCE provider_id
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.provider_id OWNER TO movies;
+SET default_tablespace = '';
+SET default_with_oids = false;
+
+CREATE TABLE provider (
+    provider_id smallint DEFAULT nextval('provider_id'::regclass) NOT NULL,
+    provider_shortcode character varying(30) NOT NULL,
+    provider character varying(30) NOT NULL
+);
+
 
 CREATE SEQUENCE genre_id
     START WITH 1

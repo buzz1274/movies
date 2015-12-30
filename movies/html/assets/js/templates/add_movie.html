@@ -1,0 +1,38 @@
+<div class="container">
+    <div class="offset5 span4 popup_info well" style="top:150px;">
+        <h4>Add Movie</h4>
+        IMDB ID<br />
+        <input type="text" class="span4"
+               autocomplete="off" id="add_movie_imdb_id"><br />
+        <% if(message && message.imdb_id) { %>
+            <p class="text-error">
+                <%= message.imdb_id %>
+            </p>
+        <% } %>
+        Provider<br />
+        <select id="add_movie_provider">
+            <option value="">Please select...</option>
+            <option value="amazon_prime">Amazon Prime</option>
+            <option value="flixster">Flixster</option>
+            <option value="google_video">Google Video</option>
+        </select><br />
+        <% if(message && message.provider) { %>
+            <p class="text-error">
+                <%= message.provider %>
+            </p>
+        <% } %>
+        HD<br />
+        <select id="add_movie_hd">
+            <option value="">Please select...</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+        </select><br />
+        <% if(message && message.hd) { %>
+            <p class="text-error">
+                <%= message.hd %>
+            </p>
+        <% } %>
+        <button type="submit" class="btn" id="add_movie_button">Submit</button>
+        <button type="cancel" class="btn" id="cancel_button">Cancel</button>
+    </div>
+</div>

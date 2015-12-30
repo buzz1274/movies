@@ -4,7 +4,8 @@ define(function(require, exports, module) {
     var _ = require('underscore'),
         $ = require('jquery'),
         MessagePopupTemplate = require('text!templates/message_popup.html'),
-        LoginTemplate = require('text!templates/login.html')
+        AddMovieTemplate = require('text!templates/add_movie.html'),
+        LoginTemplate = require('text!templates/login.html');
 
     module.exports = {
         scrollTop:function() {
@@ -34,20 +35,43 @@ define(function(require, exports, module) {
             if(display) {
                 var template = _.template(LoginTemplate);
                 this.opaque(true);
+                $('#login_popup').append(template({message: message}));
                 $('#username').val('');
                 $('#password').val('');
-                $('#login_popup').append(template({message: message}));
             } else {
                 $('#login_popup').html('');
                 this.opaque(false);
             }
         },
-        messagePopup: function(type, message) {
-            if(typeof type == 'undefined' || !type ||
-               (type != 'error' && type != 'success')) {
-                type = 'error'
+        addMoviePopup: function(display, message, data) {
+            if(display) {
+                var template = _.template(AddMovieTemplate);
+                this.opaque(true);
+
+                $('#login_popup').append(template({message: message}));
+
+                if(!data) {
+                    $('#add_movie_imdb_id').val('');
+                    $('#add_movie_hd').val('');
+                    $('#add_movie_provider').val('');
+                } else {
+                    $('#add_movie_imdb_id').val(data.imdb_id);
+                    $('#add_movie_hd').val(data.hd);
+                    $('#add_movie_provider').val(data.provider);
+                }
+
+            } else {
+                $('#login_popup').html('');
+                this.opaque(false);
             }
-            if(typeof message == 'undefined' || !message) {
+
+        },
+        messagePopup: function(type, message) {
+            if(typeof type === 'undefined' || !type ||
+               (type !== 'error' && type !== 'success')) {
+                type = 'error';
+            }
+            if(typeof message === 'undefined' || !message) {
                 message = 'An error has occurred';
             }
             var template = _.template(MessagePopupTemplate),

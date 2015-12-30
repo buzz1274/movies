@@ -1,5 +1,5 @@
 body {
-  padding-top: 85px;
+  padding-top: 45px;
   padding-bottom: 40px;
   background: url('../img/bg.png');
 }
@@ -30,7 +30,7 @@ body {
 .sidebar-nav {
     padding: 9px 0;
 }
-div#login_popup {
+div#login_popup, div#add_movie_popup {
     z-index:1050;
 }
 div#auth {

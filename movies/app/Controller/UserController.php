@@ -33,9 +33,8 @@
          * @return mixed
          */
         public function login() {
-
             $User = $this->request->input('json_decode');
-            
+
             if(!$User || !isset($User->username) || !isset($User->password)) {
                 $status = 400;
                 $body = array();
@@ -43,6 +42,7 @@
                 if(($User = $this->User->login($User->username,
                                               AuthComponent::password($User->password))) &&
                    $User && isset($User['User']) && $this->Auth->login($User['User'])) {
+
                     $status = 200;
                     $body = array('name' => $User['User']['name'],
                                   'admin' => $User['User']['admin'],

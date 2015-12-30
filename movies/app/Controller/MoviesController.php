@@ -22,6 +22,47 @@
         //end movie
 
         /**
+         * add a new movie
+         */
+        public function add() {
+            $Movie = $this->request->input('json_decode');
+            $user = $this->Auth->user();
+
+            if(!$user || !isset($user['admin']) || !$user['admin']) {
+                $status = 403;
+                $response = 'no authorization';
+            } else {
+                if(!$this->Movie->add($Movie)) {
+                    if(is_array($this->Movie->errors)) {
+                        $response = $this->Movie->errors;
+                        $status = 400;
+                    } else {
+                        $status = 500;
+                    }
+                } else {
+                    $status = 200;
+                    $response = 'success';
+                }
+            }
+
+            return new CakeResponse(array('status' => $status,
+                                          'body' => json_encode(array($response))));
+
+        }
+        //end add
+
+        /**
+         * deletes the movie matching the supplied movie_id
+         */
+        public function delete() {
+
+            return new CakeResponse(array('status' => 200,
+                                          'body' => json_encode(array('success'))));
+
+        }
+        //end delete
+
+        /**
          * returns a csv formatted list of movies
          * @author David
          */

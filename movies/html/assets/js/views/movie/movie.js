@@ -14,7 +14,9 @@ define(function(require, exports, module) {
         tagName: "tr",
         events: {
             'click li.favourite_link': 'favourite',
-            'click li.detail_link': 'details'
+            'click li.detail_link': 'details',
+            'click li.delete_link': 'delete',
+            'click li.edit_link': 'edit'
         },
         template:_.template(ListMovieTemplate),
         initialize: function() {
@@ -30,7 +32,7 @@ define(function(require, exports, module) {
         },
         details: function () {
             if ($('tr#movie_' + this.Movie.movie_id).html()) {
-                $('tr#movie_' + this.Movie.movie_id).remove();
+                this.close_details(this.Movie.movie_id);
             } else {
                 Interface.loadingImage(true);
 
@@ -62,8 +64,24 @@ define(function(require, exports, module) {
                 });
             }
         },
+        close_details: function (movie_id) {
+            if ($('tr#movie_' + movie_id).html()) {
+                $('tr#movie_' + movie_id).remove();
+            }
+        },
         favourite:function() {
+            this.close_details(this.model.get('Movie').movie_id);
             user.favourite(this.model);
+        },
+        edit: function () {
+            this.model.edit();
+        },
+        delete: function () {
+            this.close_details(this.model.get('Movie').movie_id);
+            this.model.delete(this.delete_movie_row);
+        },
+        delete_movie_row: function (imdb_id) {
+            alert("CALLBACK");
         },
         render:function () {
             this.$el.html(this.template({'Movie': this.model.toJSON().Movie,

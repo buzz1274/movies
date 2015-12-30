@@ -1,6 +1,15 @@
 <thead>
     <tr style="height:30px;">
-        <th id="table_title" style="width:100%" colspan="5">
+        <th id="table_title" style="width:100%" colspan="9">
+            <% if (authenticated && admin) {%>
+                <span class="pull-right">
+                    <a id="add_movie_popup_link" title="Add Movie" href="#">
+                        <i id="add_movie_popup_link_child" class="icon-plus">
+                            &nbsp;
+                        </i>
+                    </a>
+                </span>
+            <% } %>
             <h4 style="margin:0px 0px 1px 0px;">Movies</h4>
         </th>
     </tr>

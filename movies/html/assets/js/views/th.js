@@ -14,7 +14,8 @@ define(function(require, exports, module) {
         el:'#movies_table',
         tagName:"thead",
         events: {
-            'click span.sort_link': 'sort'
+            'click span.sort_link': 'sort',
+            'click a#add_movie_popup_link': 'addMoviePopup'
         },
         initialize: function() {
             if(this.options.template === 'MovieHeaderTemplate') {
@@ -26,6 +27,10 @@ define(function(require, exports, module) {
         render:function () {
             $(this.el).html(this.template(user.toJSON()));
             Interface.displaySortIcons(stateParams.asc, stateParams.s);
+        },
+        addMoviePopup: function(ev) {
+            ev.preventDefault();
+            Interface.addMoviePopup((ev.target.id === 'add_movie_popup_link_child'));
         },
         sort:function(ev) {
             this.undelegateEvents();

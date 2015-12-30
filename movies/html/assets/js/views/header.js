@@ -5,6 +5,7 @@ define(function(require, exports, module) {
         Backbone = require('backbone'),
         $ = require('bootstrap'),
         HeaderTemplate = require('text!templates/header.html'),
+        Movie = require('models/movie/movie'),
         Interface = require('helper/interface');
 
     module.exports = Backbone.View.extend({
@@ -15,6 +16,8 @@ define(function(require, exports, module) {
             'click #login_button': 'authenticate',
             'keypress #username': 'authenticate',
             'keypress #password': 'authenticate',
+            'click #add_movie_button': 'addMovie',
+            'keypress #imdb_id': 'addMovie',
             'click span#login_popup_link': 'loginPopup',
             'click #cancel_button': 'loginPopup'
         },
@@ -30,7 +33,8 @@ define(function(require, exports, module) {
             $(this.el).append(this.template(this.model.toJSON()));
         },
         loginPopup:function(ev) {
-            Interface.loginPopup((ev.target.id == 'login_popup_link'))
+            ev.preventDefault();
+            Interface.loginPopup((ev.target.id === 'login_popup_link'));
         },
         authenticate:function(ev) {
             if(typeof(ev.keyCode) != 'undefined' && ev.keyCode != 13) {
@@ -45,6 +49,20 @@ define(function(require, exports, module) {
                     password = null;
             }
             this.model.authenticate(action, username, password);
-        }
+        },
+        addMovie: function(ev) {
+            if(ev.keyCode !== undefined && ev.keyCode !== 13) {
+                return;
+            }
+
+            var movie = new Movie();
+
+            movie.add($('#add_movie_imdb_id').val(),
+                      $('#add_movie_provider').val(),
+                      $("#add_movie_hd").val());
+
+            Interface.addMoviePopup(false);
+
+        },
     });
 });

@@ -4,9 +4,8 @@ define(function(require) {
     var Backbone = require("backbone"),
         $ = require("jquery"),
         Interface = require("helper/interface"),
-        summary = require("models/movie/summary");
-
-    var User = Backbone.Model.extend({
+        summary = require("models/movie/summary"),
+        User = Backbone.Model.extend({
         url:'/user/',
         idAttribute: "user_id",
         poll: function() {
@@ -30,7 +29,7 @@ define(function(require) {
         },
         authenticate:function(action, username, password) {
             var data = null;
-            if(action == 'login') {
+            if(action === 'login') {
                 data = {username: username, password: password};
             }
 
@@ -39,7 +38,7 @@ define(function(require) {
             this.save(data,
                 {url:'/user/'+action+'/',
                     success: function(model, response) {
-                        if(action == 'logout') {
+                        if(action === 'logout') {
                             Interface.messagePopup('success', 'You have logged out');
                         }
                         model.set({username: null, password: null,
@@ -68,16 +67,18 @@ define(function(require) {
             this.save(data,
                 {url:'/user/favourite/',
                     success: function() {
+                        var message = '',
+                            not_favourites = summary.get('not_favourites'),
+                            favourites = summary.get('favourites');
+
                         if(Movie.favourite) {
-                            var message = 'Movie added to favourites';
+                            message = 'Movie added to favourites';
                         } else {
-                            var message = 'Movie removed from favourites';
+                            message = 'Movie removed from favourites';
                         }
+
                         Interface.messagePopup('success', message);
                         movie.set(Movie);
-
-                        var not_favourites = summary.get('not_favourites');
-                        var favourites = summary.get('favourites');
 
                         if(Movie.favourite) {
                             summary.set({not_favourites: not_favourites - 1,
