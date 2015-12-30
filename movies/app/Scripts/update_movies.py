@@ -6,11 +6,14 @@ from movie import Movie
 
 config = Config()
 movie = Movie()
-current_genres = movie.current_genres()
-current_certificates = movie.current_certificates()
+#current_genres = movie.current_genres()
+#current_certificates = movie.current_certificates()
 
-movie.update_rating()
+#movie.update_rating()
 movie.update_invalid_movies()
+
+import sys
+sys.exit()
 
 try:
     imdb_ids = []

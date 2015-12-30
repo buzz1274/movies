@@ -22,7 +22,7 @@ class IMDB(object):
     imdb_id = None
     page = None
     cast_page = None
-    rating = None
+    rating = False
     synopsis = None
     genres = []
     directors = []
@@ -55,9 +55,11 @@ class IMDB(object):
                                          (self.imdb_id,))
 
             self._set_rating()
-            self._set_plot_keywords()
 
-            if not self.rating_only:
+            if not self.rating_only and self.rating:
+
+                print "getting all details"
+
                 self._set_title()
                 self._set_certificate()
                 self._set_genres()
@@ -67,6 +69,7 @@ class IMDB(object):
                 self._set_directors()
                 self._set_actors()
                 self._set_runtime()
+                self._set_plot_keywords()
 
         except Exception, e:
             print "failed", e
@@ -90,9 +93,10 @@ class IMDB(object):
         sets the imdb rating for the current movie
         """
         try:
-            self.rating = self.page.find(True, {'class': 'star-box-giga-star'})
+            self.rating = self.page.find(True, {'class': 'titlePageSprite star-box-giga-star'})
+
             if self.rating:
-                self.rating = self.rating.contents[0]
+                self.rating = self.rating.contents[0].strip()
         except Exception, e:
             raise IMDBException('Unable to retrieve rating(%s)(%s)' %
                                  (self.imdb_id, e))
@@ -103,6 +107,7 @@ class IMDB(object):
         """
         try:
             tag = self.page.find('span', itemprop='name').contents
+
             if tag:
                 self.title = tag[0].strip()
         except Exception, e:
@@ -116,9 +121,10 @@ class IMDB(object):
         self.cast_page =\
             self._get_page_mechanize('http://uk.imdb.com/title/%s/fullcredits' %\
                                      (self.imdb_id,))
-         
+
         try:
             tags = self.cast_page.find('table', {'class': 'cast_list'}).findAll('tr')
+
             if tags:
                 for tag in tags:
                     try:
@@ -136,7 +142,7 @@ class IMDB(object):
                             actor = tag.find('td', {'itemprop': 'actor'}).find('a')
                         except Exception:
                             pass
-                       
+
                         if actor:
                             actor_id = re.match('\/name\/(.*)\/', actor['href'])
                             actor = actor.find('span').contents[0]
@@ -153,7 +159,7 @@ class IMDB(object):
                         if actor_id and actor:     
                             self.actors.append({'id': actor_id,
                                                 'name': actor,
-                                                'image_src': image_src})                            
+                                                'image_src': image_src})
 
                     except (KeyError, AttributeError), e:
                         pass

@@ -51,6 +51,7 @@ class Movie:
                 __or__(self.config.movie_table.c.runtime == None).\
                 __or__(self.config.movie_table.c.runtime < 60).\
                 __or__(self.config.movie_table.c.runtime > 600)).\
+                where(self.config.movie_table.c.deleted == False).\
                 order_by(asc(self.config.movie_table.c.title))
           
         return self.config.db.execute(query).fetchall()
@@ -138,7 +139,7 @@ class Movie:
             self.movie = self.get(imdb_id)
             imdb = IMDB(imdb_id)
 
-            if imdb.title:
+            if imdb.title and imdb.rating:
                 if not imdb.certificate:
                     certificate_id = self.movie.certificate_id
                 else:
@@ -158,7 +159,7 @@ class Movie:
                     runtime = imdb.runtime
                 else:
                     runtime = self.movie['runtime']
-                    
+
                 query = self.config.movie_table.update().\
                                 where(self.config.movie_table.c.imdb_id==\
                                       imdb_id).\
@@ -172,6 +173,7 @@ class Movie:
                                        date_last_scraped=func.now())
 
                 self.config.db.execute(query)
+
                 movie_save_directory = '%s/%s' % (self.config.image_save_path, 'movies',)
                 save_path = "%s/%s.jpg" % (movie_save_directory, imdb_id,)
 
@@ -197,7 +199,8 @@ class Movie:
                 if imdb.plot_keywords:
                     self._add_keywords(imdb.plot_keywords)
 
-        except Exception:
+        except Exception, e:
+            print e
             pass
 
     def get(self, imdb_id):
