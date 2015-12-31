@@ -11,6 +11,12 @@
             </div>
         <% } %>
         <br />
+        <dl>
+            <dt>
+                <strong>Provider:</strong>
+            </dt>
+            <%= movie.Provider.provider %>
+        </dl>
         <% if (user.authenticated) {%>
             <dl>
                 <dt>
