@@ -15,7 +15,9 @@
             <dt>
                 <strong>Provider:</strong>
             </dt>
-            <%= movie.Provider.provider %>
+            <a target="_blank" href="<%= movie.Provider.provider_url %>">
+                <%= movie.Provider.provider %>
+            </a>
         </dl>
         <% if (user.authenticated) {%>
             <dl>
