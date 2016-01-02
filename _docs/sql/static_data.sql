@@ -70,5 +70,5 @@ INSERT INTO provider VALUES (2, 'google_video', 'Google Video', 'https://play.go
 -- PostgreSQL database dump complete
 --
 
-INSERT INTO "user" VALUES(1, 'admin', '', true, NOW(), 'admin');
+INSERT INTO "user" VALUES(1, 'admin', 'ce674eaa43dc2f8e8bd9431f02ced457d744ae63', true, NOW(), 'admin');
 
