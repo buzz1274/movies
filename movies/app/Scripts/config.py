@@ -31,6 +31,10 @@ class Config(object):
     backup_path = None
     backup_files_to_keep = None
     email_address = None
+    mailhost = None
+    mailhost_port = None
+    mailhost_username = None
+    mailhost_password = None
 
     def __init__(self):
         try:
@@ -84,3 +88,7 @@ class Config(object):
         self.backup_path = config.get('BACKUP', 'backup_path').strip('"')
         self.backup_files_to_keep = int(config.get('BACKUP', 'backup_files_to_keep').strip('"'))
         self.email_address = config.get('MISC', 'email_address').strip('"')
+        self.mailhost = config.get('MAIL', 'mailhost').strip('"')
+        self.mailhost_port = config.get('MAIL', 'mailhost_port').strip('"')
+        self.mailhost_username = config.get('MAIL', 'mailhost_username').strip('"')
+        self.mailhost_password = config.get('MAIL', 'mailhost_password').strip('"')

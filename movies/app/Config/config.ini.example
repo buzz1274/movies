@@ -18,5 +18,11 @@ image_save_path="" #location to save downloaded movie posters
 backup_path="" #path to backup db dump and movie images.
 backup_files_to_keep = "" #how manny back up files to keep before oldest is deleted
 
+[MAIL]
+mailhost="smtp.mailgun.org"
+mailhost_port="587"
+mailhost_username=""
+mailhost_password=""
+
 [MISC]
 email_address=""

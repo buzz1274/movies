@@ -6,14 +6,11 @@ from movie import Movie
 
 config = Config()
 movie = Movie()
-#current_genres = movie.current_genres()
-#current_certificates = movie.current_certificates()
+current_genres = movie.current_genres()
+current_certificates = movie.current_certificates()
 
-#movie.update_rating()
+movie.update_rating()
 movie.update_invalid_movies()
-
-import sys
-sys.exit()
 
 try:
     imdb_ids = []
@@ -54,7 +51,8 @@ try:
         message['From'] = config.email_address
         message['To'] = config.email_address
 
-        mail = smtplib.SMTP('localhost')
+        mail = smtplib.SMTP(config.mailhost, config.mailhost_port)
+        mail.login(config.mailhost_username, config.mailhost_password)
         mail.sendmail(config.email_address, [config.email_address],
                       message.as_string())
         mail.quit()
