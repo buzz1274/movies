@@ -30,11 +30,11 @@ SET search_path = public, pg_catalog;
 --
 
 CREATE SEQUENCE certificate_id
-    START WITH 7
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
+START WITH 7
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
 
 
 ALTER TABLE public.certificate_id OWNER TO movies;
@@ -58,11 +58,11 @@ ALTER TABLE public.certificate OWNER TO movies;
 
 
 CREATE SEQUENCE provider_id
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
+START WITH 4
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
 
 
 ALTER TABLE public.provider_id OWNER TO movies;
@@ -72,16 +72,18 @@ SET default_with_oids = false;
 CREATE TABLE provider (
     provider_id smallint DEFAULT nextval('provider_id'::regclass) NOT NULL,
     provider_shortcode character varying(30) NOT NULL,
-    provider character varying(30) NOT NULL
+    provider character varying(30) NOT NULL,
+    provider_url text
 );
 
+ALTER TABLE public.provider OWNER TO movies;
 
 CREATE SEQUENCE genre_id
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
+START WITH 1
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
 
 
 ALTER TABLE public.genre_id OWNER TO movies;
@@ -103,11 +105,11 @@ ALTER TABLE public.genre OWNER TO movies;
 --
 
 CREATE SEQUENCE keyword_id
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
+START WITH 1
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
 
 
 ALTER TABLE public.keyword_id OWNER TO movies;
@@ -129,11 +131,11 @@ ALTER TABLE public.keyword OWNER TO movies;
 --
 
 CREATE SEQUENCE movie_id
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
+START WITH 1
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
 
 
 ALTER TABLE public.movie_id OWNER TO movies;
@@ -156,7 +158,8 @@ CREATE TABLE movie (
     release_year smallint,
     has_image boolean DEFAULT false NOT NULL,
     hd boolean DEFAULT false NOT NULL,
-    certificate_id smallint
+    certificate_id smallint,
+    provider_id smallint
 );
 
 
@@ -206,11 +209,11 @@ ALTER TABLE public.movie_role OWNER TO movies;
 --
 
 CREATE SEQUENCE person_id
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
+START WITH 1
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
 
 
 ALTER TABLE public.person_id OWNER TO movies;
@@ -233,11 +236,11 @@ ALTER TABLE public.person OWNER TO movies;
 --
 
 CREATE SEQUENCE role_id
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
+START WITH 1
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
 
 
 ALTER TABLE public.role_id OWNER TO movies;
@@ -275,11 +278,11 @@ ALTER TABLE public."user" OWNER TO movies;
 --
 
 CREATE SEQUENCE user_movie_favourite_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
+START WITH 1
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
 
 
 ALTER TABLE public.user_movie_favourite_id_seq OWNER TO movies;
@@ -302,11 +305,11 @@ ALTER TABLE public.user_movie_favourite OWNER TO movies;
 --
 
 CREATE SEQUENCE user_movie_watched_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
+START WITH 1
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
 
 
 ALTER TABLE public.user_movie_watched_id_seq OWNER TO movies;
@@ -330,7 +333,7 @@ ALTER TABLE public.user_movie_watched OWNER TO movies;
 --
 
 ALTER TABLE ONLY certificate
-    ADD CONSTRAINT certificate_pkey PRIMARY KEY (certificate_id);
+ADD CONSTRAINT certificate_pkey PRIMARY KEY (certificate_id);
 
 
 --
@@ -338,7 +341,7 @@ ALTER TABLE ONLY certificate
 --
 
 ALTER TABLE ONLY genre
-    ADD CONSTRAINT genre_genre_key UNIQUE (genre);
+ADD CONSTRAINT genre_genre_key UNIQUE (genre);
 
 
 --
@@ -346,7 +349,7 @@ ALTER TABLE ONLY genre
 --
 
 ALTER TABLE ONLY genre
-    ADD CONSTRAINT genre_pkey PRIMARY KEY (genre_id);
+ADD CONSTRAINT genre_pkey PRIMARY KEY (genre_id);
 
 
 --
@@ -354,7 +357,7 @@ ALTER TABLE ONLY genre
 --
 
 ALTER TABLE ONLY movie
-    ADD CONSTRAINT imdb UNIQUE (imdb_id);
+ADD CONSTRAINT imdb UNIQUE (imdb_id);
 
 
 --
@@ -362,7 +365,7 @@ ALTER TABLE ONLY movie
 --
 
 ALTER TABLE ONLY keyword
-    ADD CONSTRAINT keyword_pkey PRIMARY KEY (keyword_id);
+ADD CONSTRAINT keyword_pkey PRIMARY KEY (keyword_id);
 
 
 --
@@ -370,7 +373,7 @@ ALTER TABLE ONLY keyword
 --
 
 ALTER TABLE ONLY movie_genre
-    ADD CONSTRAINT mg UNIQUE (movie_id, genre_id);
+ADD CONSTRAINT mg UNIQUE (movie_id, genre_id);
 
 
 --
@@ -378,7 +381,7 @@ ALTER TABLE ONLY movie_genre
 --
 
 ALTER TABLE ONLY movie_keyword
-    ADD CONSTRAINT mk UNIQUE (movie_id, keyword_id);
+ADD CONSTRAINT mk UNIQUE (movie_id, keyword_id);
 
 
 --
@@ -386,7 +389,7 @@ ALTER TABLE ONLY movie_keyword
 --
 
 ALTER TABLE ONLY movie
-    ADD CONSTRAINT movie_pkey PRIMARY KEY (movie_id);
+ADD CONSTRAINT movie_pkey PRIMARY KEY (movie_id);
 
 
 --
@@ -394,7 +397,7 @@ ALTER TABLE ONLY movie
 --
 
 ALTER TABLE ONLY movie_role
-    ADD CONSTRAINT movie_role_movie_id_key UNIQUE (movie_id, role_id, person_id);
+ADD CONSTRAINT movie_role_movie_id_key UNIQUE (movie_id, role_id, person_id);
 
 
 --
@@ -402,7 +405,7 @@ ALTER TABLE ONLY movie_role
 --
 
 ALTER TABLE ONLY person
-    ADD CONSTRAINT person_pkey PRIMARY KEY (person_id);
+ADD CONSTRAINT person_pkey PRIMARY KEY (person_id);
 
 
 --
@@ -410,7 +413,7 @@ ALTER TABLE ONLY person
 --
 
 ALTER TABLE ONLY role
-    ADD CONSTRAINT role_pkey PRIMARY KEY (role_id);
+ADD CONSTRAINT role_pkey PRIMARY KEY (role_id);
 
 
 --
@@ -455,7 +458,7 @@ CREATE INDEX person_idx ON person USING btree (person_name);
 --
 
 ALTER TABLE ONLY movie
-    ADD CONSTRAINT movie_certificate_id_fkey FOREIGN KEY (certificate_id) REFERENCES certificate(certificate_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+ADD CONSTRAINT movie_certificate_id_fkey FOREIGN KEY (certificate_id) REFERENCES certificate(certificate_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
 
 
 --
@@ -463,7 +466,7 @@ ALTER TABLE ONLY movie
 --
 
 ALTER TABLE ONLY movie_genre
-    ADD CONSTRAINT movie_genre_genre_id_fkey FOREIGN KEY (genre_id) REFERENCES genre(genre_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+ADD CONSTRAINT movie_genre_genre_id_fkey FOREIGN KEY (genre_id) REFERENCES genre(genre_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
 
 
 --
@@ -471,7 +474,7 @@ ALTER TABLE ONLY movie_genre
 --
 
 ALTER TABLE ONLY movie_genre
-    ADD CONSTRAINT movie_genre_movie_id_fkey FOREIGN KEY (movie_id) REFERENCES movie(movie_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+ADD CONSTRAINT movie_genre_movie_id_fkey FOREIGN KEY (movie_id) REFERENCES movie(movie_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
 
 
 --
@@ -479,7 +482,7 @@ ALTER TABLE ONLY movie_genre
 --
 
 ALTER TABLE ONLY movie_keyword
-    ADD CONSTRAINT movie_keyword_keyword_id_fkey FOREIGN KEY (keyword_id) REFERENCES keyword(keyword_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+ADD CONSTRAINT movie_keyword_keyword_id_fkey FOREIGN KEY (keyword_id) REFERENCES keyword(keyword_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
 
 
 --
@@ -487,7 +490,7 @@ ALTER TABLE ONLY movie_keyword
 --
 
 ALTER TABLE ONLY movie_keyword
-    ADD CONSTRAINT movie_keyword_movie_id_fkey FOREIGN KEY (movie_id) REFERENCES movie(movie_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+ADD CONSTRAINT movie_keyword_movie_id_fkey FOREIGN KEY (movie_id) REFERENCES movie(movie_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
 
 
 --
@@ -495,7 +498,7 @@ ALTER TABLE ONLY movie_keyword
 --
 
 ALTER TABLE ONLY movie_role
-    ADD CONSTRAINT movie_role_movie_id_fkey FOREIGN KEY (movie_id) REFERENCES movie(movie_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+ADD CONSTRAINT movie_role_movie_id_fkey FOREIGN KEY (movie_id) REFERENCES movie(movie_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
 
 
 --
@@ -503,7 +506,7 @@ ALTER TABLE ONLY movie_role
 --
 
 ALTER TABLE ONLY movie_role
-    ADD CONSTRAINT movie_role_person_id_fkey FOREIGN KEY (person_id) REFERENCES person(person_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+ADD CONSTRAINT movie_role_person_id_fkey FOREIGN KEY (person_id) REFERENCES person(person_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
 
 
 --
@@ -511,7 +514,7 @@ ALTER TABLE ONLY movie_role
 --
 
 ALTER TABLE ONLY movie_role
-    ADD CONSTRAINT movie_role_role_id_fkey FOREIGN KEY (role_id) REFERENCES role(role_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+ADD CONSTRAINT movie_role_role_id_fkey FOREIGN KEY (role_id) REFERENCES role(role_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
 
 
 --

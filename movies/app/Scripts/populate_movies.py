@@ -39,6 +39,7 @@ if not movies or len(movies) < MOVIES_TO_POPULATE:
                 if href:
                     query = config.movie_table.insert(). \
                         values(imdb_id=href.group(1),
+                               provider_id=1,
                                title=re.sub(CLEAN_TITLE_REGEX, '',
                                             link.contents[0]))
                     try:

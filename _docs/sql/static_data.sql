@@ -57,8 +57,18 @@ INSERT INTO genre VALUES (40, 'Film-Noir');
 INSERT INTO role VALUES (1, 'director');
 INSERT INTO role VALUES (2, 'actor');
 
+--
+-- Data for Name: provider; Type: TABLE DATA; Schema: public; Owner: movies
+--
+
+INSERT INTO provider VALUES (1, 'amazon_prime', 'Amazon Prime', 'https://www.amazon.co.uk/gp/video/library');
+INSERT INTO provider VALUES (2, 'flixster', 'Flixster', 'https://video.flixster.com/collection#/sort/date-added/desc');
+INSERT INTO provider VALUES (2, 'google_video', 'Google Video', 'https://play.google.com/store/account');
+
 
 --
 -- PostgreSQL database dump complete
 --
+
+INSERT INTO "user" VALUES(1, 'admin', '', true, NOW(), 'admin');
 
