@@ -12,7 +12,7 @@ define(function(require, exports, module) {
             var data = {movie_id: false,
                         imdb_id: imdb_id,
                         provider: provider,
-                        hd: hd}
+                        hd: hd};
 
             this.save(data,
                 {url: '/movie/add/',
@@ -33,18 +33,17 @@ define(function(require, exports, module) {
                 }
             );
         },
-        delete: function (callback) {
+        delete: function (collection) {
             var movie = this.get('Movie'),
                 that = this;
 
             this.save({movie_id: movie.movie_id},
                 {url: '/movie/delete/'+movie.movie_id+'/',
                     success: function() {
-                        that.destroy();
-                        callback(1);
+                        collection.remove(that);
+                        Interface.messagePopup('success', 'Movie deleted');
                     },
                     error: function() {
-                        callback(1)
                         Interface.messagePopup('error',
                             'An error occurred whilst deleting the movie');
                     }

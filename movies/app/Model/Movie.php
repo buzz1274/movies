@@ -12,6 +12,8 @@
 
         public $errors = false;
 
+        public $sequence = 'public.movie_id';
+
         public $belongsTo = array('Certificate' =>
                                         array('className' => 'Certificate',
                                               'foreignKey' => 'certificate_id'),
@@ -131,11 +133,27 @@
 
             $provider = $this->Provider->find('first', array('conditions' =>
                                 array('provider_shortcode' => $movie->provider)));
-            
-            if(!$this->save(array('imdb_id' => (string)$movie->imdb_id,
-                                  'title' => '',
-                                  'hd' => $movie->hd == 'yes' ? true : false,
-                                  'provider_id' => $provider['Provider']['provider_id']))) {
+
+            $update_movie = $this->find('first',
+                                 array('recursive' => 2,
+                                       'callbacks' => false,
+                                       'conditions' => array('imdb_id' => $movie->imdb_id)));
+
+            if($update_movie) {
+                $update_movie['Movie']['deleted'] = false;
+                $update_movie['Movie']['hd'] = $movie->hd == 'yes' ? true : false;
+                $update_movie['Movie']['provider_id'] = $provider['Provider']['provider_id'];
+
+                $data = $update_movie['Movie'];
+            } else {
+                $data = array('movie_id' => false,
+                              'imdb_id' => (string)$movie->imdb_id,
+                              'title' => '',
+                              'hd' => $movie->hd == 'yes' ? true : false,
+                              'provider_id' => $provider['Provider']['provider_id']);
+            }
+
+            if(!$this->save($data)) {
                 return false;
             } else {
                 return true;
@@ -343,12 +361,6 @@
                         $results[$key]['Movie']['runtime'] .= ' '.$minutes.'mins';
                     }
 
-                }
-
-                if(isset($results[$key]['Movie']['filesize'])) {
-                    $results[$key]['Movie']['filesize'] =
-                        number_format($results[$key]['Movie']['filesize'] /
-                                      (1000 * 1000 * 1000), 2);
                 }
 
             }
@@ -852,8 +864,9 @@
             if(!is_object($movie) ||
                !isset($movie->imdb_id) || !$movie->imdb_id) {
                 $this->errors['imdb_id'] = 'Please enter an imdb id';
-            } elseif($this->find('first', array('conditions' =>
-                         array('imdb_id' => $movie->imdb_id)))) {
+            } elseif(($m = $this->find('first', array('conditions' =>
+                                            array('imdb_id' => $movie->imdb_id)))) &&
+                     !$m['Movie']['deleted']) {
                 $this->errors['imdb_id'] = 'imdb id already in database';
             }
 

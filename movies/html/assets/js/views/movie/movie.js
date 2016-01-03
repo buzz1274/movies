@@ -78,10 +78,7 @@ define(function(require, exports, module) {
         },
         delete: function () {
             this.close_details(this.model.get('Movie').movie_id);
-            this.model.delete(this.delete_movie_row);
-        },
-        delete_movie_row: function (imdb_id) {
-            alert("CALLBACK");
+            this.model.delete(this);
         },
         render:function () {
             this.$el.html(this.template({'Movie': this.model.toJSON().Movie,

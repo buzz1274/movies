@@ -55,9 +55,35 @@
          * deletes the movie matching the supplied movie_id
          */
         public function delete() {
+            $user = $this->Auth->user();
 
-            return new CakeResponse(array('status' => 200,
-                                          'body' => json_encode(array('success'))));
+            if(!$user || !isset($user['admin']) || !$user['admin']) {
+                $status = 403;
+                $response = 'no authorization';
+            } else {
+                $movie = $this->Movie->find('first',
+                    array('recursive' => 2,
+                          'callbacks' => false,
+                          'conditions' => array('movie_id' =>
+                                                $this->request->params['movieID'])));
+
+                if(!$movie) {
+                    $status = 400;
+                } else {
+                    $movie['Movie']['deleted'] = true;
+
+                    if(!$this->Movie->save($movie['Movie'])) {
+                        $status = 500;
+                        $response = 'errors';
+                    } else {
+                        $status = 200;
+                        $response = 'success';
+                    }
+                }
+            }
+
+            return new CakeResponse(array('status' => $status,
+                                          'body' => json_encode($response)));
 
         }
         //end delete
