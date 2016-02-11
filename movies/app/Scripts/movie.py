@@ -155,7 +155,9 @@ class Movie:
                 else:                             
                     release_year = imdb.release_year
 
-                if not self.movie['runtime'] and imdb.runtime:
+                if ((not self.movie['runtime'] or
+                    (self.movie['runtime'] < 60 or self.movie['runtime'] > 600)) and
+                   imdb.runtime):
                     runtime = imdb.runtime
                 else:
                     runtime = self.movie['runtime']

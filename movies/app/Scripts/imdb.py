@@ -32,7 +32,7 @@ class IMDB(object):
     certificate = None
     plot_keywords = []
     rating_only = False
-    run_time = False
+    runtime = 0
 
     def __init__(self, imdb_id, rating_only = False):
         """
@@ -90,10 +90,11 @@ class IMDB(object):
         sets the imdb rating for the current movie
         """
         try:
-            self.rating = self.page.find(True, {'class': 'titlePageSprite star-box-giga-star'})
+            self.rating = self.page.find('span', {'itemprop': 'ratingValue'})
 
             if self.rating:
                 self.rating = self.rating.contents[0].strip()
+
         except Exception, e:
             raise IMDBException('Unable to retrieve rating(%s)(%s)' %
                                  (self.imdb_id, e))
@@ -103,10 +104,11 @@ class IMDB(object):
         gets the title for the current movie
         """
         try:
-            tag = self.page.find('span', itemprop='name').contents
+            tag = self.page.find('h1', itemprop='name').contents
 
             if tag:
                 self.title = tag[0].strip()
+
         except Exception, e:
             raise IMDBException('Unable to retrieve title(%s)(%s)' %
                                  (self.imdb_id, e))
@@ -170,19 +172,20 @@ class IMDB(object):
         sets directors for the current movie
         """
         try:
-            tags = self.page.find('div', itemprop='director')
+            tags = self.page.findAll('span', itemprop='director')
             if tags:
-                tags = tags.findAll('a', itemprop='url')
-                if tags:
-                    for director in tags:
-                        try:
-                            match = re.match('\/name\/(.*)\/\?.*', director['href'])
+                for director in tags:
+                    try:
+                        director = director.find('a')
+                        if director:
+                            match = re.match('\/name\/(.*)\/?\?.*', director['href'])
                             director = director.find('span').contents[0]
                             if len(director) > 0 and match and match.group(1):
                                 self.directors.append({'id':  match.group(1),
                                                        'name': director})
-                        except KeyError:
-                            pass
+
+                    except KeyError:
+                        pass
         except Exception, e:
             raise IMDBException('Unable to retrieve director(%s)(%s)' %
                                  (self.imdb_id, e))
@@ -253,9 +256,11 @@ class IMDB(object):
         """
         sets the movie release date
         """
-        self.release_year = self.page.find('time', itemprop='datePublished')
-        if self.release_year and self.release_year['datetime']:
-            match = re.match('[0-9]{4}', self.release_year['datetime'])
+        self.release_year = self.page.find('span', {'id': 'titleYear'}).find('a')
+
+        if self.release_year:
+            match = re.match('[0-9]{4}', self.release_year.contents[0])
+
             if match and match.group(0):
                 self.release_year = match.group(0)
             else:
@@ -282,7 +287,7 @@ class IMDB(object):
         sets the movie synopsis
         """
         try:
-            tags = self.page.find('p', itemprop='description')
+            tags = self.page.find('div', itemprop='description')
             if tags:
                 tags = tags.contents
                 self.synopsis = tags[0].strip()
@@ -297,7 +302,16 @@ class IMDB(object):
         try:
             tags = self.page.find('time', itemprop='duration')
             if tags and tags.contents:
-                self.runtime = re.sub('[^0-9]', '', tags.contents[0])
+                hours = re.match('([\d]+)h', tags.contents[0].strip())
+
+                if hours:
+                    self.runtime = int(hours.group(1)) * 60
+
+                minutes = re.match('.*?([\d]+)min', tags.contents[0].strip())
+
+                if minutes:
+                    self.runtime += int(minutes.group(1))
+
         except Exception, e:
             raise IMDBException('Unable to retrieve run time(%s)(%s)' %
                                 (self.imdb_id, e))
