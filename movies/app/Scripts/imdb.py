@@ -245,7 +245,8 @@ class IMDB(object):
                 self.certificate = tag['content']
                 if self.certificate.strip().lower() == 'x':
                     self.certificate = "18"
-                elif self.certificate.strip().lower() == 'r':
+                elif (self.certificate.strip().lower() == 'r' or
+                      self.certificate.strip().lower() == 'pg-13'):
                     self.certificate = "15"
                 elif self.certificate.strip().lower() == 'a':
                     self.certificate = "PG"
